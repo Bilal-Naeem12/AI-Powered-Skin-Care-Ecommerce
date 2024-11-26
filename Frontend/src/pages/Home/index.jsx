@@ -1,7 +1,7 @@
 
 import HeroSection from './HeroSection';
 import AISection from './AISection';
-import ProductList from './ProductList';
+import ProductShowcase from './ProductShowcase';
 import MainLayout from '../../component/Layout/MainLayout';
 
 const HomePage = () => {
@@ -9,7 +9,7 @@ const HomePage = () => {
     <MainLayout>
       <HeroSection />
       <AISection />
-      <ProductList />
+      <ProductShowcase />
     </MainLayout>
   );
 };

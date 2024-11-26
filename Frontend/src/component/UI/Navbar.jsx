@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -66,12 +67,12 @@ const Navbar = () => {
 
         {/* Center Section - Logo */}
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <img
+    <Link to={"/"}>      <img
             src="/assets/logo.png"
             alt="Skin Care Pro"
             style={{ height: "40px" }}
           />
-  
+  </Link>
          
         </Box>
 
@@ -80,11 +81,12 @@ const Navbar = () => {
           <IconButton>
             <SearchIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
           </IconButton>
-          <IconButton>
+         <Link to="/login"><IconButton>
             <FavoriteBorderIcon
            sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
             />
           </IconButton>
+          </Link> 
           <IconButton>
             <ShoppingCartOutlinedIcon
              sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}

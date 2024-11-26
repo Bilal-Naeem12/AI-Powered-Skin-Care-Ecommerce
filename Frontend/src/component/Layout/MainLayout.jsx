@@ -1,5 +1,6 @@
-import Navbar from '../UI/Navbar';
-import Footer from '../UI/Footer';
+import Footer from "../UI/Footer";
+import Navbar from "../UI/Navbar";
+
 
 const MainLayout = ({ children }) => {
   return (
