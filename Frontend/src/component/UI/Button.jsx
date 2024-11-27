@@ -1,27 +1,59 @@
-const Button = ({ children, onClick, className, variant = "white" }) => {
-  const baseClasses = `px-6 py-3 rounded-md transition duration-300 flex items-center gap-2 ${className}`;
+import React from "react";
+import { Button as MUIButton } from "@mui/material";
 
+const Button = ({ children, onClick, variant = "white", className, ...props }) => {
   // Variant Styles
-  const whiteVariant = `border border-white text-white hover:bg-white hover:text-gray-800`;
-  const blackVariant = `border border-black text-black hover:bg-black hover:text-white`;
-  const primaryVariant = `bg-blue-600 text-white hover:bg-blue-700`;
-  const secondaryVariant = `bg-black text-white hover:bg-gray-700`;
-
-  // Dynamically select variant styles
-  const variantClasses = {
-    white: whiteVariant,
-    black: blackVariant,
-    primary: primaryVariant,
-    secondary: secondaryVariant,
+  const variantStyles = {
+    white: {
+      border: "1px solid white",
+      color: "white",
+      "&:hover": {
+        backgroundColor: "white",
+        color: "gray",
+      },
+    },
+    black: {
+      border: "1px solid black",
+      color: "black",
+      "&:hover": {
+        backgroundColor: "black",
+        color: "white",
+      },
+    },
+    primary: {
+      backgroundColor: "#2563eb", // Tailwind's blue-600
+      color: "white",
+      "&:hover": {
+        backgroundColor: "#1d4ed8", // Tailwind's blue-700
+      },
+    },
+    secondary: {
+      backgroundColor: "black",
+      color: "white",
+      "&:hover": {
+        backgroundColor: "gray",
+      },
+    },
   };
 
   return (
-    <button
+    <MUIButton
       onClick={onClick}
-      className={`${baseClasses} ${variantClasses[variant]}`}
+      sx={{
+        px: 3, // Padding x-axis
+        py: 1.5, // Padding y-axis
+        borderRadius: "8px",
+        transition: "all 0.3s",
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        ...variantStyles[variant],
+      }}
+      className={className}
+      {...props}
     >
       {children}
-    </button>
+    </MUIButton>
   );
 };
 

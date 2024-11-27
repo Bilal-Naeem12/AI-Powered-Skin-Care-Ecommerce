@@ -87,11 +87,12 @@ const Navbar = () => {
             />
           </IconButton>
           </Link> 
-          <IconButton>
-            <ShoppingCartOutlinedIcon
+          <Link to="/cartPage">       <IconButton>
+          <ShoppingCartOutlinedIcon
              sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
             />
           </IconButton>
+          </Link> 
         </Box>
 
         {/* Hamburger Menu for Mobile */}

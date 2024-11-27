@@ -30,7 +30,7 @@ const AISection = () => {
       </div>
     </section>
     <section className=" py-16 border border-y-black">
-      <div className="container mx-auto flex flex-col md:flex-row items-center">
+      <div className="container mx-auto flex flex-col md:flex-row-reverse items-center">
         {/* Image Section */}
         <div className="md:w-2/5 flex justify-center">
           <img

@@ -1,9 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Box, TextField, Button, Typography } from "@mui/material";
+import { FcGoogle } from "react-icons/fc"; // For Google icon
 import { Link } from "react-router-dom";
 
-const LoginForm = () => {
+const SignupForm = () => {
   const {
     register,
     handleSubmit,
@@ -20,13 +21,13 @@ const LoginForm = () => {
         {/* Left Image Section */}
         <Box className="w-full md:w-[40%] flex justify-center">
           <img
-            src="/assets/product_images/moisturizer.jpg" // Replace with your actual image path
+            src="/assets/product_images/vitamin-c-serum.jpg" // Replace with your actual image path
             alt="Moisturizer"
             className="w-full max-w-lg rounded-lg shadow-md"
           />
         </Box>
 
-        {/* Right Login Form Section */}
+        {/* Right Form Section */}
         <Box
           className="w-full md:w-[50%] bg-white p-8 md:p-10 lg:p-12 rounded-lg shadow-lg"
         >
@@ -36,12 +37,25 @@ const LoginForm = () => {
             className="mb-4"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            Log in to SkinCare Pro
+            Create an account
           </Typography>
-      
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
-            {/* Email or Phone Field */}
+            {/* Name Field */}
+            <Box className="mb-6">
+              <TextField
+                fullWidth
+                label="Name"
+                variant="outlined"
+                error={!!errors.name}
+                helperText={errors.name ? errors.name.message : ""}
+                {...register("name", {
+                  required: "Name is required",
+                })}
+              />
+            </Box>
+
+            {/* Email Field */}
             <Box className="mb-6">
               <TextField
                 fullWidth
@@ -79,7 +93,7 @@ const LoginForm = () => {
               />
             </Box>
 
-            {/* Login Button */}
+            {/* Create Account Button */}
             <Box className="mb-4">
               <Button
                 type="submit"
@@ -96,43 +110,53 @@ const LoginForm = () => {
                   boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
                 }}
               >
-                Log In
+                Create Account
               </Button>
             </Box>
 
-            {/* Links Section */}
-            <Box className="flex justify-between">
-              <Link to="/signup" style={{ textDecoration: "none" }}>
-                <Typography
-                  align="left"
-                  variant="body2"
-                  style={{
-                    color: "#000",
-                    textDecoration: "underline",
-                    fontFamily: "Poppins, sans-serif",
-                    cursor: "pointer",
-                    fontWeight: "500",
-                  }}
-                  className="hover:underline"
-                >
-                  Create a new account
-                </Typography>
-              </Link>
+            {/* Google Signup Button */}
+            <Box className="mb-4">
+              <Button
+                type="button"
+                fullWidth
+                variant="outlined"
+                style={{
+                  color: "#000",
+                  padding: "12px 0",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  fontFamily: "Poppins, sans-serif",
+                  textTransform: "none",
+                  borderColor: "#ccc",
+                }}
+                startIcon={<FcGoogle />}
+              >
+                Sign up with Google
+              </Button>
+            </Box>
 
-              <Typography
-                align="right"
-                variant="body2"
+            {/* Already have an account */}
+            <Typography
+              align="center"
+              variant="body2"
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                marginTop: "1rem",
+                color: "#333",
+              }}
+            >
+              Already have an account?{" "}
+         <Link to="/login">  <span
                 style={{
                   color: "#E91E63",
-                  fontFamily: "Poppins, sans-serif",
                   cursor: "pointer",
-                  fontWeight: "500",
+                  fontWeight: "bold",
                 }}
                 className="hover:underline"
               >
-                Forget Password?
-              </Typography>
-            </Box>
+                Log in
+              </span></Link>   
+            </Typography>
           </form>
         </Box>
       </Box>
@@ -140,4 +164,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default SignupForm;
