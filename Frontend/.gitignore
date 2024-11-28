@@ -29,7 +29,7 @@ Thumbs.db
 .next/
 .nuxt/
 .parcel-cache/
-public/assets/
+
 
 # TypeScript
 *.tsbuildinfo
