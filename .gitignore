@@ -49,7 +49,6 @@ coverage/
 frontend/.next/
 frontend/.nuxt/
 frontend/.parcel-cache/
-frontend/public/assets/
 frontend/out/
 frontend/static/
 
