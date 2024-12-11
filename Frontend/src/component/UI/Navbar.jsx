@@ -115,7 +115,7 @@ const Navbar = () => {
           >
             Analyze
           </Typography>  </Link>
-          <Link to={"/analyze-page"}>    <Typography
+          <Link to={"/about-us"}>    <Typography
             variant="body1"
             sx={{
               cursor: "pointer",

@@ -7,6 +7,7 @@ import CartPage from "../pages/CartPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import AnalyzePage from "../pages/AnalyzePage";
 import ContactUsPage from "../pages/ContactUsPage";
+import NotFound from "../pages/404"; // Import the NotFound component
 
 const AppRouter = () => {
   return (
@@ -19,6 +20,9 @@ const AppRouter = () => {
         <Route path="/checkout-page" element={<CheckoutPage />} />
         <Route path="/analyze-page" element={<AnalyzePage />} />
         <Route path="/contact-us-page" element={<ContactUsPage />} />
+
+        {/* Catch-all route for 404 Not Found */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
