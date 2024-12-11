@@ -10,7 +10,7 @@ const CartActions = () => {
           Return To Shop
         </Button>
       </Link>
-      <Link to="/checkoutPage" style={{ textDecoration: "none" }}>
+      <Link to="/checkout-page" style={{ textDecoration: "none" }}>
         <Button variant="secondary" className="px-6 py-3">
         Proceed to Checkout
       </Button>

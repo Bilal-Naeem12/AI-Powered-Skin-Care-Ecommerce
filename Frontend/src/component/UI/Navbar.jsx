@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,15 +9,27 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
+  InputBase,
 } from "@mui/material";
+import { motion ,AnimatePresence } from "framer-motion";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Person2Outlined from "@mui/icons-material/Person2Outlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false); // State to control search bar visibility
+  const [searchValue, setSearchValue] = useState(""); // State to track input value
+  const searchRef = useRef(null); // Ref to track the input field
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
@@ -26,8 +38,31 @@ const Navbar = () => {
     setDrawerOpen(open);
   };
 
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSearchToggle = () => {
+    setSearchOpen(true);
+  };
+
+  // Collapse search bar if it loses focus and is empty
+  const handleBlur = () => {
+    if (searchValue.trim() === "") {
+      setSearchOpen(false);
+    }
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
   return (
-    <AppBar position="static" color="inherit" elevation={0} sx={{ borderBottom: "1px solid #e0e0e0" }}>
+    <AppBar position="static" className=" shadow-lg" color="inherit" elevation={0} sx={{ borderBottom: "1px solid #e0e0e0" }}>
       <Toolbar
         sx={{
           display: "flex",
@@ -35,6 +70,13 @@ const Navbar = () => {
           alignItems: "center",
         }}
       >
+              {/* Center Section - Logo */}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Link to={"/"}>
+            <img src="/assets/logo.png" alt="Skin Care Pro" style={{ height: "40px" }} />
+          </Link>
+        </Box>
+
         {/* Left Section - Links */}
         <Box
           sx={{
@@ -43,6 +85,16 @@ const Navbar = () => {
             alignItems: "center",
           }}
         >
+         <Link to={"/"}>  <Typography
+            variant="body1"
+            sx={{
+              cursor: "pointer",
+              color: "gray",
+              "&:hover": { color: "#FF69B4" },
+            }}
+          >
+            Home
+          </Typography></Link>
           <Typography
             variant="body1"
             sx={{
@@ -51,9 +103,19 @@ const Navbar = () => {
               "&:hover": { color: "#FF69B4" },
             }}
           >
-            Shop
+          Shop
           </Typography>
-          <Typography
+          <Link to={"/analyze-page"}>    <Typography
+            variant="body1"
+            sx={{
+              cursor: "pointer",
+              color: "gray",
+              "&:hover": { color: "#FF69B4" },
+            }}
+          >
+            Analyze
+          </Typography>  </Link>
+          <Link to={"/analyze-page"}>    <Typography
             variant="body1"
             sx={{
               cursor: "pointer",
@@ -62,37 +124,101 @@ const Navbar = () => {
             }}
           >
             About Us
-          </Typography>
+          </Typography>  </Link>
+          <Link to={"/contact-us-page"}>    <Typography
+            variant="body1"
+            sx={{
+              cursor: "pointer",
+              color: "gray",
+              "&:hover": { color: "#FF69B4" },
+            }}
+          >
+              Contact Us
+          </Typography>  </Link>
+  
         </Box>
 
-        {/* Center Section - Logo */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-    <Link to={"/"}>      <img
-            src="/assets/logo.png"
-            alt="Skin Care Pro"
-            style={{ height: "40px" }}
-          />
-  </Link>
-         
-        </Box>
-
+  
         {/* Right Section - Icons */}
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          <IconButton>
-            <SearchIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
-          </IconButton>
-         <Link to="/login"><IconButton>
-            <FavoriteBorderIcon
-           sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
+          {/* Search Bar Toggle */}
+          <AnimatePresence>
+    {searchOpen ? (
+      <motion.div
+        key="searchBar" // Unique key for AnimatePresence
+        initial={{ width: 0, opacity: 0 }}
+        animate={{ width: "200px", opacity: 1 }}
+        exit={{ width: 0, opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <InputBase
+          ref={searchRef}
+          placeholder="Search…"
+          value={searchValue}
+          onChange={handleSearchChange}
+          onBlur={handleBlur}
+          autoFocus
+          sx={{
+            borderBottom: "1px solid gray",
+            width: "100%",
+            padding: "0 8px",
+            "&:focus": {
+              borderBottom: "2px solid #FF69B4",
+            },
+            color: "gray",
+          }}
+        />
+      </motion.div>
+    ) : null}
+  </AnimatePresence>
+  {!searchOpen && (
+    <IconButton onClick={handleSearchToggle}>
+      <SearchIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
+    </IconButton>
+  )}
+          <IconButton onClick={handleMenuOpen}>
+            <Person2Outlined
+              sx={{ fontSize: "1.7rem", color: "gray", "&:hover": { color: "#FF69B4" } }}
             />
           </IconButton>
-          </Link> 
-          <Link to="/cartPage">       <IconButton>
-          <ShoppingCartOutlinedIcon
-             sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
-            />
-          </IconButton>
-          </Link> 
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            MenuListProps={{ onMouseLeave: handleMenuClose }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MenuItem onClick={handleMenuClose}>
+                <AccountCircleIcon sx={{ marginRight: 2 }} />
+                <Typography fontSize={14} color="gray">
+                  My Profile
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <SettingsIcon sx={{ marginRight: 2 }} />
+                <Typography fontSize={14} color="gray">
+                  Settings
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <LogoutIcon sx={{ marginRight: 2 }} />
+                <Typography fontSize={14} color="gray">
+                  Log Out
+                </Typography>
+              </MenuItem>
+            </motion.div>
+          </Menu>
+          <Link to="/cart-page">
+            <IconButton>
+              <ShoppingCartOutlinedIcon
+                sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
+              />
+            </IconButton>
+          </Link>
         </Box>
 
         {/* Hamburger Menu for Mobile */}
@@ -106,7 +232,12 @@ const Navbar = () => {
 
       {/* Drawer for Mobile Menu */}
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
           <List>
             <ListItem button>
               <ListItemText primary="Shop" />

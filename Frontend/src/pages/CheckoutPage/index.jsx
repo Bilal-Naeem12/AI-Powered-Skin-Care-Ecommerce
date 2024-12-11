@@ -18,7 +18,7 @@ const CheckoutPage = () => {
       name: "Sun Screen",
       price: 349,
       quantity: 1,
-      image: "/assets/product_images/sunscreen.jpg",
+      image: "/assets/product_images/sun-screen.jpg",
     },
   ];
 
