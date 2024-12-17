@@ -13,7 +13,7 @@ const CameraView = ({ viewState, countdown, startCapture }) => {
         {/* Capture View */}
         {viewState === "capture" && (
           <img
-            src="/assets/face-image.png" // Replace with a real camera feed or placeholder
+            src="/assets/face-image.jpg" // Replace with a real camera feed or placeholder
             alt="Camera View"
             className="object-cover w-full h-full rounded-lg"
           />
@@ -24,7 +24,7 @@ const CameraView = ({ viewState, countdown, startCapture }) => {
        <div className="relative w-full h-full">
        {/* Image */}
        <img
-         src="/assets/face-image.png" // Replace with a real camera feed or placeholder
+         src="/assets/face-image.jpg" // Replace with a real camera feed or placeholder
          alt="Camera View"
          className="object-cover w-full h-full rounded-lg"
        />
@@ -46,7 +46,7 @@ const CameraView = ({ viewState, countdown, startCapture }) => {
         {/* Result View */}
         {viewState === "result" && (
           <img
-            src="/assets/face-image.png" // Display the captured image
+            src="/assets/face-image.jpg" // Display the captured image
             alt="Captured"
             className="object-cover w-full h-full rounded-lg"
           />

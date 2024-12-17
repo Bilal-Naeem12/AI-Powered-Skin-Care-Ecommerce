@@ -13,6 +13,7 @@ const FaceScanModal = ({ onClose, onAnalyze }) => {
     setViewState("countdown");
 
     let count = 3;
+    setCountdown(3);
     const interval = setInterval(() => {
       setCountdown((prev) => prev - 1);
       count -= 1;
