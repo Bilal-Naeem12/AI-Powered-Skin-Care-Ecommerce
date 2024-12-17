@@ -7,14 +7,14 @@ const ContactDetails = () => {
     {
       title: "Contact Directly",
       items: [
-        { icon: <EmailIcon />, text: "info@dukanso.com" },
-        { icon: <PhoneIcon />, text: "+92 311-746-756" },
+        { icon: <EmailIcon />, text: "info@skincare.com" },
+        { icon: <PhoneIcon />, text: "+92 315-755-723" },
       ],
     },
     {
       title: "Customer Service",
       items: [
-        { icon: <EmailIcon />, text: "support@shophive.com" },
+        { icon: <EmailIcon />, text: "support@skincare.com" },
         { icon: <PhoneIcon />, text: "+92 42-111-746-756" },
       ],
     },
@@ -28,15 +28,15 @@ const ContactDetails = () => {
     },
     {
       title: "Ceo Direct Complain",
-      items: [{ text: "ceo@shophive.com" }],
+      items: [{ text: "ceo@skincare.com" }],
     },
     {
       title: "Work With Us",
-      items: [{ text: "jobs@shophive.com" }],
+      items: [{ text: "jobs@skincare.com" }],
     },
     {
       title: "Corporate Support",
-      items: [{ text: "corporate@shophive.com" }],
+      items: [{ text: "corporate@skincare.com" }],
     },
   ];
 

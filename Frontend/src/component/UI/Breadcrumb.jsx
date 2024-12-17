@@ -2,7 +2,7 @@ import React from "react";
 
 const Breadcrumb = ({ paths }) => {
   return (
-    <nav className="text-sm text-gray-600">
+    <nav className="text-lg text-gray-600">
       {paths.map((path, index) => (
         <span key={index}>
           <a

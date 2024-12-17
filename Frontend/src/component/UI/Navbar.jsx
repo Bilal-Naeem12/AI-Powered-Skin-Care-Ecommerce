@@ -95,7 +95,7 @@ const Navbar = () => {
           >
             Home
           </Typography></Link>
-          <Typography
+          <Link to={"/shop"}>    <Typography
             variant="body1"
             sx={{
               cursor: "pointer",
@@ -104,7 +104,7 @@ const Navbar = () => {
             }}
           >
           Shop
-          </Typography>
+          </Typography></Link>
           <Link to={"/analyze-page"}>    <Typography
             variant="body1"
             sx={{
