@@ -11,7 +11,7 @@ const ShopPage = () => {
 
   return (
    <MainLayout>
-<div className="container mx-auto py-5">
+<div className=" w-10/12 mx-auto py-5">
 <Breadcrumb
         paths={[
           { name: "Home", link: "/" },
