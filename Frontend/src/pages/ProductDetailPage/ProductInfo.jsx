@@ -12,12 +12,13 @@ const ProductInfo = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
+      {/* Left Side - Static Image with Scrollable Content */}
+      <div className="sticky top-10 max-h-screen  overflow-y-auto ">
         <div className="relative">
           <img
             src="/assets/product_images/sun-screen.jpg" // Replace with real image
             alt="Product"
-            className="rounded-lg w-full object-cover"
+              className="rounded-lg w-full h-[600px] object-cover overflow-hidden"
           />
           <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
             25% OFF
@@ -25,7 +26,80 @@ const ProductInfo = () => {
         </div>
       </div>
 
+      {/* Right Side - Product Info */}
       <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold">Bluebell Dream Nourishing Cream</h1>
+        <p className="text-lg font-semibold">Our Price Rs. 750.00</p>
+        <div className="flex items-center gap-2">
+          <IconButton onClick={() => handleQuantity("decrease")} size="small">
+            <RemoveIcon />
+          </IconButton>
+          <span className="border px-4 py-1 rounded">{quantity}</span>
+          <IconButton onClick={() => handleQuantity("increase")} size="small">
+            <AddIcon />
+          </IconButton>
+        </div>
+        <Button
+          variant="contained"
+          color="inherit"
+          className="!bg-black !text-white hover:!bg-gray-800"
+        >
+          Add to Cart
+        </Button>
+        <h1 className="text-2xl font-bold">Bluebell Dream Nourishing Cream</h1>
+        <p className="text-lg font-semibold">Our Price Rs. 750.00</p>
+        <div className="flex items-center gap-2">
+          <IconButton onClick={() => handleQuantity("decrease")} size="small">
+            <RemoveIcon />
+          </IconButton>
+          <span className="border px-4 py-1 rounded">{quantity}</span>
+          <IconButton onClick={() => handleQuantity("increase")} size="small">
+            <AddIcon />
+          </IconButton>
+        </div>
+        <Button
+          variant="contained"
+          color="inherit"
+          className="!bg-black !text-white hover:!bg-gray-800"
+        >
+          Add to Cart
+        </Button>
+        <h1 className="text-2xl font-bold">Bluebell Dream Nourishing Cream</h1>
+        <p className="text-lg font-semibold">Our Price Rs. 750.00</p>
+        <div className="flex items-center gap-2">
+          <IconButton onClick={() => handleQuantity("decrease")} size="small">
+            <RemoveIcon />
+          </IconButton>
+          <span className="border px-4 py-1 rounded">{quantity}</span>
+          <IconButton onClick={() => handleQuantity("increase")} size="small">
+            <AddIcon />
+          </IconButton>
+        </div>
+        <Button
+          variant="contained"
+          color="inherit"
+          className="!bg-black !text-white hover:!bg-gray-800"
+        >
+          Add to Cart
+        </Button>
+        <h1 className="text-2xl font-bold">Bluebell Dream Nourishing Cream</h1>
+        <p className="text-lg font-semibold">Our Price Rs. 750.00</p>
+        <div className="flex items-center gap-2">
+          <IconButton onClick={() => handleQuantity("decrease")} size="small">
+            <RemoveIcon />
+          </IconButton>
+          <span className="border px-4 py-1 rounded">{quantity}</span>
+          <IconButton onClick={() => handleQuantity("increase")} size="small">
+            <AddIcon />
+          </IconButton>
+        </div>
+        <Button
+          variant="contained"
+          color="inherit"
+          className="!bg-black !text-white hover:!bg-gray-800"
+        >
+          Add to Cart
+        </Button>
         <h1 className="text-2xl font-bold">Bluebell Dream Nourishing Cream</h1>
         <p className="text-lg font-semibold">Our Price Rs. 750.00</p>
         <div className="flex items-center gap-2">

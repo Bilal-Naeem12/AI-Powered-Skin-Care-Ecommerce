@@ -1,10 +1,11 @@
 import React from "react";
 import Button from "./Button";
 import { MdFavoriteBorder } from "react-icons/md"; // Importing icons
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+  <Link to={`/product/${product.id}`}>   <div className="border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
       {/* Product Image */}
       <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
 
@@ -28,6 +29,7 @@ const ProductCard = ({ product }) => {
         />
       </div>
     </div>
+    </Link>
   );
 };
 

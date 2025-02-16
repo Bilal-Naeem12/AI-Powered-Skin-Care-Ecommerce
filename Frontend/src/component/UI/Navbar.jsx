@@ -205,10 +205,11 @@ const Navbar = () => {
                 </Typography>
               </MenuItem>
               <MenuItem onClick={handleMenuClose}>
-                <LogoutIcon sx={{ marginRight: 2 }} />
+              <Link to={"/login"}>    <LogoutIcon sx={{ marginRight: 2 }} />
                 <Typography fontSize={14} color="gray">
                   Log Out
                 </Typography>
+                </Link>
               </MenuItem>
             </motion.div>
           </Menu>
@@ -232,7 +233,7 @@ const Navbar = () => {
 
       {/* Drawer for Mobile Menu */}
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box
+        <Box  
           sx={{ width: 250 }}
           role="presentation"
           onClick={toggleDrawer(false)}
