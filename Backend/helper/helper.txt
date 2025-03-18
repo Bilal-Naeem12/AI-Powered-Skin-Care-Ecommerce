@@ -1,0 +1,40 @@
+User.js
+SkinAnalysis.js
+Product.js
+Cart.js
+Order.js
+Payment.js
+Chatbot.js
+Allergen.js
+ProgressTracking.js
+Admin.js
+Review.js
+Wishlist.js
+Shipping.js
+Notification.js
+Auth.js
+Category.js
+Brand.js
+Discount.js
+Subscription.js
+Transaction.js
+ReturnRequest.js
+CustomerSupport.js
+Feedback.js
+SkinType.js
+Appointment.js (if dermatologist consultation is included)
+Blog.js (for skincare tips and articles)
+FAQ.js
+Referral.js
+LoyaltyPoints.js
+Session.js (for user sessions and login history)
+Address.js
+AuditLog.js (for tracking admin changes)
+Recommendation.js (for AI-based product recommendations)
+WishlistItem.js
+Invoice.js
+SupportTicket.js
+Inventory.js
+Promotion.js
+ReviewReply.js (for admin responses to user reviews)
+OrderTracking.js

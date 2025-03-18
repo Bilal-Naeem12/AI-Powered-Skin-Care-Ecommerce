@@ -1,49 +1,74 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+require('dotenv').config(); // Load environment variables
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const helmet = require('helmet'); // Security middleware
+const cors = require('cors'); // Cross-Origin Resource Sharing
+const rateLimit = require('express-rate-limit'); // Prevent brute force attacks
+const compression = require('compression'); // Optimize response size
+const mongoose = require('mongoose');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// Import Routes
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
-var app = express();
+const app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+// **Security Middleware**
+app.use(helmet()); // Adds security headers
+app.use(cors({ origin: process.env.CLIENT_URL || '*' })); // Restrict API access if needed
+app.use(compression()); // Enables gzip compression for performance
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// **Rate Limiting to Prevent Abuse**
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    message: "Too many requests, please try again later."
+});
+app.use(limiter);
+
+// **Database Connection**
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+// **Express Middleware**
+app.use(logger('dev')); // Request logging
+app.use(express.json()); // JSON payload support
+app.use(express.urlencoded({ extended: true })); // URL-encoded payload support
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// **View Engine Setup**
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+// **Routes**
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+// **404 Error Handling**
+app.use((req, res, next) => {
+    next(createError(404, "The requested resource was not found."));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// **Global Error Handler**
+app.use((err, req, res, next) => {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    res.status(err.status || 500);
+    res.render('error');
 });
 
-// Define the port
+// **Define & Start the Server**
 const PORT = process.env.PORT || 3000;
-
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running and listening on http://localhost:${PORT}`);
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
 
 module.exports = app;
