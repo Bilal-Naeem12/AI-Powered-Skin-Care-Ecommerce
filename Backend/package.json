@@ -3,14 +3,26 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "test": "jest",
     "start": "nodemon ./app.js"
   },
   "dependencies": {
+    "compression": "^1.8.0",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
+    "dotenv": "^16.4.7",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
     "http-errors": "~1.6.3",
-    "morgan": "~1.9.1"
+    "mongoose": "^8.12.2",
+    "morgan": "~1.9.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.0"
   }
 }

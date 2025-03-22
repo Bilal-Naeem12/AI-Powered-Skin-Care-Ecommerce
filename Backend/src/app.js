@@ -10,9 +10,7 @@ const rateLimit = require('express-rate-limit'); // Prevent brute force attacks
 const compression = require('compression'); // Optimize response size
 const mongoose = require('mongoose');
 
-// Import Routes
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+
 
 const app = express();
 
@@ -48,8 +46,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // **Routes**
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
 
 // **404 Error Handling**
 app.use((req, res, next) => {
