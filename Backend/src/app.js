@@ -11,7 +11,8 @@ const compression = require('compression'); // Optimize response size
 const mongoose = require('mongoose');
 
 
-
+// Import Routes for each module
+const mainRouter = require('./routes/mainRouter');
 const app = express();
 
 // **Security Middleware**
@@ -28,7 +29,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // **Database Connection**
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("✅ MongoDB Connected"))
@@ -45,10 +46,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// **Routes**
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
 
+// **Module Routes** - Connect each module to its route path
+app.use("/api", mainRouter);
 // **404 Error Handling**
 app.use((req, res, next) => {
     next(createError(404, "The requested resource was not found."));
@@ -66,7 +66,7 @@ app.use((err, req, res, next) => {
 // **Define & Start the Server**
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    console.log(`🚀 Server is running on ${process.env.FRONTEND_URL}`);
 });
 
 module.exports = app;

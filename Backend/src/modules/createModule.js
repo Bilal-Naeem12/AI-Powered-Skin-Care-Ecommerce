@@ -14,7 +14,6 @@ const createFolderStructure = (moduleName) => {
     `${moduleName}Validator.js`,
     `${moduleName}Utils.js`,
     '__tests__',
-    `__tests__/${moduleName}.js`
   ];
 
   // Create the module folder

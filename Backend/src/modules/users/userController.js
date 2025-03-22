@@ -24,7 +24,7 @@ exports.registerUser = async (req, res) => {
         await newUser.save();
 
         // Send verification email
-        const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+        const verificationLink = `${process.env.FRONTEND_URL}/api/users/verify-email?token=${verificationToken}`;
         await sendEmail(email, "Verify Your Email", `Click here to verify: ${verificationLink}`);
 
         res.status(201).json({ message: "User registered successfully. Please verify your email." });

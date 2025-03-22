@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { discountOffer } = require("../config"); // You can set discount offer config here
+const { discountOffer } = require("../../config/env"); // You can set discount offer config here
 
 // **🔹 Send Recovery Email**
 exports.sendRecoveryEmail = async (userEmail, cartDetails) => {

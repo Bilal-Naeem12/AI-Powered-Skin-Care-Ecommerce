@@ -121,7 +121,10 @@ const UserSchema = new mongoose.Schema({
             orderedAt: { type: Date, default: Date.now }
         }
     ],
-
+    verificationToken: {
+        type: String, // Stores the verification token
+        default: null // Initially null, will be set when user registers
+    },
     // **Authentication & Security**
     refreshToken: {
         type: String // Stores refresh token for authentication

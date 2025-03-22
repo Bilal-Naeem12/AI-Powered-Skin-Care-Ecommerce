@@ -13,8 +13,8 @@ const {
   changeUserRole
 } = require("./userController");
 
-const { authMiddleware } = require("../../middlewares/authMiddleware");
-const { roleMiddleware } = require("../../middlewares/roleMiddleware");
+const { authMiddleware } = require("../../middleware/authMiddleware");
+const { roleMiddleware } = require("../../middleware/roleMiddleware");
 const { validateUserRegistration, validateLogin, validatePasswordReset } = require("./userValidator");
 
 const router = express.Router();

@@ -9,7 +9,7 @@ const { calculateDiscount } = require("../discountUtils");
 describe("Discount Module Tests", () => {
   beforeAll(async () => {
     // Connect to an in-memory MongoDB for testing
-    const mongoURI = "mongodb://localhost:27017/test"; // You can use an in-memory database or local DB for tests
+    const mongoURI = process.env.MONGODB_URI_TEST; // You can use an in-memory database or local DB for tests
     await mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
   });
 

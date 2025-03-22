@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "start": "nodemon ./app.js"
+    "start": "nodemon ./src/app.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "compression": "^1.8.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -15,11 +16,16 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-rate-limit": "^7.5.0",
+    "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.15.0",
     "mongoose": "^8.12.2",
     "morgan": "~1.9.1",
-    "path": "^0.12.7"
+    "nodemailer": "^6.10.0",
+    "path": "^0.12.7",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

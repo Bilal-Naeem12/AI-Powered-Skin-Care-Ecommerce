@@ -1,10 +1,10 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
-const app = require("../../app"); // Import your Express app
+const app = require("../../../app"); // Import your Express app
 
 describe("AuditLog Module Tests", () => {
     beforeAll(async () => {
-        const mongoURI = "mongodb://localhost:27017/test"; // Use an in-memory DB or local DB for tests
+        const mongoURI = process.env.MONGODB_URI_TEST; // Use an in-memory DB or local DB for tests
         await mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
     });
 
