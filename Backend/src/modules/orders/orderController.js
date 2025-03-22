@@ -3,7 +3,7 @@ const OrderService = require("./orderService");
 // **🔹 Create a New Order**
 exports.createOrder = async (req, res) => {
     try {
-        const userId = req.user.userId;  // Get the user from the authenticated session
+        const userId = req.user.id;  // Get the user from the authenticated session
         const orderData = req.body;
 
         const newOrder = await OrderService.createOrder(userId, orderData);

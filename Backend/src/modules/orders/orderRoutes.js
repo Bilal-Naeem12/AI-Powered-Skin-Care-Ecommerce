@@ -1,11 +1,12 @@
 const express = require("express");
 const { createOrder, updateOrderStatus, cancelOrder, processRefund, getOrderById, getAllOrders } = require("./orderController");
 const { validateCreateOrder, validateUpdateOrderStatus, validateResult } = require("./orderValidator");
+const { authMiddleware } = require("../../middleware/authMiddleware");
 
 const router = express.Router();
 
 // **🔹 Route for Creating a New Order**
-router.post("/create", validateCreateOrder, validateResult, createOrder);  // Create order with validation
+router.post("/create", validateCreateOrder, validateResult,authMiddleware, createOrder);  // Create order with validation
 
 // **🔹 Route for Updating Order Status**
 router.put("/:id/status", validateUpdateOrderStatus, validateResult, updateOrderStatus);  // Update order status (Shipped, Delivered, etc.)
