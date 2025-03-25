@@ -12,7 +12,7 @@ import ShopPage from "../pages/ShopPage";
 import ProductDetailPage from "../pages/ProductDetailPage";
 import AboutUsPage from "../pages/AboutUsPage";
 import ProfilePage from "../pages/ProfilePage";
-import TestPage from "../pages/test";
+import TestPage from "../pages/Test";
 import InpaitingTestPage from "../pages/Test/InpaitingTest";
 
 const AppRouter = () => {

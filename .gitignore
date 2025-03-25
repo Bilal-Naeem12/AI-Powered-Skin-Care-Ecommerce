@@ -14,6 +14,9 @@ logs/
 frontend/node_modules/
 backend/node_modules/
 CV-BACKEND/app/models
+
+CV-BACKEND/app/models/*
+!CV-BACKEND/app/models/.gitkeep
 # Build outputs
 frontend/dist/
 frontend/build/
@@ -67,3 +70,6 @@ backend/tsconfig.tsbuildinfo
 .git/
 *.pt
 *.pt
+/CV-BACKEND/app/models
+*.pt
+CV-BACKEND/app/models/acne_model.pt
