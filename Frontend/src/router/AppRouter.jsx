@@ -12,6 +12,8 @@ import ShopPage from "../pages/ShopPage";
 import ProductDetailPage from "../pages/ProductDetailPage";
 import AboutUsPage from "../pages/AboutUsPage";
 import ProfilePage from "../pages/ProfilePage";
+import TestPage from "../pages/test";
+import InpaitingTestPage from "../pages/Test/InpaitingTest";
 
 const AppRouter = () => {
   return (
@@ -28,6 +30,7 @@ const AppRouter = () => {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/profile-page" element={<ProfilePage />} />
+        <Route path="/test" element={<InpaitingTestPage />} />
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
