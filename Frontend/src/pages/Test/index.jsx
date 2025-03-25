@@ -8,6 +8,7 @@ function TestPage() {
   const [labeledImage, setLabeledImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [modelType, setModelType] = useState("acne"); // Default to acne
 
   // Handle file selection
   const handleFileChange = (event) => {
@@ -28,19 +29,20 @@ function TestPage() {
       return;
     }
 
+    
     const formData = new FormData();
     formData.append("file", image);
     setLoading(true);
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/predict/", formData, {
+      const response = await axios.post(`http://127.0.0.1:8000/api/${modelType}/predict`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log("Axios Response:", response.data);
-      setDetections(response.data.detections);
-      setLabeledImage(`data:image/jpeg;base64,${response.data.labeled_image}`); // Convert base64 to image
+      setDetections(response.data.result.detections);
+      setLabeledImage(`data:image/jpeg;base64,${response.data.result.labeled_image}`); // Convert base64 to image
 
     } catch (error) {
       console.error("Axios Error:", error);
@@ -50,9 +52,20 @@ function TestPage() {
     }
   };
 
+  const handleModelChange = (event) => {
+    setModelType(event.target.value);
+  };
+
+
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
       <h2>YOLOv8 Object Detection</h2>
+ {/* Model Selection */}
+ <label htmlFor="modelType" style={{ marginTop: "10px", display: "block" }}>Select Inpainting Model:</label>
+      <select id="modelType" value={modelType} onChange={handleModelChange} style={{ padding: "5px", marginTop: "5px" }}>
+        <option value="acne">Acne Removal</option>
+        <option value="puffy_eyes">Puffy Eyes Removal</option>
+      </select>
 
       {/* File Upload */}
       <input type="file" accept="image/*" onChange={handleFileChange} />

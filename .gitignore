@@ -13,7 +13,7 @@ logs/
 # Dependency directories
 frontend/node_modules/
 backend/node_modules/
-
+CV-BACKEND/app/models
 # Build outputs
 frontend/dist/
 frontend/build/
@@ -65,3 +65,5 @@ backend/tsconfig.tsbuildinfo
 
 # Git-specific ignore
 .git/
+*.pt
+*.pt

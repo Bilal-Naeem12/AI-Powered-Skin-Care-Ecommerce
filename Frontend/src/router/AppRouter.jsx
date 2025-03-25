@@ -30,7 +30,8 @@ const AppRouter = () => {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/profile-page" element={<ProfilePage />} />
-        <Route path="/test" element={<InpaitingTestPage />} />
+        <Route path="/test" element={<TestPage />} />
+        <Route path="/testIn" element={<InpaitingTestPage />} />
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>

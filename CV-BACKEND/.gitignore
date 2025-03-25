@@ -1,0 +1,64 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment files
+.env
+.venv/
+*.venv
+*.env
+.env.local
+.env.development
+.env.production
+Pipfile
+Pipfile.lock
+
+# Ignore log and temporary files
+logs/
+*.log
+*.out
+*.err
+*.pid
+*.swp
+*.swo
+
+# Ignore dataset and large model files
+./app/models/
+
+# Ignore temp files generated during inference
+temp_*.png
+temp_*.jpg
+temp_*.jpeg
+temp_*.bmp
+temp_output/
+output/
+*.tmp
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore compiled Cython files
+*.so
+*.c
+*.cpp
+
+# Ignore FastAPI Uvicorn log files
+*.db
+*.sqlite3
+
+# Ignore Node.js dependencies (if frontend exists)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Ignore Docker files (if using Docker)
+docker-compose.override.yml

@@ -32,6 +32,7 @@ export default function InpaitingTestPage() {
       return;
     }
 
+    console.log(modelType)
     const formData = new FormData();
     formData.append("file", image);
     formData.append("model_type", modelType); // Send selected model type
@@ -40,12 +41,12 @@ export default function InpaitingTestPage() {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/inpaint/", formData, {
+      const response = await axios.post("http://127.0.0.1:8000/api/inpainting/inpaint", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log("API Response:", response.data);
-      setInpaintedImage(`data:image/jpeg;base64,${response.data.cleaned_image}`); // Convert base64 to image
+      setInpaintedImage(`data:image/jpeg;base64,${response.data.inpainted_image}`); // Convert base64 to image
 
     } catch (error) {
       console.error("API Error:", error);
