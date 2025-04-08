@@ -49,8 +49,3 @@ async def not_found_handler(request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"error": "Not Found", "details": exc.detail},
     )
-
-if __name__ == "__main__":
-    import uvicorn
-    logger.info("🚀 Starting FastAPI server...")
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

@@ -20,14 +20,29 @@ model = AutoDetectionModel.from_pretrained(
 def predict_acne(image: Image.Image):
     """Run SAHI sliced prediction on input image and return results."""
     
-    # Run sliced prediction
+    original_width, original_height = image.size
+
+    print("image size " + str(original_width) + " x " + str(original_height))
+
+
+    # Dynamically calculate slice size (approx. 1/3rd of the image dimension)
+    slice_height = max(128, original_height // 3)
+    slice_width = max(128, original_width // 3)
+
+    # Dynamically calculate overlap (e.g., 20% of slice size as ratio to image size)
+    overlap_height_ratio = min(0.1, slice_height / original_height)
+    overlap_width_ratio = min(0.1, slice_width / original_width)
+
+    logging.info(f"[SAHI] Using slice size ({slice_width}x{slice_height}) with overlap ({overlap_width_ratio:.2f}, {overlap_height_ratio:.2f})")
+
+    # Run SAHI prediction
     result = get_sliced_prediction(
         image,
         detection_model=model,
-        slice_height=256,
-        slice_width=250,
-        overlap_height_ratio=0.0,
-        overlap_width_ratio=0.0
+        slice_height=slice_height,
+        slice_width=slice_width,
+        overlap_height_ratio=overlap_height_ratio,
+        overlap_width_ratio=overlap_width_ratio,
     )
 
     # Draw results on image

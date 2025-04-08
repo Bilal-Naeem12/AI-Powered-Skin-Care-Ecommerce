@@ -7,26 +7,37 @@ import FaceScanModal from "../../pages/FaceScanModal";
 import LoadingModal from "../../pages/LoadingModal";
 import { useNavigate } from "react-router-dom";
 import AnnouncementBar from "../UI/AnnouncementBar";
+import useFaceScanStore from "../../store/useFaceScanStore"; // ✅ Zustand store
 
 const MainLayout = ({ children }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // FaceScanModal state
-  const [isLoading, setIsLoading] = useState(false); // LoadingModal state
-  const navigate = useNavigate(); // React Router's navigate hook
-  const [isAnnoucement,setIsAnnoucement] = useState(true);
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const navigate = useNavigate();
 
-  const showLoading = () => {
-    setIsModalOpen(false); // Close FaceScanModal
-    setIsLoading(true); // Show LoadingModal
+  // Zustand store
+  const {
+    isModalOpen,
+    isLoading,
+    openModal,
+    closeModal,
+    showLoading,
+    hideLoading
+  } = useFaceScanStore();
+
+  // Local state (not managed by Zustand)
+  const [isAnnoucement, setIsAnnoucement] = useState(true);
+
+  const handleAnalyze = () => {
+    closeModal();     // ✅ Close modal via Zustand
+    showLoading();    // ✅ Show loading via Zustand
     setTimeout(() => {
       navigate("/analyze-page");
-    }, 3000); // Simulate a 3-second loading
+      hideLoading()
+    }, 3000);
+   
   };
 
   return (
     <div>
-      {({isAnnoucement} && <AnnouncementBar/>)}
+      {isAnnoucement && <AnnouncementBar />}
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />
@@ -51,7 +62,7 @@ const MainLayout = ({ children }) => {
       </div>
 
       {/* Face Scan Modal */}
-      {isModalOpen && <FaceScanModal onClose={closeModal} onAnalyze={showLoading} />}
+      {isModalOpen && <FaceScanModal onClose={closeModal} onAnalyze={handleAnalyze} />}
 
       {/* Loading Modal */}
       {isLoading && <LoadingModal message="Analyzing your face..." />}
