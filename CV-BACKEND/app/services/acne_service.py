@@ -1,45 +1,60 @@
-from ultralytics import YOLO
-import logging
-from PIL import Image, ImageDraw
+from PIL import Image
 import io
 import base64
+from sahi import AutoDetectionModel
+from sahi.utils.cv import read_image
+from sahi.utils.file import download_from_url
+from sahi.predict import get_prediction, get_sliced_prediction, predict
+import logging
+from PIL import Image, ImageDraw
 
-# Load Acne Detection Model
+# Load YOLOv8 model using SAHI wrapper
 MODEL_PATH = "app/models/acne_model.pt"
-model = YOLO(MODEL_PATH)
+model = AutoDetectionModel.from_pretrained(
+     model_type='yolov8',
+    model_path=MODEL_PATH,
+    confidence_threshold=0.3,
+    device="cpu"
+)
 
-# Set confidence threshold
-CONFIDENCE_THRESHOLD = 0.3
+def predict_acne(image: Image.Image):
+    """Run SAHI sliced prediction on input image and return results."""
+    
+    # Run sliced prediction
+    result = get_sliced_prediction(
+        image,
+        detection_model=model,
+        slice_height=256,
+        slice_width=250,
+        overlap_height_ratio=0.0,
+        overlap_width_ratio=0.0
+    )
 
-def predict_acne(image: Image):
-    """Run YOLO model on the input image, draw bounding boxes, and return detections + processed image."""
-
-    # Run YOLO detection
-    results = model(image, conf=CONFIDENCE_THRESHOLD)
+    # Draw results on image
+    draw = ImageDraw.Draw(image)
     detections = []
-    draw = ImageDraw.Draw(image)  # Create a drawable image
 
-    for result in results:
-        for box in result.boxes:
-            if float(box.conf) >= CONFIDENCE_THRESHOLD:
-                x1, y1, x2, y2 = [float(coord) for coord in box.xyxy[0]]
-                confidence = float(box.conf)
+    for det in result.object_prediction_list:
+        bbox = det.bbox.to_xyxy()
+        confidence = det.score.value
+        class_name = det.category.name
 
-                # Save detection results
-                det = {
-                    "confidence": confidence,
-                    "bbox": [x1, y1, x2, y2]
-                }
-                detections.append(det)
+        draw.rectangle(bbox, outline="blue", width=3)
 
-                # Draw bounding box on image
-                draw.rectangle([x1, y1, x2, y2], outline="blue", width=3)  # Blue for acne detections
-            
-    logging.info(f"Acne Model Predictions: {detections}")
+        detections.append({
+            "confidence": round(confidence, 2),
+            "bbox": list(map(float, bbox)),
+            "class": class_name,
+        })
 
-    # Convert the image to a Base64 string
+    # Encode labeled image as base64
     buffered = io.BytesIO()
     image.save(buffered, format="JPEG")
     encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-    return {"detections": detections, "labeled_image": encoded_image}
+    logging.info(f"[SAHI] Detections: {detections}")
+
+    return {
+        "detections": detections,
+        "labeled_image": encoded_image
+    }
