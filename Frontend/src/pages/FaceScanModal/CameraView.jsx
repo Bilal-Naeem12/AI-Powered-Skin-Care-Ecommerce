@@ -1,6 +1,7 @@
 import React from "react";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ResultButtons from "./ResultButtons";
+import FaceScanner from "../../component/UI/FaceScanner";
 
 const CameraView = ({ viewState, countdown, startCapture }) => {
   return (
@@ -12,11 +13,7 @@ const CameraView = ({ viewState, countdown, startCapture }) => {
       >
         {/* Capture View */}
         {viewState === "capture" && (
-          <img
-            src="/assets/face-image.jpg" // Replace with a real camera feed or placeholder
-            alt="Camera View"
-            className="object-cover w-full h-full rounded-lg"
-          />
+         <FaceScanner />
         )}
 
         {/* Countdown View */}

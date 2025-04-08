@@ -41,7 +41,7 @@ export default function InpaitingTestPage() {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/inpainting/inpaint", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_FASTAPI}/inpainting/inpaint`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
