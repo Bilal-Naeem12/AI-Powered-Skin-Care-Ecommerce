@@ -2,41 +2,11 @@ import React from "react";
 import Breadcrumb from "../../component/UI/Breadcrumb";
 import FaceScanResult from "./FaceScanResult";
 import PersonalizedRoutine from "./PersonalizedRoutine";
-import RecommendedProducts from "./ProductCard";
+import RecommendedProducts from "../../component/UI/RecommendedProducts";
 import MainLayout from "../../component/Layout/MainLayout";
-
+import products from "../../dummyData/product.json"
 const AnalyzePage = () => {
-  const products = [
-    {
-      name: "Moisturizer",
-      description: "Give Natural Nourishment",
-      price: "950",
-      reason: "To help Hydrate your Skin",
-      image: "/assets/product_images/moisturizer.jpg",
-    },
-    {
-      name: "Sunscreen",
-      description: "Protect your skin from UV rays",
-      price: "1250",
-      reason: "Prevents pigmentation and sunburn",
-      image: "/assets/product_images/sun-screen.jpg",
-    },
-    {
-      name: "Moisturizer",
-      description: "Give Natural Nourishment",
-      price: "950",
-      reason: "To help Hydrate your Skin",
-      image: "/assets/product_images/moisturizer.jpg",
-    },
-    {
-      name: "Sunscreen",
-      description: "Protect your skin from UV rays",
-      price: "1250",
-      reason: "Prevents pigmentation and sunburn",
-      image: "/assets/product_images/sun-screen.jpg",
-    },
  
-  ];
 
   return (
     <MainLayout>

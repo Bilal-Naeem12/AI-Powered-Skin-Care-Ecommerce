@@ -1,18 +1,30 @@
 import React from "react";
-import { Box, Typography, TextField, MenuItem } from "@mui/material";
+import { Box, Typography, TextField, MenuItem, IconButton } from "@mui/material";
+import { MdDelete } from "react-icons/md"; // Import delete icon
+import useCartStore from "../../store/useCartStore"; // Import the Zustand store
 
-const CartItem = ({ item, handleQuantityChange }) => {
+const CartItem = ({ item }) => {
+  const { updateProductQuantity, removeProductFromCart } = useCartStore(); // Access the actions from the Zustand store
+
+  const handleQuantityChange = (productId, newQuantity) => {
+    updateProductQuantity(productId, newQuantity); // Update the quantity in the cart when changed
+  };
+
+  const handleDelete = (productId) => {
+    removeProductFromCart(productId); // Remove the product from the cart when delete button is clicked
+  };
+
   return (
     <Box className="flex justify-between items-center py-4 border-b">
       {/* Product Info */}
       <Box className="w-[30%] flex items-center gap-4">
         <img
-          src={item.image}
-          alt={item.name}
+          src={item.product.image}
+          alt={item.product.name}
           className="w-16 h-16 rounded-lg object-cover"
         />
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
-          {item.name}
+          {item.product.name}
         </Typography>
       </Box>
 
@@ -21,15 +33,17 @@ const CartItem = ({ item, handleQuantityChange }) => {
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        Rs {item.price}/-
+        Rs {item.product.price}/-
       </Typography>
 
       {/* Quantity Dropdown */}
       <Box className="w-[20%] text-center">
         <TextField
           select
-          value={item.quantity}
-          onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+          value={item.quantity} // Update the value based on the quantity in the cart
+          onChange={(e) =>
+            handleQuantityChange(item.product._id, e.target.value) // Pass the correct _id for updating
+          }
           size="small"
           variant="outlined"
         >
@@ -41,13 +55,23 @@ const CartItem = ({ item, handleQuantityChange }) => {
         </TextField>
       </Box>
 
-      {/* Subtotal */}
+      {/* Total Price for this Item */}
       <Typography
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        Rs {item.price * item.quantity}/-
+        Rs {item.product.price * item.quantity}/-
       </Typography>
+
+      {/* Delete Button */}
+      <Box className="w-[10%] flex justify-center items-center">
+        <IconButton
+          onClick={() => handleDelete(item.product._id)} // Trigger product removal
+          color="error"
+        >
+          <MdDelete className="text-xl" /> {/* Delete icon */}
+        </IconButton>
+      </Box>
     </Box>
   );
 };

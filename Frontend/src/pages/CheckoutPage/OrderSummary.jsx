@@ -1,7 +1,14 @@
 import React from "react";
 import { Box, Typography, Button, Radio, RadioGroup, FormControlLabel } from "@mui/material";
+import useCartStore from "../../store/useCartStore"; // Import the Zustand store
 
-const OrderSummary = ({ cartItems = [], subtotal = 0 }) => {
+const OrderSummary = () => {
+  // Access cart items and subtotal from Zustand store
+  const { cart, getTotalPrice } = useCartStore();
+
+  // Calculate subtotal dynamically based on cart items from Zustand store
+  const subtotal = getTotalPrice();
+
   return (
     <Box className="bg-white rounded-lg shadow-md p-6">
       <Typography
@@ -14,21 +21,21 @@ const OrderSummary = ({ cartItems = [], subtotal = 0 }) => {
       </Typography>
 
       {/* Cart Items */}
-      {cartItems.map((item) => (
+      {cart.map((item) => (
         <Box
-          key={item.id}
+          key={item.product._id}
           className="flex justify-between items-center mb-4"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
           <Box className="flex items-center gap-4">
             <img
-              src={item.image}
-              alt={item.name}
+              src={item.product.image}
+              alt={item.product.name}
               className="w-16 h-16 rounded-lg object-cover"
             />
-            <Typography>{item.name}</Typography>
+            <Typography>{item.product.name}</Typography>
           </Box>
-          <Typography>Rs {item.price * item.quantity}/-</Typography>
+          <Typography>Rs {item.product.price * item.quantity}/-</Typography>
         </Box>
       ))}
 

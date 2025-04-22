@@ -3,29 +3,14 @@ import BillingForm from "./BillingForm";
 import OrderSummary from "./OrderSummary";
 import MainLayout from "../../component/Layout/MainLayout";
 import { Box } from "@mui/material";
+import useCartStore from "../../store/useCartStore"; // Import the Zustand store
 
 const CheckoutPage = () => {
-  const cartItems = [
-    {
-      id: 1,
-      name: "Moisturizer",
-      price: 499,
-      quantity: 1,
-      image: "/assets/product_images/moisturizer.jpg",
-    },
-    {
-      id: 2,
-      name: "Sun Screen",
-      price: 349,
-      quantity: 1,
-      image: "/assets/product_images/sun-screen.jpg",
-    },
-  ];
+  // Access cart items and the getTotalPrice function from Zustand store
+  const { cart, getTotalPrice } = useCartStore();
 
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // Calculate subtotal dynamically based on cart items from Zustand store
+  const subtotal = getTotalPrice();
 
   return (
     <MainLayout>
@@ -37,7 +22,7 @@ const CheckoutPage = () => {
 
         {/* Order Summary */}
         <Box className="w-full md:w-[40%]">
-          <OrderSummary cartItems={cartItems} subtotal={subtotal} />
+          <OrderSummary cartItems={cart} subtotal={subtotal} />
         </Box>
       </Box>
     </MainLayout>

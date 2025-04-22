@@ -5,36 +5,36 @@ import { MdArrowForward } from "react-icons/md";
 
 const products = [
   {
-    id: 1,
+    _id: 1, // Unique identifier for the product
     name: "Vitamin C Serum",
     description: "A Vitamin C-rich layering serum",
     size: "60 ml",
-    price: "Rs 820/-",
-    image: "/assets/product_images/vitamin-c-serum.jpg", // Update with your image path
+    price: 820, // Price as a number for better calculations
+    image: "/assets/product_images/vitamin-c-serum.jpg",
   },
   {
-    id: 2,
+    _id: 2, // Unique identifier for the product
     name: "Moisturizer",
     description: "Gives natural nourishment",
     size: "50 ml",
-    price: "Rs 499/-",
-    image: "/assets/product_images/moisturizer.jpg", // Update with your image path
+    price: 499,
+    image: "/assets/product_images/moisturizer.jpg",
   },
   {
-    id: 3,
+    _id: 3, // Unique identifier for the product
     name: "Sun Screen",
     description: "Face cream with sunscreen SPF10",
     size: "200 ml",
-    price: "Rs 349/-",
-    image: "/assets/product_images/sun-screen.jpg", // Update with your image path
+    price: 349,
+    image: "/assets/product_images/sun-screen.jpg",
   },
   {
-    id: 4,
+    _id: 4, // Unique identifier for the product
     name: "B3 Niacinamide Serum",
     description: "Overnight redeemer with Vitamins B",
     size: "60 ml",
-    price: "Rs 999/-",
-    image: "/assets/product_images/niacinamide-serum.jpg", // Update with your image path
+    price: 999,
+    image: "/assets/product_images/niacinamide-serum.jpg",
   },
 ];
 
@@ -54,7 +54,7 @@ const ProductShowcase = () => {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
 
