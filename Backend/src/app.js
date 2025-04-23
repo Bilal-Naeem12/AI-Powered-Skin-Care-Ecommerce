@@ -17,7 +17,7 @@ const app = express();
 
 // **Security Middleware**
 app.use(helmet()); // Adds security headers
-app.use(cors({ origin: process.env.CLIENT_URL || '*' })); // Restrict API access if needed
+app.use(cors({ origin: process.env.CLIENT_URL || '*' ,credentials: true })); // Restrict API access if needed
 app.use(compression()); // Enables gzip compression for performance
 
 // **Rate Limiting to Prevent Abuse**

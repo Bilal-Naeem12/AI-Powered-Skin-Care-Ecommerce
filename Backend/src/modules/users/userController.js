@@ -70,7 +70,21 @@ exports.loginUser = async (req, res) => {
         user.refreshToken = refreshToken;
         await user.save();
 
-        res.status(200).json({ accessToken, refreshToken });
+        // Set access token cookie with a short expiration time (e.g., 15 mins)
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true, // Can't access by JavaScript
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+
+  // Set refresh token cookie with a longer expiration time (e.g., 7 days)
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  res.status(200).send('Login successful');
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

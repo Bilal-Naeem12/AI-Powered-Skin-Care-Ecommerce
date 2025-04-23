@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"; // Import Zod
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Importing toast
+import axios from "axios";
+import Cookies from 'js-cookie'; // You can use js-cookie to get cookies easily
 
 // Define Zod schema for validation
 const loginSchema = z.object({
@@ -23,6 +26,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>; // Type inference from Zod schema
 
 const LoginForm: React.FC = () => {
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate(); // This hook is used for programmatic navigation
+
   // Setup react-hook-form with Zod schema
   const {
     register,
@@ -32,9 +38,45 @@ const LoginForm: React.FC = () => {
     resolver: zodResolver(loginSchema), // Use Zod resolver for validation
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log("Form Submitted: ", data);
-    // Add logic to handle form submission (e.g., send data to API)
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      // Make the POST request using axios with withCredentials enabled
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BACKEND_URL}/users/login`,
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true,  // Ensures cookies are sent and received
+        }
+      );
+
+      // At this point, cookies are set by the backend (e.g., accessToken and refreshToken)
+      // Retrieve the tokens from cookies (if set by the backend)
+      // const accessToken = Cookies.get('accessToken');
+      // const refreshToken = Cookies.get('refreshToken');
+      // console.log(accessToken)
+      // Check if the response was successful
+      if (response.status === 200) {
+        // Optionally, store tokens in localStorage (for example, if needed)
+        // localStorage.setItem('accessToken', accessToken);
+        // localStorage.setItem('refreshToken', refreshToken);
+
+        // Navigate to the homepage
+        navigate('/');
+
+        // Show success notification
+        toast.success('Login successful!');
+      } else {
+        // If login fails, show an error message
+        toast.error('Invalid username or password');
+      }
+    } catch (err) {
+      console.error(err);
+      // Show error notification
+      toast.error('An error occurred. Please try again.');
+    }
   };
 
   return (
