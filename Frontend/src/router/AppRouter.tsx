@@ -15,6 +15,10 @@ import ProfilePage from "../pages/ProfilePage";
 import TestPage from "../pages/Test";
 import InpaitingTestPage from "../pages/Test/InpaitingTest";
 
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import ResetPasswordPageWrapper from "@/pages/ResetPasswordPage/ResetPasswordPageWrapper";
+import ForgotPasswordFormPage from "@/pages/ForgetPassword";
+
 const AppRouter: React.FC = () => {
   return (
     <Router>
@@ -32,6 +36,12 @@ const AppRouter: React.FC = () => {
         <Route path="/profile-page" element={<ProfilePage />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
+        <Route path="/forget-password" element={<ForgotPasswordFormPage />} />
+        <Route
+          path="/reset-password/:token" // Token is passed as a URL parameter
+          element={<ResetPasswordPageWrapper />} // Render the ResetPasswordPage
+        />
+
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>

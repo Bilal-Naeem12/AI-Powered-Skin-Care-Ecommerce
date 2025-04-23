@@ -32,7 +32,12 @@ app.use(limiter);
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB Connected"))
+}).then( async() =>{
+    
+    
+    
+    console.log("✅ MongoDB Connected")
+})
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 // **Express Middleware**

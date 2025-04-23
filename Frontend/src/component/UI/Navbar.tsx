@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -29,6 +29,7 @@ import axios from "axios";
 import { Login, LoginOutlined } from "@mui/icons-material";
 import useFetchAuthData from "@/hooks/useFetchAuthData";
 import { User } from "@/types/User";
+import useUserStore from "@/store/useUserStore";
 
 // Type for Menu Anchor Element
 type AnchorElType = null | HTMLElement;
@@ -73,10 +74,10 @@ const Navbar: React.FC = () => {
     setSearchValue(event.target.value);
   };
   const navigate = useNavigate();
-  const { data: user, loading, error } = useFetchAuthData<User>(
-    `${import.meta.env.VITE_API_BACKEND_URL}/users/profile`
-  );
-
+  useEffect(() => {
+    useUserStore.getState().checkLogin();
+  }, []);
+  const { isLoggedIn } = useUserStore();
   const handleLogout = async () => {
     try {
       // Call the logout endpoint on the backend
@@ -85,7 +86,8 @@ const Navbar: React.FC = () => {
       });
   
    
-  
+      useUserStore.getState().logout(); // This clears the user data from the store and localStorage
+
       // Redirect to login
       navigate("/login");
     } catch (error) {
@@ -189,7 +191,7 @@ const Navbar: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
       
-      { user? <>
+      { isLoggedIn? <>
       
            <Link to={"/profile-page"}>
                 <MenuItem onClick={handleMenuClose}>

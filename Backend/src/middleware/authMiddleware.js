@@ -6,9 +6,9 @@ exports.authMiddleware = (req, res, next) => {
         // Get token from request headers
         const token = req.cookies.accessToken;
 
-        if (!token) {
-            return res.status(401).json({ message: "Access denied. No token provided." });
-        }
+        // if (!token) {
+        //     return res.status(401).json({ message: "Access denied. No token provided." });
+        // }
        
         // Verify JWT token
         jwt.verify(token, process.env.JWT_SECRET,async (err, decoded) => {

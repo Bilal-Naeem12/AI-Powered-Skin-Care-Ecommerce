@@ -27,19 +27,19 @@ const UserSchema = new mongoose.Schema({
         minlength: [6, "Password must be at least 6 characters"]
     },
     phone: {
-      type: String,
-      required: [true, "Phone number is required"],
-      unique: true,
-      match: [/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"]
-  },
+        type: String,
+        match: [/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"],
+        required: false, // Make it optional
+        default: null, // Allow it to be null
+        // Remove the unique constraint
+      }
+,      
   date_of_birth: {
       type: Date,
-      required: [true, "Date of birth is required"]
   },
   gender: {
       type: String,
       enum: ["Male", "Female", "Non-binary", "Other"],
-      required: true
   },
   address: {
       street: { type: String, trim: true },

@@ -2,16 +2,22 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { FcGoogle } from "react-icons/fc"; // For Google icon
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { toast } from "react-toastify";
+import axios from "axios";
+interface ApiResponse {
+  message: string;
+  // Add other properties from your API response here if needed
+}
 // Zod validation schema
 const signupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
   email: z
     .string()
-    .min(1, "Email or phone number is required")
+    .min(1, "Email is required")
     .regex(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
       "Invalid email address"
@@ -22,20 +28,46 @@ const signupSchema = z.object({
     .max(20, "Password must be less than 20 characters long"),
 });
 
+// Use Zod to infer the type from the schema
 type SignupData = z.infer<typeof signupSchema>;
 
 const SignupForm: React.FC = () => {
+
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignupData>({
-    resolver: zodResolver(signupSchema), // Using Zod validation schema
+    resolver: zodResolver(signupSchema),  // Use Zod validation schema
   });
 
-  const onSubmit = (data: SignupData) => {
-    console.log("Form Submitted: ", data);
-    // Add logic to handle form submission (e.g., send data to API)
+  // onSubmit handler
+  const onSubmit = async (data: SignupData) => {
+    try {
+      // Making the API request for user signup
+      const response = await axios.post<ApiResponse>(`${import.meta.env.VITE_API_BACKEND_URL}/users/register`, data);
+    
+      // Check the response and display success message
+      if (response.status === 201) {
+        // Handle success (e.g., show a success message, redirect user, etc.)
+        console.log("Signup successful", response.data);
+        toast.success(response.data.message || "Operation successful!");
+
+        navigate("/login")
+      }
+    } catch (error: any) {
+      // Check if the error response status is 400 (Bad Request)
+      if (error.response?.status === 400) {
+        // Show the error message from the server (from error.response.data.message)
+        toast.error(error.response?.data.message || "Signup failed. Please try again.");
+      } else {
+        // Handle other types of errors (e.g., network errors)
+        toast.error("An error occurred. Please try again.");
+      }
+      console.error("Error during signup:", error);
+    }
+    
   };
 
   return (
@@ -62,23 +94,38 @@ const SignupForm: React.FC = () => {
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
-            {/* Name Field */}
-            <Box className="mb-6">
-              <TextField
-                fullWidth
-                label="Name"
-                variant="outlined"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                {...register("name")}
-              />
-            </Box>
+            {/* First Name and Last Name Fields in a Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* First Name Field */}
+              <Box className="mb-6">
+                <TextField
+                  fullWidth
+                  label="First Name"
+                  variant="outlined"
+                  error={!!errors.first_name}
+                  helperText={errors.first_name?.message}
+                  {...register("first_name")}
+                />
+              </Box>
+
+              {/* Last Name Field */}
+              <Box className="mb-6">
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                  variant="outlined"
+                  error={!!errors.last_name}
+                  helperText={errors.last_name?.message}
+                  {...register("last_name")}
+                />
+              </Box>
+            </div>
 
             {/* Email Field */}
             <Box className="mb-6">
               <TextField
                 fullWidth
-                label="Email or Phone Number"
+                label="Email"
                 variant="outlined"
                 error={!!errors.email}
                 helperText={errors.email?.message}

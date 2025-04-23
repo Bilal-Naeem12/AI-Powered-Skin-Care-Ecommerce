@@ -6,9 +6,15 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; // Importing toast
 import axios from "axios";
+import useUserStore from "@/store/useUserStore";
+import { User } from "@/types/User";
 
 
-
+interface ApiResponse {
+  message: string;
+  user:User
+  // Add other properties from your API response here if needed
+}
 // Define Zod schema for validation
 const loginSchema = z.object({
   email: z
@@ -42,7 +48,7 @@ const LoginForm: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       // Make the POST request using axios with withCredentials enabled
-      const response = await axios.post(
+      const response = await axios.post<ApiResponse>(
         `${import.meta.env.VITE_API_BACKEND_URL}/users/login`,
         {
           email: data.email,
@@ -52,32 +58,32 @@ const LoginForm: React.FC = () => {
           withCredentials: true,  // Ensures cookies are sent and received
         }
       );
-
-     
-
-      // console.log(accessToken)
+  
       // Check if the response was successful
       if (response.status === 200) {
-        // Optionally, store tokens in localStorage (for example, if needed)
-        // localStorage.setItem('accessToken', accessToken);
-        // localStorage.setItem('refreshToken', refreshToken);
-    
-        // Navigate to the homepage
-        navigate('/');
-      
-        
+        // Handle success (Redirect user, show success toast)
+        navigate('/'); // Redirect to homepage
+        useUserStore.getState().setUser(response.data.user);
         // Show success notification
-        toast.success('Login successful!');
+        toast.success(response.data.message || "Login successful!");
       } else {
-        // If login fails, show an error message
-        toast.error('Invalid username or password');
+        // If response status is not 200, show error message from backend
+        toast.error(response.data.message || "Something went wrong!");
       }
-    } catch (err) {
-      console.error(err);
-      // Show error notification
-      toast.error('An error occurred. Please try again.');
+    } catch (err: any) {
+      console.error("Login error:", err);
+  
+      // If there's an error, show the error message from the backend or a generic one
+      if (err.response) {
+        // Backend sent an error message
+        toast.error(err.response.data.message || "An error occurred. Please try again.");
+      } else {
+        // Network or unexpected error
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
+  
 
   return (
     <Box className="bg-[#f8f8f8] min-h-screen flex items-center justify-center">
@@ -167,7 +173,7 @@ const LoginForm: React.FC = () => {
                   Create a new account
                 </Typography>
               </Link>
-
+              <Link to="/forget-password" style={{ textDecoration: "none" }}>
               <Typography
                 align="right"
                 variant="body2"
@@ -181,6 +187,7 @@ const LoginForm: React.FC = () => {
               >
                 Forget Password?
               </Typography>
+              </Link>
             </Box>
           </form>
         </Box>
