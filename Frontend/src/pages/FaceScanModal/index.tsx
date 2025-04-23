@@ -7,6 +7,7 @@ import ResultButtons from "./ResultButtons";
 import useFaceScanStore from "../../store/useFaceScanStore"; // Zustand store
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { PredictionResponse } from "@/types/PredictionResponse";
 
 const FaceScanModal: React.FC = () => {
   const [viewState, setViewState] = useState<"capture" | "countdown" | "loading" | "result">("capture");
@@ -84,17 +85,18 @@ const FaceScanModal: React.FC = () => {
       closeModal();
       showLoading();
 
-      // const response = await axios.post(
-      //   `${import.meta.env.VITE_API_FASTAPI}/acne/predict`,
-      //   formData,
-      //   {
-      //     headers: { "Content-Type": "multipart/form-data" },
-      //   }
-      // );
+      
+  const response = await axios.post<PredictionResponse>(
+    `${import.meta.env.VITE_API_FASTAPI}/acne/predict`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
 
-      // const result = response.data.result;
-      // setDetections(result.detections);
-      // setDetectedImage(`data:image/jpeg;base64,${result.labeled_image}`);
+  const result = response.data.result;
+  setDetections(result.detections);
+  setDetectedImage(`data:image/jpeg;base64,${result.labeled_image}`);
 
       navigate("/analyze-page");
     } catch (err) {

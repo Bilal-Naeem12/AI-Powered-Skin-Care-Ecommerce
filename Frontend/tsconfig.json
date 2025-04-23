@@ -2,15 +2,16 @@
   "compilerOptions": {
 
     /* Language and Environment */
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "target": "es2020",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "lib": ["es6", "dom"],                                      /* Specify a set of bundled library declaration files that describe the target runtime environment. */
 
     /* Modules */
-    "module": "commonjs",                                /* Specify what module code is generated. */
+    "module": "es2020",                             /* Specify what module code is generated. */
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
     "jsx": "react-jsx",
     /* Type Checking */
+    "moduleResolution": "node",
     "strict": true,                                      /* Enable all strict type-checking options. */
     "allowJs": true,
     "noImplicitAny": true,
