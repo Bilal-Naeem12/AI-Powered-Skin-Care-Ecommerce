@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware"; // Import devtools middleware
 import Product from "@/types/Product"; // Import the Product type from the correct path
 import { CartItem } from "@/types/CartItem";
+import { toast } from 'react-toastify'; // Make sure you have this import
 
 
 
@@ -23,12 +24,25 @@ const useCartStore = create<CartStore>()(
 
     // Add product to cart
     addProductToCart: (product, quantity = 1) => {
+    
+    
       set((state) => {
         // Check if the product already exists in the cart using the unique _id
         const existingProduct = state.cart.find(
           (item) => item.product._id === product._id
-        );
-
+        )
+       // Show toast notification (outside set to avoid duplicates)
+       toast.success(
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img
+            src={product.images[0]} // Assuming product.image is the URL
+            alt={product.name}
+            style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '5px' }}
+          />
+          <span><strong>{product.name}</strong><br/> added to cart!</span>
+        </div>,
+    
+      );
         if (existingProduct) {
           // If the product exists, update the quantity
           return {

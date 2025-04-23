@@ -10,7 +10,8 @@ const {
   updateUserProfile,
   softDeleteAccount,
   getAllUsers,
-  changeUserRole
+  changeUserRole,
+  logoutUser,
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -37,5 +38,5 @@ router.delete("/profile", authMiddleware, softDeleteAccount);  // Soft Delete Ac
 // **🔹 Admin Routes (Requires Admin Role)**
 router.get("/admin/all-users", authMiddleware, roleMiddleware("admin"), getAllUsers);  // Get All Users
 router.put("/admin/change-role", authMiddleware, roleMiddleware("admin"), changeUserRole);  // Change User Role
-
+router.post("/logout", logoutUser);  // Logout
 module.exports = router;

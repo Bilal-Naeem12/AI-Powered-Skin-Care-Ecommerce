@@ -8,28 +8,46 @@ const useFetchAuthData = <T,>(url: string, reloadTrigger?: boolean) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      const tryRequest = () => {
+        return axios.get<T>(url, {
+          withCredentials: true, // Send cookies including HTTP-only tokens
+        });
+      };
+
       try {
-        setLoading(true);
-
-        // Get the token from storage (localStorage or sessionStorage)
-        const token = localStorage.getItem("authToken");
-
-        // Create headers with the token if available
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-        const response = await axios.get<T>(url, { headers });  // Include the headers with the token
-        console.log("API Response:", response.data); // Log the response data to the console
+        const response = await tryRequest();
         setData(response.data);
       } catch (err: any) {
-        setError("Failed to fetch data.");
-        console.error("Error fetching data:", err); // Log any errors
+        if (err.response?.status === 401) {
+          try {
+            // Attempt to refresh access token using the refresh token (HTTP-only cookie)
+            await axios.post(
+              `${import.meta.env.VITE_API_BACKEND_URL}/users/refresh-token`,
+              {},
+              { withCredentials: true }
+            );
+
+            // Retry original request after refreshing
+            const retryResponse = await tryRequest();
+            setData(retryResponse.data);
+          } catch (refreshError) {
+            console.error("Refresh token failed:", refreshError);
+            setError("Session expired. Please log in again.");
+          }
+        } else {
+          console.error("API error:", err);
+          setError("Failed to fetch data.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [url, reloadTrigger]); // Reload when reloadTrigger changes
+  }, [url, reloadTrigger]);
 
   return { data, loading, error };
 };

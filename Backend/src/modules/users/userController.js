@@ -72,19 +72,24 @@ exports.loginUser = async (req, res) => {
 
         // Set access token cookie with a short expiration time (e.g., 15 mins)
   res.cookie('accessToken', accessToken, {
-    httpOnly: true, // Can't access by JavaScript
+    httpOnly:true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 0.5 * 60 * 1000, // 15 minutes
   });
 
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
+    httpOnly:true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  res.status(200).send('Login successful');
+  // Convert to object and exclude password and refreshToken
+  const safeUser = user.toObject();
+  delete safeUser.password;
+  delete safeUser.refreshToken;
+
+  res.status(200).json(safeUser);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -93,16 +98,31 @@ exports.loginUser = async (req, res) => {
 // **🔹 Refresh Token**
 exports.refreshToken = async (req, res) => {
     try {
-        const { token } = req.body;
+        const token = req.cookies.refreshToken;
+        console.log(token)
+        // Find user with the matching refresh token
         const user = await User.findOne({ refreshToken: token });
-        if (!user) return res.status(403).json({ message: "Invalid refresh token" });
+        if (!user) {
+            return res.status(403).json({ message: "Invalid refresh token" });
+        }
 
+        // Generate new access token
         const newAccessToken = user.generateAuthToken();
-        res.status(200).json({ accessToken: newAccessToken });
+
+        // Set access token cookie (short expiry)
+        res.cookie('accessToken', newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        res.status(200).json({ message: "Access token refreshed successfully." });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // **🔹 Password Reset (Request)**
 exports.requestPasswordReset = async (req, res) => {
@@ -148,10 +168,8 @@ exports.resetPassword = async (req, res) => {
 // **🔹 Get User Profile**
 exports.getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId).select("-password -refreshToken");
-        if (!user) return res.status(404).json({ message: "User not found" });
-        console.log(user)
-        res.status(200).json(user);
+      
+        res.status(200).json(req.user);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -208,3 +226,17 @@ exports.changeUserRole = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.logoutUser = (req, res) => {
+    res.clearCookie("accessToken", {
+      
+      
+ 
+    });
+    res.clearCookie("refreshToken", {
+    
+    });
+  
+    return res.status(200).json({ message: "Logout successful." });
+  };

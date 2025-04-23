@@ -6,7 +6,8 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; // Importing toast
 import axios from "axios";
-import Cookies from 'js-cookie'; // You can use js-cookie to get cookies easily
+
+
 
 // Define Zod schema for validation
 const loginSchema = z.object({
@@ -52,20 +53,19 @@ const LoginForm: React.FC = () => {
         }
       );
 
-      // At this point, cookies are set by the backend (e.g., accessToken and refreshToken)
-      // Retrieve the tokens from cookies (if set by the backend)
-      // const accessToken = Cookies.get('accessToken');
-      // const refreshToken = Cookies.get('refreshToken');
+     
+
       // console.log(accessToken)
       // Check if the response was successful
       if (response.status === 200) {
         // Optionally, store tokens in localStorage (for example, if needed)
         // localStorage.setItem('accessToken', accessToken);
         // localStorage.setItem('refreshToken', refreshToken);
-
+    
         // Navigate to the homepage
         navigate('/');
-
+      
+        
         // Show success notification
         toast.success('Login successful!');
       } else {

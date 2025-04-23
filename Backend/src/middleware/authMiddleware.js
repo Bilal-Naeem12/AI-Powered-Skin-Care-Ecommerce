@@ -4,7 +4,7 @@ const User = require('../modules/users/userModel'); // Assuming you have the Use
 exports.authMiddleware = (req, res, next) => {
     try {
         // Get token from request headers
-        const token = req.headers.authorization?.split(" ")[1];
+        const token = req.cookies.accessToken;
 
         if (!token) {
             return res.status(401).json({ message: "Access denied. No token provided." });
@@ -17,9 +17,10 @@ exports.authMiddleware = (req, res, next) => {
             }
 
             try {
+             
                 // Fetch the user from the database using the decoded userId
                 const user = await User.findById(decoded.userId).select("-password -refreshToken"); // Excluding password and refresh token for security
-        
+               
                 if (!user) {
                     return res.status(404).json({ message: "User not found." });
                 }

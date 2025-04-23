@@ -23,6 +23,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Login, LoginOutlined } from "@mui/icons-material";
+import useFetchAuthData from "@/hooks/useFetchAuthData";
+import { User } from "@/types/User";
 
 // Type for Menu Anchor Element
 type AnchorElType = null | HTMLElement;
@@ -66,7 +72,26 @@ const Navbar: React.FC = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
   };
+  const navigate = useNavigate();
+  const { data: user, loading, error } = useFetchAuthData<User>(
+    `${import.meta.env.VITE_API_BACKEND_URL}/users/profile`
+  );
 
+  const handleLogout = async () => {
+    try {
+      // Call the logout endpoint on the backend
+      await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/users/logout`, {}, {
+        withCredentials: true, // Important for cookies
+      });
+  
+   
+  
+      // Redirect to login
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   return (
     <AppBar position="static" className="shadow-lg" color="inherit" elevation={0} sx={{ borderBottom: "1px solid #e0e0e0" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -143,6 +168,12 @@ const Navbar: React.FC = () => {
               <SearchIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
             </IconButton>
           )}
+          
+          <Link to="/cart-page">
+            <IconButton>
+              <ShoppingCartOutlinedIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
+            </IconButton>
+          </Link>
           <IconButton onClick={handleMenuOpen}>
             <Person2Outlined sx={{ fontSize: "1.7rem", color: "gray", "&:hover": { color: "#FF69B4" } }} />
           </IconButton>
@@ -157,7 +188,10 @@ const Navbar: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Link to={"/profile-page"}>
+      
+      { user? <>
+      
+           <Link to={"/profile-page"}>
                 <MenuItem onClick={handleMenuClose}>
                   <AccountCircleIcon sx={{ marginRight: 2 }} />
                   <Typography fontSize={14} color="gray">
@@ -165,27 +199,36 @@ const Navbar: React.FC = () => {
                   </Typography>
                 </MenuItem>
               </Link>
-              <MenuItem onClick={handleMenuClose}>
+                 <MenuItem onClick={handleMenuClose}>
                 <SettingsIcon sx={{ marginRight: 2 }} />
                 <Typography fontSize={14} color="gray">
                   Settings
                 </Typography>
               </MenuItem>
-              <Link to={"/login"}>
-                <MenuItem onClick={handleMenuClose}>
+              
+                <MenuItem  onClick={() => {
+  handleLogout();
+  handleMenuClose(); // Close the menu dropdown if needed
+}}>
                   <LogoutIcon sx={{ marginRight: 2 }} />
                   <Typography fontSize={14} color="gray">
                     Log Out
                   </Typography>
                 </MenuItem>
-              </Link>
+            </>:
+            <> <Link to={"/login"}>
+                  <MenuItem >
+              <LoginOutlined sx={{ marginRight: 2 }} />
+                  <Typography fontSize={14} color="gray">
+                    Log In
+                  </Typography>
+                </MenuItem>
+                </Link>
+            </>
+            
+            }
             </motion.div>
           </Menu>
-          <Link to="/cart-page">
-            <IconButton>
-              <ShoppingCartOutlinedIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
-            </IconButton>
-          </Link>
         </Box>
 
         {/* Hamburger Menu for Mobile */}
