@@ -1,57 +1,31 @@
-import React from 'react';
-import { Paper, Typography, CircularProgress, Box, Divider, Avatar, Grid, Button, Chip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Avatar, Typography, Divider, CircularProgress, Button, Grid, Chip } from '@mui/material';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { User } from '@/types/User';
 import ProfileHeaderAndInfo from '@/component/UI/ProfileHeaderAndInfo';
 import MainLayout from '@/component/Layout/MainLayout';
-import { styled } from '@mui/system';
-import useFetchAuthData from '@/hooks/useFetchAuthData'; // adjust path as needed
+import useFetchAuthData from '@/hooks/useFetchAuthData';
+import useUserStore from '@/store/useUserStore';
 
-const StyledPaper = styled(Paper)({
-  padding: '2rem',
-  borderRadius: '8px',
-  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-});
+const ProfileComponent: React.FC = () => {
 
-const ProfileComponent = () => {
-  const { data: user, loading, error } = useFetchAuthData<User>(
-    `${import.meta.env.VITE_API_BACKEND_URL}/users/profile`
-  );
+ 
+ const {user } = useUserStore()
 
-  if (loading) {
-    return (
-      
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <CircularProgress />
-        </Box>
-   
-    );
-  }
 
-  if (error || !user) {
-    return (
-    
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography variant="h6" color="error">
-            Something went wrong. Please try again later.
-          </Typography>
-        </Box>
-     
-    );
-  }
+
 
   return (
-  
-      <Box sx={{ maxWidth: '900px', mx: 'auto', mt: 4, p: 2 }}>
-        {/* Profile Header */}
-        <ProfileHeaderAndInfo givenUser={user} />
 
+      <Box sx={{ maxWidth: '900px', mt: 0, p: 2 }}>
         {/* Profile Info Section */}
-        <StyledPaper elevation={3}>
+        <Box sx={{ padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
           <Typography variant="h6" gutterBottom>
             Profile Information
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} sm={4}>
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -67,7 +41,7 @@ const ProfileComponent = () => {
               <Typography variant="h5">{user?.first_name} {user?.last_name}</Typography>
               <Typography variant="body1" color="textSecondary">{user?.email}</Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                {user?.phone}
+                {user?.phone || 'Phone not provided'}
               </Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                 {user?.address?.street}, {user?.address?.city}, {user?.address?.state}, {user?.address?.country}
@@ -75,38 +49,33 @@ const ProfileComponent = () => {
             </Grid>
           </Grid>
 
+          {/* Skin Concerns Section */}
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6">Skin Concerns</Typography>
             <Divider sx={{ mb: 2 }} />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {user?.skin_concerns.length ? (
-                user?.skin_concerns.map((concern, index) => (
+                user.skin_concerns.map((concern, index) => (
                   <Chip label={concern} key={index} color="primary" />
                 ))
               ) : (
                 <Typography variant="body2">No skin concerns listed.</Typography>
               )}
             </Box>
+          </Box>
 
-            <Typography variant="h6" sx={{ mt: 4 }}>
-              Lifestyle Factors
-            </Typography>
+          {/* Lifestyle Factors */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6">Lifestyle Factors</Typography>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="body1">Smoking: {user?.lifestyle_factors.smoking ? 'Yes' : 'No'}</Typography>
             <Typography variant="body1">Alcohol Consumption: {user?.lifestyle_factors.alcohol_consumption ? 'Yes' : 'No'}</Typography>
             <Typography variant="body1">Diet: {user?.lifestyle_factors.diet}</Typography>
           </Box>
 
-          <Box sx={{ mt: 4, textAlign: 'center' }}>
-            <Button variant="contained" color="primary" onClick={() => console.log('Edit Profile clicked')}>
-              Edit Profile
-            </Button>
-          </Box>
-        </StyledPaper>
-
-        
+        </Box>
       </Box>
-   
+
   );
 };
 

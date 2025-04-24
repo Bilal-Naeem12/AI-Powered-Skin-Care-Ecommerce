@@ -195,15 +195,33 @@ exports.getUserProfile = async (req, res) => {
 // **🔹 Update User Profile**
 exports.updateUserProfile = async (req, res) => {
     try {
-        const updates = req.body;
-        const user = await User.findByIdAndUpdate(req.user.userId, updates, { new: true }).select("-password");
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        res.status(200).json(user);
+      const { user } = req;
+      console.log(user._id)
+      if (!user?._id) {
+        return res.status(401).json({ message: "Unauthorised – no user in request" });
+      }
+  
+      const updates = req.body;
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        updates,
+        { new: true, runValidators: true }
+      ).select("-password -refreshToken");
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      res.status(200).json({
+        user: updatedUser,
+        message: `${updatedUser.first_name} profile successfully updated`,
+      });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      console.error("updateUserProfile:", error);
+      res.status(500).json({ error: error.message });
     }
-};
+  };
+  
 
 // **🔹 Soft Delete Account**
 exports.softDeleteAccount = async (req, res) => {

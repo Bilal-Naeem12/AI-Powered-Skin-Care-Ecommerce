@@ -2,6 +2,10 @@
 import MainLayout from '@/component/Layout/MainLayout';
 import SidebarComponent from '@/component/Layout/Sidebar';
 import {profileSidebarOptions, SidebarOption} from '@/data/profileSidebarOptions';
+import useFetchAuthData from '@/hooks/useFetchAuthData';
+import { User } from '@/types/User';
+import { Box, CircularProgress, Typography } from '@mui/material';
+
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 const ProfilePage = () => {
@@ -21,10 +25,26 @@ const flattenRoutes = (options: SidebarOption[]): SidebarOption[] => {
 
   return flatRoutes;
 };
-
-
+const { data: user, loading, error } = useFetchAuthData<User>(
+  `${import.meta.env.VITE_API_BACKEND_URL}/users/profile`
+);
+if (loading) {
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress />
+    </Box>
+  );
+}
 const allRoutes = flattenRoutes(profileSidebarOptions.flatMap((section) => section.options));
-
+if (error || !user) {
+  return (
+    <Box sx={{ textAlign: 'center', mt: 4 }}>
+      <Typography variant="h6" color="error">
+        Something went wrong. Please try again later.
+      </Typography>
+    </Box>
+  );
+}
   return (
     <MainLayout>
       <div className="flex flex-grow ">

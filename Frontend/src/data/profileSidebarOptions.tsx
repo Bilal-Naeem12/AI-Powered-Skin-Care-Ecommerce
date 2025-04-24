@@ -1,3 +1,4 @@
+
 import AccountSettingsComponent from "@/pages/user-side/ProfilePage/sub-pages/AccountSettingsComponent";
 import BreakoutAnalyzerComponent from "@/pages/user-side/ProfilePage/sub-pages/BreakoutAnalyzerComponent";
 import FAQComponent from "@/pages/user-side/ProfilePage/sub-pages/FAQComponent";
@@ -103,7 +104,7 @@ import {
         },
         {
           name: "Account Settings",
-          path: "/profile-page/settings",
+          path: "/profile-page/account-settings",
           icon: Settings,
           component: AccountSettingsComponent, // Define AccountSettingsComponent
         },

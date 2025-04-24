@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"; // Add useNav
 import UserImage from "@/assets/avatar-default.png";
 import { SidebarSection } from "@/data/profileSidebarOptions";
 import { ChevronRight, ChevronLeft, ChevronDown, LogOut } from "lucide-react";
+import useUserStore from "@/store/useUserStore";
 
 interface SidebarProps {
   sidebarOptions: SidebarSection[];  // Receive sections as a prop
@@ -14,8 +15,8 @@ const SidebarComponent: React.FC<SidebarProps> = ({ sidebarOptions }) => {
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({}); // State for expanded sections
   const location = useLocation(); // Get the current route
   const navigate = useNavigate(); // Hook to navigate programmatically
-
-  // Function to toggle expanded section
+  const {user}  = useUserStore()
+    // Function to toggle expanded section
   const toggleSection = (sectionName: string) => {
     setExpandedSections((prevState) => ({
       ...prevState,
@@ -46,7 +47,7 @@ const SidebarComponent: React.FC<SidebarProps> = ({ sidebarOptions }) => {
             </div>
             {isOpen && (
               <div className="ml-3 flex text-primary">
-                <h3 className="text-lg font-semibold">Malaika Bilal</h3>
+                <h3 className="text-lg font-semibold">{user?.first_name} {user?.last_name}</h3>
                 <ChevronDown
                   size={20}
                   className={`transition-transform mt-1 ${
