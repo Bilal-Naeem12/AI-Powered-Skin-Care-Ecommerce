@@ -75,14 +75,14 @@ exports.loginUser = async (req, res) => {
   res.cookie('accessToken', accessToken, {
     httpOnly:true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    maxAge: 1*60*1000, // 15 minutes
+    maxAge: 100*60*1000, // 15 minutes
   });
 
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
   res.cookie('refreshToken', refreshToken, {
     httpOnly:true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    maxAge: 20*60*1000, // 7 days
+    maxAge: 100*60*1000, // 7 days
   });
 
   // Convert to object and exclude password and refreshToken
@@ -117,7 +117,7 @@ exports.refreshToken = async (req, res) => {
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 1*60*1000, // 15 minutes
+            maxAge: 100*60*1000, // 15 minutes
         });
 
         res.status(200).json({ message: "Access token refreshed successfully." });

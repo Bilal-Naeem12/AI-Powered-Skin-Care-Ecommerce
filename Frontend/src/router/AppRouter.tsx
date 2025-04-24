@@ -1,23 +1,23 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import SignupPage from "../pages/Signup";
-import CartPage from "../pages/CartPage";
-import CheckoutPage from "../pages/CheckoutPage";
-import AnalyzePage from "../pages/AnalyzePage";
-import ContactUsPage from "../pages/ContactUsPage";
+import Home from "../pages/user-side/Home";
+import Login from "../pages/user-side/Login";
+import SignupPage from "../pages/user-side/Signup";
+import CartPage from "../pages/user-side/CartPage";
+import CheckoutPage from "../pages/user-side/CheckoutPage";
+import AnalyzePage from "../pages/user-side/AnalyzePage";
+import ContactUsPage from "../pages/user-side/ContactUsPage";
 import NotFound from "../pages/404"; // Import the NotFound component
-import ShopPage from "../pages/ShopPage";
-import ProductDetailPage from "../pages/ProductDetailPage";
-import AboutUsPage from "../pages/AboutUsPage";
-import ProfilePage from "../pages/ProfilePage";
+import ShopPage from "../pages/user-side/ShopPage";
+import ProductDetailPage from "../pages/user-side/ProductDetailPage";
+import AboutUsPage from "../pages/user-side/AboutUsPage";
+import ProfilePage from "../pages/user-side/ProfilePage";
 import TestPage from "../pages/Test";
 import InpaitingTestPage from "../pages/Test/InpaitingTest";
 
-import ResetPasswordPage from "@/pages/ResetPasswordPage";
-import ResetPasswordPageWrapper from "@/pages/ResetPasswordPage/ResetPasswordPageWrapper";
-import ForgotPasswordFormPage from "@/pages/ForgetPassword";
+import ResetPasswordPage from "@/pages/user-side/ResetPasswordPage";
+import ResetPasswordPageWrapper from "@/pages/user-side/ResetPasswordPage/ResetPasswordPageWrapper";
+import ForgotPasswordFormPage from "@/pages/user-side/ForgetPassword";
 
 const AppRouter: React.FC = () => {
   return (
@@ -33,7 +33,7 @@ const AppRouter: React.FC = () => {
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/profile-page" element={<ProfilePage />} />
+        <Route path="/profile-page/*" element={<ProfilePage />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
         <Route path="/forget-password" element={<ForgotPasswordFormPage />} />

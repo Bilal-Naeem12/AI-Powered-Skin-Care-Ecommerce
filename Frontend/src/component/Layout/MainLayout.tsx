@@ -3,8 +3,8 @@ import Footer from "../UI/Footer";
 import Navbar from "../UI/Navbar";
 import QrCodeScannerRounded from "@mui/icons-material/QrCodeScannerRounded";
 import ChatIcon from "@mui/icons-material/Chat";
-import FaceScanModal from "../../pages/FaceScanModal";
-import LoadingModal from "../../pages/LoadingModal";
+import FaceScanModal from "../../pages/user-side/FaceScanModal";
+import LoadingModal from "../../pages/user-side/LoadingModal";
 import { useNavigate } from "react-router-dom";
 import AnnouncementBar from "../UI/AnnouncementBar";
 import useFaceScanStore from "../../store/useFaceScanStore"; // ✅ Zustand store
