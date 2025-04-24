@@ -40,7 +40,7 @@ const SidebarComponent: React.FC<SidebarProps> = ({ sidebarOptions }) => {
           >
             <div className={`w-16 h-16 ${isOpen?"visible":" opacity-0 md:opacity-100"}   transition-all  rounded-full shadow-md border-4 border-white overflow-hidden`}>
               <img
-                src={UserImage}
+                src={user?.profileImage||UserImage}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />

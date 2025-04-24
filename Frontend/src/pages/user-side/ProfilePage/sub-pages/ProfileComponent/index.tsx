@@ -1,82 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Avatar, Typography, Divider, CircularProgress, Button, Grid, Chip } from '@mui/material';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import { User } from '@/types/User';
-import ProfileHeaderAndInfo from '@/component/UI/ProfileHeaderAndInfo';
-import MainLayout from '@/component/Layout/MainLayout';
-import useFetchAuthData from '@/hooks/useFetchAuthData';
-import useUserStore from '@/store/useUserStore';
+// src/components/ProfileComponent.tsx
+import React from "react";
+import {
+  HiOutlineMail,
+  HiOutlinePhone,
+  HiOutlineCalendar,
+  HiOutlineGlobe,
+  HiOutlineCog,
+} from "react-icons/hi";
+import { MdLocationOn } from "react-icons/md";
+import useUserStore from "@/store/useUserStore";
+import { Detail } from "./Detail";
+
+const heading = "text-lg font-semibold text-primary";
+const label   = "text-sm font-medium text-gray-600 dark:text-gray-400";
+const value   = "text-sm";
 
 const ProfileComponent: React.FC = () => {
+  const { user } = useUserStore();
 
- 
- const {user } = useUserStore()
+  if (!user)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
 
-
-
+  const {
+    first_name,
+    last_name,
+    email,
+    phone,
+    date_of_birth,
+    gender,
+    preferred_language,
+    profileImage,
+    address,
+    skin_concerns,
+    lifestyle_factors,
+    allergenPreferences,
+  } = user;
 
   return (
+    <section className="max-w-7xl mx-auto p-4 md:p-8">
+      {/* Card */}
+      <div className="rounded-xl shadow-lg bg-white dark:bg-neutral-800 overflow-hidden">
+        {/* Header */}
+        <div className="bg-white dark:bg-[#75abd8] text-white p-6 flex flex-col md:flex-row items-center gap-4">
+          <img
+            src={profileImage || "/assets/default-profile.png"}
+            alt={`${first_name} ${last_name}`}
+            className="w-28 h-28 rounded-full bg-white object-cover shadow-md"
+          />
+          <div>
+            <h2 className="text-2xl font-bold">
+              {first_name} {last_name}
+            </h2>
+            <p className="flex items-center gap-1 mt-1">
+              <HiOutlineMail /> {email}
+            </p>
+            {phone && (
+              <p className="flex items-center gap-1">
+                <HiOutlinePhone /> {phone}
+              </p>
+            )}
+          </div>
+        </div>
 
-      <Box sx={{ maxWidth: '900px', mt: 0, p: 2 }}>
-        {/* Profile Info Section */}
-        <Box sx={{ padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
-          <Typography variant="h6" gutterBottom>
-            Profile Information
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
+        {/* Body */}
+        <div className="p-6 space-y-8 bg-white">
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={4}>
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Avatar
-                  alt={user?.first_name}
-                  src={user?.profileImage || '/assets/default-profile.png'}
-                  sx={{ width: 120, height: 120 }}
-                />
-              </Box>
-            </Grid>
+          {/* Personal Details */}
+          <div>
+            <h3 className={heading}>Personal details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <Detail label="Date of birth">
+                <HiOutlineCalendar className="inline-block mr-1" />
+                {date_of_birth
+                  ? new Date(date_of_birth).toLocaleDateString()
+                  : "—"}
+              </Detail>
+              <Detail label="Gender">{gender || "—"}</Detail>
+              <Detail label="Preferred language">
+                {preferred_language || "—"}
+              </Detail>
+              <Detail label="Allergens">
+                {allergenPreferences?.length
+                  ? allergenPreferences.join(", ")
+                  : "—"}
+              </Detail>
+            </div>
+          </div>
 
-            <Grid item xs={12} sm={8}>
-              <Typography variant="h5">{user?.first_name} {user?.last_name}</Typography>
-              <Typography variant="body1" color="textSecondary">{user?.email}</Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                {user?.phone || 'Phone not provided'}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                {user?.address?.street}, {user?.address?.city}, {user?.address?.state}, {user?.address?.country}
-              </Typography>
-            </Grid>
-          </Grid>
+          {/* Address */}
+          <div>
+            <h3 className={heading}>Address</h3>
+            <p className="mt-2 flex items-start gap-1">
+              <MdLocationOn className="mt-0.5 shrink-0" />
+              {address?.street || ""} {address?.city || ""},{" "}
+              {address?.state || ""} {address?.country || ""}{" "}
+              {address?.postal_code || ""}
+            </p>
+          </div>
 
-          {/* Skin Concerns Section */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Skin Concerns</Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {user?.skin_concerns.length ? (
-                user.skin_concerns.map((concern, index) => (
-                  <Chip label={concern} key={index} color="primary" />
+          {/* Skin Concerns */}
+          <div>
+            <h3 className={heading}>Skin concerns</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {skin_concerns?.length ? (
+                skin_concerns.map((c) => (
+                  <span
+                    key={c}
+                    className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs"
+                  >
+                    {c}
+                  </span>
                 ))
               ) : (
-                <Typography variant="body2">No skin concerns listed.</Typography>
+                <p className={value}>None listed</p>
               )}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          {/* Lifestyle Factors */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Lifestyle Factors</Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="body1">Smoking: {user?.lifestyle_factors.smoking ? 'Yes' : 'No'}</Typography>
-            <Typography variant="body1">Alcohol Consumption: {user?.lifestyle_factors.alcohol_consumption ? 'Yes' : 'No'}</Typography>
-            <Typography variant="body1">Diet: {user?.lifestyle_factors.diet}</Typography>
-          </Box>
-
-        </Box>
-      </Box>
-
+          {/* Lifestyle */}
+          <div>
+            <h3 className={heading}>Lifestyle factors</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <Detail label="Smoking">
+                {lifestyle_factors?.smoking ? "Yes" : "No"}
+              </Detail>
+              <Detail label="Alcohol consumption">
+                {lifestyle_factors?.alcohol_consumption ? "Yes" : "No"}
+              </Detail>
+              <Detail label="Diet">{lifestyle_factors?.diet || "—"}</Detail>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
+
+/* Re-usable small component */
+
 
 export default ProfileComponent;

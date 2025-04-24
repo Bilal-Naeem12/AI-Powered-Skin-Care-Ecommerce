@@ -59,7 +59,7 @@ import {
           name: "Setting",
           path: "/profile-page/settings",
           icon: Settings,
-          component: SettingsComponent,
+          component: AccountSettingsComponent,
         },
         {
           name: "Log out",
