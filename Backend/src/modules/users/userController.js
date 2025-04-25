@@ -56,7 +56,7 @@ exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-        console.log(password)
+       
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
@@ -103,7 +103,7 @@ exports.refreshToken = async (req, res) => {
       if (!token) {
             return res.status(401).json({ message: "Access denied. No token provided." });
         }
-        console.log(token)
+       
         // Find user with the matching refresh token
         const user = await User.findOne({ refreshToken: token });
         if (!user) {
@@ -167,7 +167,7 @@ exports.resetPassword = async (req, res) => {
           message: "Invalid or expired token. Please request a new password reset.",
         });
       }
-      console.log(newPassword)
+    
       // Hash and save the new password
       user.password = newPassword;
       user.resetPasswordToken = null; // Clear the reset token
@@ -199,7 +199,7 @@ exports.updateUserProfile = async (req, res) => {
       if (!user?._id) {
         return res.status(401).json({ message: "Unauthorised – no user in request" });
       }
-      
+  
       const updates = req.body;
       if (updates.email) {
         const email = updates.email.toLowerCase().trim();
