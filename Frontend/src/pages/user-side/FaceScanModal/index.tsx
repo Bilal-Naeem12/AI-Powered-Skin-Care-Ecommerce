@@ -4,99 +4,121 @@ import CloseIcon from "@mui/icons-material/Close";
 import Instructions from "./Instructions";
 import CameraView from "./CameraView";
 import ResultButtons from "./ResultButtons";
-import useFaceScanStore from "../../../store/useFaceScanStore"; // Zustand store
+import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { PredictionResponse } from "@/types/PredictionResponse";
 
 const FaceScanModal: React.FC = () => {
-  const [viewState, setViewState] = useState<"capture" | "countdown" | "loading" | "result">("capture");
+  /* ------------ local state ------------------------------------------------ */
+  const [viewState, setViewState] = useState<
+    "capture" | "countdown" | "loading" | "result"
+  >("capture");
   const [countdown, setCountdown] = useState<number>(3);
 
-  const faceRef = useRef<any>(null); // Ref for face scanner
-  const setFaceRef = useFaceScanStore((state) => state.setFaceRef);
+  /* ------------ refs ------------------------------------------------------- */
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const faceRef = useRef<any>(null); // exposed by <FaceScanner />
+
+  /* ------------ zustand shortcuts ----------------------------------------- */
+  const {
+    capturedImage,
+    setCapturedImage,
+    resetCapturedImage,
+    setFaceRef,
+    closeModal,
+  } = useFaceScanStore();
+
   const navigate = useNavigate();
 
-  const capturedImage = useFaceScanStore((state) => state.capturedImage);
-  const setCapturedImage = useFaceScanStore((state) => state.setCapturedImage);
-  const resetCapturedImage = useFaceScanStore((state) => state.resetCapturedImage);
-
-  // Zustand store methods
-  const { closeModal } = useFaceScanStore();
-
+  /* expose faceRef to other components via store */
   useEffect(() => {
     setFaceRef(faceRef.current);
-  }, [faceRef, setFaceRef]);
+  }, [setFaceRef]);
 
-  const startCapture = () => {
+  /* ------------ countdown logic ------------------------------------------- */
+  const startCountdown = () => {
     setViewState("countdown");
-
+    setCountdown(3);
     let count = 3;
-    setCountdown(count);
 
-    const interval = setInterval(() => {
-      setCountdown((prev) => prev - 1);
+    intervalRef.current = setInterval(() => {
       count -= 1;
+      setCountdown(count);
 
       if (count <= 0) {
-        clearInterval(interval);
-        setViewState("loading");
-
-        setTimeout(() => {
-          const base64Image = faceRef.current?.captureSnapshot();
-          if (base64Image) {
-            setCapturedImage(base64Image); // Store captured image in Zustand
-            console.log("✅ Snapshot Captured");
-          } else {
-            console.error("❌ faceRef is null or image not captured");
-          }
-          setViewState("result");
-        }, 500);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        captureImage();
       }
-    }, 1000);
+    }, 1_000);
   };
 
+  /** abort if constraints break mid-countdown */
+  const abortCountdown = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setCountdown(3);
+    setViewState("capture");
+  };
+
+  /** take snapshot & switch to loading → result */
+  const captureImage = () => {
+    setViewState("loading");
+
+    setTimeout(() => {
+      const base64Image = faceRef.current?.captureSnapshot();
+      if (base64Image) {
+        setCapturedImage(base64Image);
+        console.log("✅ Snapshot Captured");
+      } else {
+        console.error("❌ faceRef is null or image not captured");
+      }
+      setViewState("result");
+    }, 500);
+  };
+
+  /* clear interval on unmount */
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  /* ------------ analyse ---------------------------------------------------- */
   const handleAnalyze = async () => {
     const {
-      closeModal,
       capturedImage,
       setDetectedImage,
       setDetections,
       showLoading,
       hideLoading,
+      closeModal: close,
     } = useFaceScanStore.getState();
 
     if (!capturedImage) return;
 
-    // Convert base64 to Blob
-    const byteString = atob(capturedImage.split(",")[1]);
-    const mimeString = capturedImage.split(",")[0].split(":")[1].split(";")[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeString });
+    // base64 → blob
+    const [meta, data] = capturedImage.split(",");
+    const mime = meta.match(/data:(.+);base64/)?.[1] ?? "image/jpeg";
+    const byteStr = atob(data);
+    const bytes = Uint8Array.from(byteStr, (b) => b.charCodeAt(0));
+    const blob = new Blob([bytes], { type: mime });
 
-    const formData = new FormData();
-    formData.append("file", blob);
+    const fd = new FormData();
+    fd.append("file", blob);
 
     try {
-      closeModal();
+      close();
       showLoading();
 
-      
-  const response = await axios.post<PredictionResponse>(
-    `${import.meta.env.VITE_API_FASTAPI}/acne/predict`,
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    }
-  );
+      const resp = await axios.post<PredictionResponse>(
+        `${import.meta.env.VITE_API_FASTAPI}/acne/predict`,
+        fd,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-  const result = response.data.result;
-  setDetections(result.detections);
-  setDetectedImage(`data:image/jpeg;base64,${result.labeled_image}`);
+      const result = resp.data.result;
+      setDetections(result.detections);
+      setDetectedImage(`data:image/jpeg;base64,${result.labeled_image}`);
 
       navigate("/analyze-page");
     } catch (err) {
@@ -107,7 +129,7 @@ const FaceScanModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <motion.div
         className="relative bg-white rounded-lg w-[90%] max-w-md p-6 shadow-xl"
         initial={{ scale: 0.8, opacity: 0 }}
@@ -115,7 +137,10 @@ const FaceScanModal: React.FC = () => {
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <button onClick={closeModal} className="absolute top-4 right-4 text-gray-500 hover:text-black">
+        <button
+          onClick={closeModal}
+          className="absolute top-4 right-4 text-gray-500 hover:text-black"
+        >
           <CloseIcon fontSize="medium" />
         </button>
 
@@ -124,7 +149,8 @@ const FaceScanModal: React.FC = () => {
         <CameraView
           viewState={viewState}
           countdown={countdown}
-          startCapture={startCapture}
+          startCountdown={startCountdown}
+          abortCountdown={abortCountdown}
           faceRef={faceRef}
           capturedImage={capturedImage}
         />
@@ -132,8 +158,8 @@ const FaceScanModal: React.FC = () => {
         {viewState === "result" && (
           <ResultButtons
             resetCapture={() => {
-              resetCapturedImage(); // Reset image via Zustand
-              setViewState("capture"); // Reset view locally
+              resetCapturedImage();
+              setViewState("capture");
             }}
             analyzeCapture={handleAnalyze}
           />
