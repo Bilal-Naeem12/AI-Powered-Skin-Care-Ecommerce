@@ -20,11 +20,11 @@ const { detectedImage } = useFaceScanStore();
 
       <div className="flex gap-5 items-center text-sm">
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-green-500 rounded-full"></span>
+          <span className="h-3 w-3 bg-red-500 rounded-full"></span>
           <span>Acne</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-red-500 rounded-full"></span>
+          <span className="h-3 w-3 bg-green-500 rounded-full"></span>
           <span>Puffy Eyes</span>
         </div>
       </div>

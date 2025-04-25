@@ -7,7 +7,7 @@ import logging
 from app.routes.acne import router as acne_router
 from app.routes.puffy_eyes import router as puffy_eyes_router
 from app.routes.inpainting import router as inpainting_router
-
+from app.routes.analyze_skin import router as analyze_skin_router
 # Initialize FastAPI
 app = FastAPI(title="AI-Powered Skin Care API", version="1.0")
 
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(acne_router, prefix="/api/acne")
 app.include_router(puffy_eyes_router, prefix="/api/puffy_eyes")
 app.include_router(inpainting_router, prefix="/api/inpainting")
+app.include_router(analyze_skin_router, prefix="/api/analyze_skin")
 
 @app.get("/")
 async def root():

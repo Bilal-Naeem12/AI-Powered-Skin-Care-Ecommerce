@@ -3,64 +3,72 @@ import Footer from "../UI/Footer";
 import Navbar from "../UI/Navbar";
 import QrCodeScannerRounded from "@mui/icons-material/QrCodeScannerRounded";
 import ChatIcon from "@mui/icons-material/Chat";
-import FaceScanModal from "../../pages/user-side/FaceScanModal";
-import LoadingModal from "../../pages/user-side/LoadingModal";
-import { useNavigate } from "react-router-dom";
+import FaceScanModal from "@/pages/user-side/FaceScanModal";
+import FaceScanEntry from "@/pages/user-side/FaceScanModal/FaceScanEntry";
+import LoadingModal from "@/pages/user-side/LoadingModal";
 import AnnouncementBar from "../UI/AnnouncementBar";
-import useFaceScanStore from "../../store/useFaceScanStore"; // ✅ Zustand store
+import useFaceScanStore from "@/store/useFaceScanStore";
 
-// Define the prop types for MainLayout
+/* -------------------------------------------------------------------------- */
+/* props                                                                      */
+/* -------------------------------------------------------------------------- */
 interface MainLayoutProps {
   children: ReactNode;
 }
 
+/* -------------------------------------------------------------------------- */
+/* component                                                                  */
+/* -------------------------------------------------------------------------- */
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const navigate = useNavigate();
-
-  // Zustand store
+  /* zustand flags ---------------------------------------------------------- */
   const {
-    isModalOpen,
-    isLoading,
+    isModalOpen,   // ← renamed for clarity in store
     openModal,
     closeModal,
- 
+    isLoading,
   } = useFaceScanStore();
 
-  // Local state (not managed by Zustand)
-  const [isAnnouncement, setIsAnnouncement] = useState(true);
+  /* local flag for entry modal -------------------------------------------- */
+  const [entryOpen, setEntryOpen] = useState(false);
 
- 
   return (
     <div>
-      {isAnnouncement && <AnnouncementBar />}
+      <AnnouncementBar />
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />
 
-      {/* Sticky Buttons */}
+      {/* sticky action buttons --------------------------------------------- */}
       <div className="fixed bottom-5 right-5 flex flex-col gap-4 z-50">
         <button
-          onClick={openModal}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300"
-          aria-label="Scan Face"
+          onClick={() => setEntryOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all"
         >
           <QrCodeScannerRounded className="w-5 h-5" />
           <span className="text-sm font-medium">Scan Face</span>
         </button>
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300"
-          aria-label="Chat With Us"
-        >
+
+        <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all">
           <ChatIcon className="w-5 h-5" />
           <span className="text-sm font-medium">Chat With Us</span>
         </button>
       </div>
 
-      {/* Face Scan Modal */}
+      {/* entry decision sheet ---------------------------------------------- */}
+      {entryOpen && (
+        <FaceScanEntry
+          closeAll={() => {
+            setEntryOpen(false);
+            closeModal(); // ensure both closed
+          }}
+        />
+      )}
+
+      {/* live face-scanner modal ------------------------------------------- */}
       {isModalOpen && <FaceScanModal />}
 
-      {/* Loading Modal */}
-      {isLoading && <LoadingModal message="Analyzing your face..." />}
+      {/* global loading dialog --------------------------------------------- */}
+      {isLoading && <LoadingModal message="Analyzing your face…" />}
     </div>
   );
 };

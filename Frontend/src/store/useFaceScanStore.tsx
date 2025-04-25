@@ -63,6 +63,7 @@ const useFaceScanStore = create<FaceScanState>((set, get) => ({
   setDetectedImage: (img: string) => set({ detectedImage: img }),
   setDetections: (results: any[]) => set({ detections: results }),
 
+  
   setFaceInsideOval: (value: boolean) => set({ faceInsideOval: value }),
   setFacingCamera: (value: boolean) => set({ facingCamera: value }),
   setLightingOk: (value: boolean) => set({ lightingOk: value }),

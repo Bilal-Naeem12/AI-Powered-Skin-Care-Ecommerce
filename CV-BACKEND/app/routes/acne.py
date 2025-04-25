@@ -10,4 +10,4 @@ router = APIRouter()
 async def detect_acne(file: UploadFile = File(...)):
     image = Image.open(io.BytesIO(await file.read()))
     detections = predict_acne(image)
-    return JSONResponse(content={"result": detections})
+    return JSONResponse(content={ detections})

@@ -7,7 +7,7 @@ import ResultButtons from "./ResultButtons";
 import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { PredictionResponse } from "@/types/PredictionResponse";
+import { PredictionResponse, SkinAnalysisResponse } from "@/types/PredictionResponse";
 
 const FaceScanModal: React.FC = () => {
   /* ------------ local state ------------------------------------------------ */
@@ -110,15 +110,15 @@ const FaceScanModal: React.FC = () => {
       close();
       showLoading();
 
-      const resp = await axios.post<PredictionResponse>(
-        `${import.meta.env.VITE_API_FASTAPI}/acne/predict`,
+      const resp = await axios.post<SkinAnalysisResponse>(
+        `${import.meta.env.VITE_API_FASTAPI}/analyze_skin/predict`,
         fd,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      const result = resp.data.result;
-      setDetections(result.detections);
-      setDetectedImage(`data:image/jpeg;base64,${result.labeled_image}`);
+      const result = resp.data;
+      // setDetections(result.detections);
+      setDetectedImage(`data:image/jpeg;base64,${result.scanned_image}`);
 
       navigate("/analyze-page");
     } catch (err) {

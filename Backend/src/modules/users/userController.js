@@ -196,12 +196,28 @@ exports.getUserProfile = async (req, res) => {
 exports.updateUserProfile = async (req, res) => {
     try {
       const { user } = req;
-      console.log(user._id)
       if (!user?._id) {
         return res.status(401).json({ message: "Unauthorised – no user in request" });
       }
-  
+      
       const updates = req.body;
+      if (updates.email) {
+        const email = updates.email.toLowerCase().trim();
+  
+        // is there another user with this e-mail?
+        const emailTaken = await User.findOne({
+          _id: { $ne: user._id },      // not this user
+          email,
+        });
+  
+        if (emailTaken) {
+          return res
+            .status(400)
+            .json({ message: "That e-mail address is already registered." });
+        }
+  
+        updates.email = email;         // normalise before save
+      }
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
         updates,
