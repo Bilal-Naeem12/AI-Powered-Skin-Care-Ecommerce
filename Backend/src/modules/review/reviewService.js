@@ -2,13 +2,54 @@ const Review = require("./reviewModel");
 const { isValidRating, calculateAverageRating, formatReviewData } = require("./reviewUtils");
 
 // **🔹 Create a New Review**
-exports.createReview = async (reviewData) => {
-    if (!isValidRating(reviewData.rating)) throw new Error("Rating must be between 1 and 5");
-
-    const newReview = new Review(reviewData);
-    await newReview.save();
-    return newReview;
-};
+exports.addReview = async ({
+    productId,
+    userId,
+    rating,
+    reviewText,
+    pros = [],
+    cons = [],
+    reviewImages = []
+  }) => {
+    const session = await mongoose.startSession();
+  
+    await session.withTransaction(async () => {
+      // 1) create the review (status: "Pending" by default)
+      await Review.create(
+        [{
+          productId,
+          userId,
+          rating,
+          reviewText,
+          pros,
+          cons,
+          reviewImages,
+          isVerifiedPurchase: true // if you already checked order history
+        }],
+        { session }
+      );
+  
+      // 2) update aggregate stats on Product
+      const incObj = {
+        reviewCount: 1,
+        [`ratingBuckets.${rating}`]: 1
+      };
+      await Product.updateOne({ _id: productId }, { $inc: incObj }, { session });
+  
+      // 3) recalc averageRating quickly from buckets
+      const p = await Product.findById(productId).session(session);
+      const total =
+        p.ratingBuckets[1] * 1 +
+        p.ratingBuckets[2] * 2 +
+        p.ratingBuckets[3] * 3 +
+        p.ratingBuckets[4] * 4 +
+        p.ratingBuckets[5] * 5;
+      p.averageRating = total / p.reviewCount;
+      await p.save({ session });
+    });
+  
+    session.endSession();
+  };
 
 // **🔹 Get Reviews by Product ID**
 exports.getReviewsByProduct = async (productId) => {

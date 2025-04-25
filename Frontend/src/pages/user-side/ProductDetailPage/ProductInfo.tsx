@@ -1,116 +1,246 @@
-import React, { useEffect, useState } from "react";
-import { Button, IconButton } from "@mui/material";
+// ----------------------------------------------
+// pages/ProductDetailPage.tsx
+// ----------------------------------------------
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Button,
+  IconButton,
+  Rating,
+  Tabs,
+  Tab,
+  CircularProgress,
+  Tooltip,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import useCartStore from "../../../store/useCartStore"; // Import Zustand store
-import Product from "@/types/Product";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import useFetchData from "@/hooks/useFetchData";
+import useCartStore from "@/store/useCartStore";
+import { Product, ProductVariant } from "@/types/Product";
+import ReviewSection from "@/component/UI/ReviewSection";
+import image from "@/assets/anaylsis.png"
+const ProductDetailPage: React.FC = () => {
+  /* ----- routing + data ----- */
+  const { id } = useParams<{ id: string }>();
+  const { data: product, loading, error } = useFetchData<Product>(
+    `${import.meta.env.VITE_API_BACKEND_URL}/products/${id}`
+  );
 
-// Define the ProductInfo component
-const ProductInfo: React.FC = () => {
-  // Access the cart store
-  const { cart, updateProductQuantity, addProductToCart } = useCartStore();
-  
-  // Assuming that we are passing a product object
-  const product :Product = {
-    _id: "1", // ID as a string (instead of number)
-    name: "Vitamin C Serum",
-    description: "A Vitamin C-rich layering serum",
-    category: "Serum", // Added the category field
-    brand: "BrandName", // Added brand as it's a required field
-    price: 820,
-    discount: { percentage: 0, discountedPrice: 820 }, // Assuming no discount initially
-    stock: 100, // Sample stock value
-    isAvailable: true,
-    variants: [
-      { size: "60 ml", price: 820, stock: 100 },
-    ],
-    images: ["/assets/product_images/vitamin-c-serum.jpg"],
-    ingredients: ["Vitamin C", "Hyaluronic Acid"],
-    allergens: ["Fragrance"],
-    aiSkinSuitability: ["Oily Skin", "Acne-Prone"],
-    averageRating: 4.5,
-    reviews: [],
-    usageInstructions: "Apply a few drops on the face daily.",
-    precautions: "Avoid direct contact with eyes.",
-    soldCount: 150,
-    isFeatured: true,
-    isDeleted: false,
-    createdAt: "2022-01-01T00:00:00Z",
-    updatedAt: "2022-02-01T00:00:00Z",
-  }
-  // Find the product in the cart
-  const cartItem = cart.find((item) => item.product._id === product._id);
+  /* ----- cart state (Zustand) ----- */
+  const { cart, addProductToCart, updateProductQuantity } = useCartStore();
 
-  // Set the initial quantity to the value from the cart (if any)
-  const initialQuantity = cartItem ? cartItem.quantity : 1;
+  /* ----- local UI state ----- */
+  const [quantity, setQuantity] = useState<number>(1);
+  const [variant, setVariant] = useState<ProductVariant | undefined>(
+    product?.variants?.[0]
+  );
+  const [tab, setTab] = useState<0 | 1>(0); // 0 -> Details, 1 -> Reviews
 
-  const [quantity, setQuantity] = useState<number>(initialQuantity);
+  /* ----- derived ----- */
+  const cartItem = cart.find((c) => c.product._id === id);
+  const [mainIdx, setMainIdx] = useState(0);          // <— NEW
+  /* ----- handlers ----- */
+  const changeQty = (dir: "inc" | "dec") =>
+    setQuantity((q) => Math.max(1, dir === "inc" ? q + 1 : q - 1));
 
-  useEffect(() => {
-    // Update the quantity in Zustand when it changes
+  const addToCart = () => {
+    if (!product) return;
     if (cartItem) {
-      setQuantity(cartItem.quantity);
-    }
-  }, [cartItem]);
-
-  const handleQuantity = (type: "increase" | "decrease") => {
-    const newQuantity = type === "increase" ? quantity + 1 : Math.max(1, quantity - 1);
-    setQuantity(newQuantity);
-
-    // Update the quantity in the cart
-    updateProductQuantity(product._id, newQuantity);
-  };
-
-  const handleAddToCart = () => {
-    if (cartItem) {
-      // If product is already in cart, update quantity
       updateProductQuantity(product._id, quantity);
     } else {
-      // If product is not in cart, add it
       addProductToCart(product, quantity);
     }
   };
 
+  /* ----- loading / error UI ----- */
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress />
+      </div>
+    );
+  if (error || !product)
+    return <p className="text-center text-red-600">{error ?? "Not found"}</p>;
+
+  /* ----- main render ----- */
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Left Side - Static Image with Scrollable Content */}
-      <div className="sticky top-10 max-h-screen overflow-y-auto">
-        <div className="relative">
+    <div className="mx-auto max-w-7xl p-4 md:p-8">
+      {/* top section */}
+      <div className="grid md:grid-cols-2 gap-10">
+        {/* images */}
+        <div className="space-y-3 sticky top-10 self-start">
           <img
-            src={product.images[0]}
+          src={product.images[mainIdx] || image}
             alt={product.name}
-            className="rounded-lg w-full h-[600px] object-cover overflow-hidden"
+            className="rounded-lg w-full h-[480px] object-cover shadow"
           />
-          <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
-            25% OFF
-          </span>
+          <div className="flex gap-2 overflow-x-auto">
+            {product.images.map((src) => (
+              <img
+                key={src}
+                src={src || ""
+                }
+                alt={product.name}
+                className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-80"
+                onClick={() => {
+                  
+                  const imgs = [...product.images];
+                  const idx = imgs.indexOf(src);
+                  setMainIdx(idx);
+              
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* info */}
+        <div className="flex flex-col gap-4">
+          {/* title & rating */}
+          <h1 className="text-3xl font-semibold">{product.name}</h1>
+          <div className="flex items-center gap-2">
+            <Rating
+              value={product.averageRating ?? 0}
+              precision={0.1}
+              readOnly
+            />
+            <span className="text-sm text-gray-600">
+              ({product.reviewCount ?? 0} ratings)
+            </span>
+          </div>
+
+          {/* price block */}
+          <div className="space-y-1">
+            {product.discount?.percentage ? (
+              <>
+                <span className="text-2xl font-bold text-red-600">
+                {import.meta.env.VITE_API_CURRENCY} {product.discount.discountedPrice?.toFixed(0)}
+                </span>
+                <span className="line-through text-gray-500 ml-2">
+                {import.meta.env.VITE_API_CURRENCY}  {product.price.toFixed(0)}
+                </span>
+                <span className="ml-2 text-green-600">
+                  -{product.discount.percentage}%
+                </span>
+              </>
+            ) : (
+              <span className="text-2xl font-bold">
+                {import.meta.env.VITE_API_CURRENCY}  {product.price.toFixed(0)}
+              </span>
+            )}
+            <p className="text-sm text-gray-600">
+              Inclusive of all taxes • Stock: {product.stock}
+            </p>
+          </div>
+
+          {/* variants */}
+          {product.variants && product.variants.length > 1 && (
+            <div>
+              <p className="font-medium mb-1">Size / Variant</p>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((v) => (
+                  <Tooltip
+                    key={v.size}
+                    title={`${import.meta.env.VITE_API_CURRENCY}  ${v.price.toFixed(0)}`}
+                    arrow
+                  >
+                    <button
+                      className={`border rounded py-1 px-3 text-sm hover:bg-gray-100 ${
+                        variant?.size === v.size ? "border-black" : ""
+                      }`}
+                      onClick={() => setVariant(v)}
+                    >
+                      {v.size}
+                    </button>
+                  </Tooltip>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* quantity selector */}
+          <div className="flex items-center gap-2">
+            <IconButton onClick={() => changeQty("dec")} size="small">
+              <RemoveIcon />
+            </IconButton>
+            <span className="border px-4 py-1 rounded">{quantity}</span>
+            <IconButton onClick={() => changeQty("inc")} size="small">
+              <AddIcon />
+            </IconButton>
+            {product.isAvailable ? (
+              <span className="text-sm text-green-700 flex items-center">
+                <CheckCircleIcon fontSize="small" className="mr-1" /> In Stock
+              </span>
+            ) : (
+              <span className="text-sm text-red-600">Out of Stock</span>
+            )}
+          </div>
+
+          {/* add to cart */}
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            className="w-max !bg-black hover:!bg-gray-800"
+            onClick={addToCart}
+            disabled={!product.isAvailable}
+          >
+            {cartItem ? "Update Cart" : "Add to Cart"}
+          </Button>
+
+          {/* description */}
+          <p className="whitespace-pre-wrap text-gray-800">
+            {product.description}
+          </p>
+
+          {/* ingredients & suitability */}
+          <div className="text-sm leading-6">
+            {product.ingredients && (
+              <p>
+                <span className="font-medium">Key ingredients:</span>{" "}
+                {product.ingredients.join(", ")}
+              </p>
+            )}
+            {product.aiSkinSuitability && (
+              <p>
+                <span className="font-medium">Suitable for:</span>{" "}
+                {product.aiSkinSuitability.join(", ")}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Right Side - Product Info */}
-      <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">{product.name}</h1>
-        <p className="text-lg font-semibold">Our Price Rs. {product.price}</p>
-        <div className="flex items-center gap-2">
-          <IconButton onClick={() => handleQuantity("decrease")} size="small">
-            <RemoveIcon />
-          </IconButton>
-          <span className="border px-4 py-1 rounded">{quantity}</span>
-          <IconButton onClick={() => handleQuantity("increase")} size="small">
-            <AddIcon />
-          </IconButton>
-        </div>
-        <Button
-          variant="contained"
-          color="inherit"
-          className="!bg-black !text-white hover:!bg-gray-800"
-          onClick={handleAddToCart} // Handle adding to the cart
-        >
-          Add to Cart
-        </Button>
+      {/* bottom tabs */}
+      <div className="mt-12">
+        <Tabs value={tab} onChange={(_, v) => setTab(v)}>
+          <Tab label="Details" />
+          <Tab label={`Reviews (${product.reviewCount ?? 0})`} />
+        </Tabs>
+
+        {tab === 0 ? (
+          <div className="p-6">
+            <h2 className="text-xl font-semibold mb-2">How to use</h2>
+            <p className="mb-4">{product.usageInstructions ?? "—"}</p>
+
+            <h2 className="text-xl font-semibold mb-2">Precautions</h2>
+            <p className="mb-4">{product.precautions ?? "—"}</p>
+
+            <h2 className="text-xl font-semibold mb-2">Product details</h2>
+            <ul className="list-disc pl-6 space-y-1 text-gray-700">
+              <li>Brand: {product.brand}</li>
+              <li>Category: {product.category}</li>
+              <li>Sold: {product.soldCount ?? 0} pcs.</li>
+              <li>Created: {new Date(product.createdAt!).toLocaleDateString()}</li>
+            </ul>
+          </div>
+        ) : (
+          <ReviewSection productId={product._id} />
+        )}
       </div>
     </div>
   );
 };
 
-export default ProductInfo;
+export default ProductDetailPage;

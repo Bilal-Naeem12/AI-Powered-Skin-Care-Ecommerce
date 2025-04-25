@@ -1,15 +1,27 @@
 const ReviewService = require("./reviewService");
 
 // **🔹 Create a New Review**
-exports.createReview = async (req, res) => {
+exports.createReview = async (req, res, next) => {
     try {
-        const reviewData = req.body;
-        const newReview = await ReviewService.createReview(reviewData);
-        res.status(201).json({ message: "Review created successfully", review: newReview });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+      const { productId } = req.params;
+      const { rating, reviewText, pros, cons, images } = req.body;
+      const userId = req.user._id;                       // set by isAuth
+  
+      await ReviewService.addReview({
+        productId,
+        userId,
+        rating,
+        reviewText,
+        pros,
+        cons,
+        reviewImages: images
+      });
+  
+      res.status(201).json({ message: "Review submitted for moderation." });
+    } catch (err) {
+      next(err); // global error handler
     }
-};
+  };
 
 // **🔹 Get Reviews by Product ID**
 exports.getReviewsByProduct = async (req, res) => {

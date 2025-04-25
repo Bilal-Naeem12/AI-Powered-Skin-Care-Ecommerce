@@ -7,11 +7,13 @@ const {
     addReplyToReview,
     voteOnReview
 } = require("./reviewController");
+const { authMiddleware } = require("../../middleware/authMiddleware");
+const validateReview = require("../../middleware/validateReviewMiddleware");
 
 const router = express.Router();
 
 // **🔹 Route to Create a New Review**
-router.post("/create", createReview);
+router.post("/create", authMiddleware,validateReview ,createReview);
 
 // **🔹 Route to Get Reviews by Product ID**
 router.get("/:productId", getReviewsByProduct);

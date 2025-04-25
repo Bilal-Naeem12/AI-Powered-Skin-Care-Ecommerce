@@ -10,6 +10,8 @@ const rateLimit = require('express-rate-limit'); // Prevent brute force attacks
 const compression = require('compression'); // Optimize response size
 const mongoose = require('mongoose');
 
+const Product  = require("./modules/products/productModel");
+const Review   = require("./modules/review/reviewModel");
 
 // Import Routes for each module
 const mainRouter = require('./routes/mainRouter');

@@ -59,11 +59,6 @@ const ProductSchema = new mongoose.Schema({
         type: [String], // Example: ["Aloe Vera", "Hyaluronic Acid", "Parabens"]
         default: []
     },
-    allergens: {
-        type: [String], // Example: ["Fragrance", "Alcohol"]
-        default: []
-    },
-
     // **AI Skin Suitability Tags**
     aiSkinSuitability: {
         type: [String], // Example: ["Oily Skin", "Sensitive Skin", "Acne-Prone"]
@@ -75,14 +70,14 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    reviews: [
-        {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-            rating: { type: Number, min: 1, max: 5 },
-            comment: { type: String, trim: true },
-            createdAt: { type: Date, default: Date.now }
-        }
-    ],
+    reviewCount:   { type: Number, default: 0 },
+    ratingBuckets: {               // optional histogram for ★ distribution
+      1: { type: Number, default: 0 },
+      2: { type: Number, default: 0 },
+      3: { type: Number, default: 0 },
+      4: { type: Number, default: 0 },
+      5: { type: Number, default: 0 }
+    },
 
     // **Usage Instructions & Precautions**
     usageInstructions: {
@@ -123,5 +118,10 @@ const ProductSchema = new mongoose.Schema({
 function arrayLimit(val) {
     return val.length > 0;
 }
-
+ProductSchema.virtual("reviews", {
+    ref: "Review",
+    localField: "_id",
+    foreignField: "productId"
+  });
+  
 module.exports = mongoose.model("Product", ProductSchema);

@@ -13,6 +13,8 @@ const {
 } = require("./productController");
 
 const { validateCreateProduct, validateUpdateProduct, validateResult } = require("./productValidator");
+const { authMiddleware } = require("../../middleware/authMiddleware");
+const validateReviewMiddleware = require("../../middleware/validateReviewMiddleware");
 
 const router = express.Router();
 
@@ -25,7 +27,7 @@ router.delete("/:id", softDeleteProduct);  // Soft delete product
 router.put("/restore/:id", restoreProduct);  // Restore deleted product
 
 // **🔹 Review Routes**
-router.post("/:id/reviews", addReview);  // Add a review to a product
+router.post("/:id/reviews",authMiddleware,validateReviewMiddleware ,addReview);  // Add a review to a product
 router.get("/:id/reviews", getProductReviews);  // Get all reviews of a product
 
 // **🔹 Stock Management**

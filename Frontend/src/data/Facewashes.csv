@@ -1,0 +1,17 @@
+Product_ID,Name,Category,Skin_Problems_Targeted,Ingredients,Price_USD,Brand,Suitable_Skin_Type,Link
+AFW-O1,CeraVe Foaming Facial Cleanser,Face Wash,Acne,"Ceramides, Niacinamide, Hyaluronic Acid",14.99,CeraVe,Oily,https://www.cerave.com/skincare/cleansers/foaming-facial-cleanser
+AFW-O2,La Roche-Posay Effaclar Medicated Gel Cleanser,Face Wash,Acne,"2% Salicylic Acid, Lipo-Hydroxy Acid",17.99,La Roche-Posay,Oily,https://www.laroche-posay.us/our-products/face/acne-products/effaclar-medicated-acne-face-wash-effaclaracnewash.html
+AFW-O3,CeraVe Acne Control Cleanser,Face Wash,Acne,"2% Salicylic Acid, Niacinamide, Ceramides, Hectorite Clay",14.99,CeraVe,Oily,https://www.cerave.com/skincare/cleansers/acne-salicylic-acid-cleanser
+AFW-O4,Neutrogena Oil-Free Acne Wash Pink Grapefruit Facial Cleanser,Face Wash,Acne,"2% Salicylic Acid, Grapefruit Extract, Vitamin C",8.99,Neutrogena,Oily,https://www.neutrogena.com/products/skincare/neutrogena-oil-free-acne-wash-pink-grapefruit-facial-cleanser/6805365
+AFW-O5,Peace Out Acne Gel Cleanser,Face Wash,Acne,"2% Salicylic Acid, Maltobionic Acid,Ceramide Complex",24,Peace Out,Oily,https://www.peaceoutskincare.com/products/acne-cleanser
+AFW-D1,CeraVe Hydrating Facial Cleanser,Face Wash,Acne,"Ceramides, Hyaluronic Acid, Glycerin",14.99,CeraVe,Dry,https://www.cerave.com/skincare/cleansers/hydrating-facial-cleanser
+AFW-D2,La Roche-Posay Toleriane Hydrating Gentle Cleanser,Face Wash,Acne,"Ceramides, Niacinamide, Glycerin",15.99,La Roche-Posay,Dry,https://www.laroche-posay.us/our-products/face/face-wash/toleriane-hydrating-gentle-facial-cleanser-tolerianehydratinggentlefacialcleanser.html
+AFW-D3,Cetaphil Gentle Skin Cleanser,Face Wash,Acne,"Glycerin, Panthenol, Niacinamide",10.49,Cetaphil,Dry,https://www.cetaphil.com/us/product/gentle-skin-cleanser
+AFW-D4,First Aid Beauty Pure Skin Face Cleanser,Face Wash,Acne,"Glycerin, Aloe Vera",24,First Aid Beauty,Dry,https://www.ulta.com/p/pure-skin-face-cleanser-xlsImpprod13491007
+AFW-D5,CeraVe Renewing SA Cleanser,Face Wash,Acne,"Salicylic Acid, Ceramides, Hyaluronic Acid,Niacinamide",13.99,CeraVe,Dry,https://www.cerave.com/skincare/cleansers/renewing-sa-cleanser
+AFW-D6,Vanicream Gentle Facial Cleanser,Face Wash,Acne,"Glycerin,coco-glucoside, sodium cocoyl glycinate, acrylates copolymer, caprylyl glycol, mica, sodium chloride, 1,2-hexanediol, titanium dioxide, sodium hydroxide, disodium EDTA",9.99,Vanicream,Dry,https://www.vanicream.com/product/vanicream-facial-cleanser
+AFW-N1,Youth to the People Superfood Cleanser,Face Wash,Acne,"Kale, Spinach, Green Tea,Alfalfa, Vitamin C, Vitamin E",36,Youth to the People,Normal,https://www.youthtothepeople.com/skincare/cleansers/superfood-cleanser/YTTP-10100.html
+AFW-N2,Glossier Milky Jelly Cleanser,Face Wash,Acne,"Poloxamer, Rose Water, Pro-Vitamin B5",18,Glossier,Normal,https://www.glossier.com/products/milky-jelly-cleanser
+AFW-N3,Tatcha The Rice Wash,Face Wash,Acne,"Japanese Rice Powder, Hyaluronic Acid",36,Tatcha,Normal,https://www.tatcha.com/product/rice-wash-creamy-rice-powder-cleanser/CC03012T.html
+AFW-N4,Fresh Soy Face Cleanser,Face Wash,Acne,"Soy Proteins, Cucumber Extract, Rosewater",38,Fresh,Normal,https://www.fresh.com/us/skincare/categories/cleansers/soy-face-cleanser-H00006238.html
+AFW-N5,EltaMD Foaming Facial Cleanser,Face Wash,Acne,"Bromelain, Apple Amino Acids",32,EltaMD,Normal,https://eltamd.com/products/skin-recovery-amino-acid-foaming-cleanser

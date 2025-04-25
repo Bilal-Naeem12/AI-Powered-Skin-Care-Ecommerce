@@ -1,47 +1,110 @@
-// Define types for the Product Variant
-interface ProductVariant {
-    size: string;
-    price: number;
-    stock: number;
-  }
-  
-  // Define types for Customer Review
-  interface Review {
-    userId: string;  // The user ID is a string, as it will be a reference to the User model.
-    rating: number;
+/* --------------------------------------------------------- */
+/*  Product model — keep in one place and re-use everywhere  */
+/* --------------------------------------------------------- */
+
+/** Allowed categories (keeps typo-free code) */
+export type ProductCategory =
+  | "Moisturizer"
+  | "Cleanser"
+  | "Serum"
+  | "Sunscreen"
+  | "Exfoliator"
+  | "Toner"
+  | "Mask"
+  | "Other";
+
+/** Discount sub-document */
+export interface Discount {
+  percentage: number;      // e.g. 10 → 10 %
+  discountedPrice?: number; // optional, shown only when > 0
+}
+
+/** Variant (size / package) */
+export interface ProductVariant {
+  size: string;            // "50 ml", "100 g", …
+  price: number;
+  stock: number;
+}
+
+/** ★ buckets = histogram */
+export interface RatingBuckets {
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  5: number;
+}
+
+/** Review (if you .populate("reviews")) */
+export interface ProductReview {
+  _id: string;
+  userId: {
+    _id: string;
+    first_name?: string;
+    last_name?: string;
+    profileImage?: string;
+  };
+  rating: 1 | 2 | 3 | 4 | 5;
+  reviewText?: string;
+  reviewImages?: string[];
+  pros?: string[];
+  cons?: string[];
+  isVerifiedPurchase?: boolean;
+  status?: "Pending" | "Approved" | "Rejected";
+  upvotes?: number;
+  downvotes?: number;
+  replies?: {
+    userId: string;
     comment: string;
-    createdAt: string; // Date in string format (ISO 8601)
-  }
-  
-  // Interface for the Product
-  interface Product {
-    _id: string;  // Unique identifier for the product
-    name: string;
-    description: string;
-    category: "Moisturizer" | "Cleanser" | "Serum" | "Sunscreen" | "Exfoliator" | "Toner" | "Mask" | "Other";
-    brand: string;
-    price: number;
-    discount: {
-      percentage: number;  // Discount percentage
-      discountedPrice: number | null; // Final price after discount
-    };
-    stock: number;
-    isAvailable: boolean;
-    variants: ProductVariant[]; // Array of product variants (sizes, packaging, etc.)
-    images: string[];  // Array of image URLs
-    ingredients: string[];  // Ingredients list
-    allergens: string[];  // Allergen list
-    aiSkinSuitability: string[];  // AI recommendations for skin suitability (e.g., "Oily Skin", "Sensitive Skin")
-    averageRating: number;  // Average rating of the product
-    reviews: Review[];  // Array of reviews
-    usageInstructions: string;
-    precautions: string;
-    soldCount: number;  // Number of items sold
-    isFeatured: boolean;  // Whether the product is featured
-    isDeleted: boolean;  // Soft delete flag
-    createdAt: string;  // Creation timestamp (ISO 8601)
-    updatedAt: string;  // Last update timestamp (ISO 8601)
-  }
-  
-  export default Product;
-  
+    createdAt: string;
+  }[];
+  createdAt?: string;
+  updatedAt?: string;
+  isDeleted?: boolean;
+}
+
+/** Full product object returned by your API */
+export interface Product {
+  _id: string;
+
+  /* core data */
+  name: string;
+  description: string;
+  category: ProductCategory;
+  brand: string;
+
+  /* pricing & stock */
+  price: number;
+  discount?: Discount;
+  stock: number;
+  isAvailable: boolean;
+
+  /* variants & media */
+  variants?: ProductVariant[];
+  images: string[];
+
+  /* ingredients & AI tags */
+  ingredients?: string[];
+  aiSkinSuitability?: string[];
+
+  /* ratings */
+  averageRating?: number;
+  reviewCount?: number;
+  ratingBuckets?: RatingBuckets;
+
+  /* usage info */
+  usageInstructions?: string;
+  precautions?: string;
+
+  /* e-commerce metadata */
+  soldCount?: number;
+  isFeatured?: boolean;
+
+  /* soft deletion & timestamps */
+  isDeleted?: boolean;
+  createdAt?: string;   // ISO strings for JSON
+  updatedAt?: string;
+
+  /* virtual populate (optional) */
+  reviews?: ProductReview[];
+}

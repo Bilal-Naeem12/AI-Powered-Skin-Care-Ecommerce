@@ -24,7 +24,8 @@ const useFetchData = <T,>(url: string, reloadTrigger?: boolean) => {
     fetchData();
   }, [url, reloadTrigger]); // Reload when reloadTrigger changes
 
-  return { data, loading, error };
+  return { data, loading, error, reloadTrigger };
+
 };
 
 export default useFetchData;

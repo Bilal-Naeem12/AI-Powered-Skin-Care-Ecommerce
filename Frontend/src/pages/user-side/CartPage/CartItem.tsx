@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, TextField, MenuItem, IconButton } from "@mui/material";
 import { MdDelete } from "react-icons/md"; // Import delete icon
 import useCartStore from "../../../store/useCartStore"; // Import the Zustand store
-import Product from "@/types/Product"; // Import the Product interface
+import {Product} from "@/types/Product"; // Import the Product interface
 
 // Define the prop types for CartItem component
 interface CartItemProps {
@@ -42,7 +42,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        Rs {item.product.price}/-
+        {import.meta.env.VITE_API_CURRENCY}  {item.product.price}/-
       </Typography>
 
       {/* Quantity Dropdown */}
@@ -69,7 +69,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        Rs {item.product.price * item.quantity}/-
+        {import.meta.env.VITE_API_CURRENCY}  {item.product.price * item.quantity}/-
       </Typography>
 
       {/* Delete Button */}
