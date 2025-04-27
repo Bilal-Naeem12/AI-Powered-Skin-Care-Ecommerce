@@ -186,7 +186,7 @@ const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
                 <img
                   key={img}
                   src={img}
-                  className="w-16 h-16 rounded object-cover hover:cursor-pointer hover:scale-110  transition-all "
+                  className="w-16 h-16 rounded-sm object-cover hover:cursor-pointer hover:scale-110  transition-all "
                   onClick={() => setOpenImage(img)}
                 />
               ))}
@@ -205,7 +205,7 @@ const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
       <img
         src={openImage || ""}
         alt="Preview"
-        className="w-full max-h-[80vh] object-contain rounded"
+        className="w-full max-h-[80vh] object-contain rounded-sm"
       />
     </motion.div>
   </DialogContent>
@@ -223,11 +223,11 @@ const Thumb: React.FC<{ url: string; onRemove: () => void }> = ({
   url,
   onRemove,
 }) => (
-  <div className="relative w-16 h-16 border rounded overflow-hidden">
+  <div className="relative w-16 h-16 border rounded-sm overflow-hidden">
     <img src={url} alt="" className="w-full h-full object-cover" />
     <IconButton
       size="small"
-      className="!absolute !top-0 !right-0 !bg-white/70"
+      className="absolute! top-0! right-0! bg-white/70!"
       onClick={onRemove}
     >
       <CloseIcon fontSize="small" />

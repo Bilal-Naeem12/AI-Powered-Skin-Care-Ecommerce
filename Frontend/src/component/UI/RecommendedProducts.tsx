@@ -16,7 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className="p-4 border rounded-lg shadow-sm sm:flex gap-4 my-4">
+    <div className="p-4 border rounded-lg shadow-xs sm:flex gap-4 my-4">
       <img
         src={product.images[0]} // Assuming the first image in the array is used
         alt={product.name}
@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="flex-1">
         <h4 className="text-lg font-bold">{product.name}</h4>
         <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-        <div className="text-gray-800 font-bold"> {import.meta.env.VITE_API_CURRENCY} {product.price}/-</div>
+        <div className="text-gray-800 font-bold"> {import.meta.env.VITE_API_CURRENCY_Symbol} {product.price}/-</div>
         <p className="text-sm text-primary">{product.category}</p> {/* Assuming category is used here */}
         <Button variant="black" className="px-2 py-1 my-5" onClick={handleAddToCart}>
           ADD TO CART

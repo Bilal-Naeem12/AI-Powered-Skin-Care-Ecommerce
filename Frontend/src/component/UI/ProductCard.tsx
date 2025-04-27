@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className="border rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+    <div className="border rounded-lg shadow-xs overflow-hidden hover:shadow-md transition">
       <Link to={`/product/${product._id}`}> {/* Product Image */}
         <img
           src={product.images[0]} // Assuming images is an array and the first one is the main image
@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 </p>
 
           {/* <p className="text-gray-500 text-sm mt-2">{product.variants}</p> Assuming the first variant is being used */}
-          <p className="text-gray-900 font-bold mt-2">{import.meta.env.VITE_API_CURRENCY} {product.price}/-</p>
+          <p className="text-gray-900 font-bold mt-2">{import.meta.env.VITE_API_CURRENCY_Symbol} {product.price}/-</p>
         </div>
       </Link>
 

@@ -37,7 +37,7 @@ const ContactForm: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="p-6 border rounded-lg shadow-sm"
+      className="p-6 border rounded-lg shadow-xs"
     >
       <h3 className="text-lg font-bold mb-4">Get in Touch</h3>
 
@@ -48,7 +48,7 @@ const ContactForm: React.FC = () => {
             type="text"
             placeholder="Name"
             {...register("name")}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-hidden focus:ring-2 ${
               errors.name ? "border-red-500 focus:ring-red-500" : "focus:ring-black"
             }`}
           />
@@ -63,7 +63,7 @@ const ContactForm: React.FC = () => {
             type="email"
             placeholder="Email"
             {...register("email")}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-hidden focus:ring-2 ${
               errors.email ? "border-red-500 focus:ring-red-500" : "focus:ring-black"
             }`}
           />
@@ -79,7 +79,7 @@ const ContactForm: React.FC = () => {
           type="text"
           placeholder="Phone Number"
           {...register("phone")}
-          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+          className={`w-full px-4 py-2 border rounded-lg focus:outline-hidden focus:ring-2 ${
             errors.phone ? "border-red-500 focus:ring-red-500" : "focus:ring-black"
           }`}
         />
@@ -94,7 +94,7 @@ const ContactForm: React.FC = () => {
           placeholder="Message"
           rows={4}
           {...register("message")}
-          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+          className={`w-full px-4 py-2 border rounded-lg focus:outline-hidden focus:ring-2 ${
             errors.message ? "border-red-500 focus:ring-red-500" : "focus:ring-black"
           }`}
         ></textarea>

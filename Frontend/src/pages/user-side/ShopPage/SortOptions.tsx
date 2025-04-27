@@ -7,7 +7,7 @@ const SortOptions = ({ sortOption, setSortOption }) => {
       <select
         value={sortOption}
         onChange={(e) => setSortOption(e.target.value)}
-        className="border px-2 py-1 rounded"
+        className="border px-2 py-1 rounded-sm"
       >
         <option value="relevance">Relevance</option>
         <option value="low-to-high">Price: Low to High</option>

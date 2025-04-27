@@ -36,14 +36,14 @@ const OrderSummary: React.FC = () => {
             />
             <Typography>{item.product.name}</Typography>
           </Box>
-          <Typography>{import.meta.env.VITE_API_CURRENCY}  {item.product.price * item.quantity}/-</Typography>
+          <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price * item.quantity}/-</Typography>
         </Box>
       ))}
 
       {/* Subtotal and Shipping */}
       <Box className="flex justify-between items-center py-3 border-t">
         <Typography>Subtotal:</Typography>
-        <Typography>{import.meta.env.VITE_API_CURRENCY}  {subtotal}/-</Typography>
+        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-</Typography>
       </Box>
       <Box className="flex justify-between items-center py-3 border-b">
         <Typography>Shipping:</Typography>
@@ -51,7 +51,7 @@ const OrderSummary: React.FC = () => {
       </Box>
       <Box className="flex justify-between items-center py-3">
         <Typography>Total:</Typography>
-        <Typography>{import.meta.env.VITE_API_CURRENCY}  {subtotal}/-</Typography>
+        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-</Typography>
       </Box>
 
       {/* Payment Options */}

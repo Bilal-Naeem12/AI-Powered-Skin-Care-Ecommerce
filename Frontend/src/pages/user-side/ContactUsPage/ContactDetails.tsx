@@ -43,7 +43,7 @@ const ContactDetails = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       {details.map((detail, index) => (
-        <div key={index} className="p-4 border rounded-lg shadow-sm">
+        <div key={index} className="p-4 border rounded-lg shadow-xs">
           <h3 className="font-bold mb-2">{detail.title}</h3>
           {detail.items.map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-sm text-gray-700 mb-1">

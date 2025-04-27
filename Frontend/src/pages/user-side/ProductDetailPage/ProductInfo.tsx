@@ -72,7 +72,7 @@ const ProductDetailPage: React.FC = () => {
           <img
           src={product.images[mainIdx] || image}
             alt={product.name}
-            className="rounded-lg w-full h-[480px] object-cover shadow"
+            className="rounded-lg w-full h-[480px] object-cover shadow-sm"
           />
           <div className="flex gap-2 overflow-x-auto">
             {product.images.map((src) => (
@@ -81,7 +81,7 @@ const ProductDetailPage: React.FC = () => {
                 src={src || ""
                 }
                 alt={product.name}
-                className="w-20 h-20 object-cover rounded border cursor-pointer hover:opacity-80"
+                className="w-20 h-20 object-cover rounded-sm border cursor-pointer hover:opacity-80"
                 onClick={() => {
                   
                   const imgs = [...product.images];
@@ -114,10 +114,10 @@ const ProductDetailPage: React.FC = () => {
             {product.discount?.percentage ? (
               <>
                 <span className="text-2xl font-bold text-red-600">
-                {import.meta.env.VITE_API_CURRENCY} {product.discount.discountedPrice?.toFixed(0)}
+                {import.meta.env.VITE_API_CURRENCY_Symbol} {product.discount.discountedPrice?.toFixed(0)}
                 </span>
                 <span className="line-through text-gray-500 ml-2">
-                {import.meta.env.VITE_API_CURRENCY}  {product.price.toFixed(0)}
+                {import.meta.env.VITE_API_CURRENCY_Symbol}  {product.price.toFixed(0)}
                 </span>
                 <span className="ml-2 text-green-600">
                   -{product.discount.percentage}%
@@ -125,7 +125,7 @@ const ProductDetailPage: React.FC = () => {
               </>
             ) : (
               <span className="text-2xl font-bold">
-                {import.meta.env.VITE_API_CURRENCY}  {product.price.toFixed(0)}
+                {import.meta.env.VITE_API_CURRENCY_Symbol}  {product.price.toFixed(0)}
               </span>
             )}
             <p className="text-sm text-gray-600">
@@ -141,7 +141,7 @@ const ProductDetailPage: React.FC = () => {
                 {product.variants.map((v) => (
                   <Tooltip
                     key={v.size}
-                    title={`${import.meta.env.VITE_API_CURRENCY}  ${v.price.toFixed(0)}`}
+                    title={`${import.meta.env.VITE_API_CURRENCY_Symbol}  ${v.price.toFixed(0)}`}
                     arrow
                   >
                     <button
@@ -163,7 +163,7 @@ const ProductDetailPage: React.FC = () => {
             <IconButton onClick={() => changeQty("dec")} size="small">
               <RemoveIcon />
             </IconButton>
-            <span className="border px-4 py-1 rounded">{quantity}</span>
+            <span className="border px-4 py-1 rounded-sm">{quantity}</span>
             <IconButton onClick={() => changeQty("inc")} size="small">
               <AddIcon />
             </IconButton>
@@ -181,7 +181,7 @@ const ProductDetailPage: React.FC = () => {
             variant="contained"
             color="primary"
             size="large"
-            className="w-max !bg-black hover:!bg-gray-800"
+            className="w-max bg-black! hover:bg-gray-800!"
             onClick={addToCart}
             disabled={!product.isAvailable}
           >

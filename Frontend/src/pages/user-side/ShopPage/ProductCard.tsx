@@ -2,14 +2,14 @@ import React from "react";
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="border rounded-lg shadow-sm p-4">
+    <div className="border rounded-lg shadow-xs p-4">
       <div className="relative mb-4">
         <img
           src={product.image}
           alt={product.title}
           className="w-full h-40 object-cover rounded-md"
         />
-        <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
+        <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded-sm">
           {product.discount}
         </span>
       </div>

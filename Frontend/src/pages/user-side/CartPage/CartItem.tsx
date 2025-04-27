@@ -42,7 +42,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        {import.meta.env.VITE_API_CURRENCY}  {item.product.price}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price}/-
       </Typography>
 
       {/* Quantity Dropdown */}
@@ -69,7 +69,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        {import.meta.env.VITE_API_CURRENCY}  {item.product.price * item.quantity}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price * item.quantity}/-
       </Typography>
 
       {/* Delete Button */}

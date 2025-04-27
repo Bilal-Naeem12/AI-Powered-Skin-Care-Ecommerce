@@ -7,7 +7,7 @@ const FaceScanResult = () => {
 const { detectedImage } = useFaceScanStore();
 
   return (
-    <div className="p-4 border rounded-lg shadow-sm">
+    <div className="p-4 border rounded-lg shadow-xs">
       <h3 className="text-lg font-bold mb-4">Face Scan Results</h3>
     
   <img

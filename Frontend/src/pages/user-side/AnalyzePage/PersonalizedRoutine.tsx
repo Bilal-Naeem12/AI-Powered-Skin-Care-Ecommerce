@@ -4,7 +4,7 @@ import Button from "../../../component/UI/Button";
 
 const PersonalizedRoutine = () => {
   return (
-    <div className="p-4 border rounded-lg shadow-sm">
+    <div className="p-4 border rounded-lg shadow-xs">
       <h3 className="text-lg font-bold mb-2">Your Personalized Routine</h3>
       <p className="text-sm text-gray-600 mb-4">
         Bespoke to your skin and your needs, your personal routine has been

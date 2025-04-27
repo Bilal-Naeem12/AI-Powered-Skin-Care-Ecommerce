@@ -52,7 +52,7 @@ const ProductImageUploader: React.FC = () => {
   };
 
   return (
-    <div className="border p-4 rounded space-y-4 max-w-sm">
+    <div className="border p-4 rounded-sm space-y-4 max-w-sm">
       {/* Product ID Input */}
       <TextField
         label="Product ID"

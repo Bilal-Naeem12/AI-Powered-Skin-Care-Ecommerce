@@ -10,14 +10,14 @@ import ManageProducts from "@/pages/admin-side/ManageProducts";
 import ManageUsers from "@/pages/admin-side/ManageUsers";
 import SiteSettings from "@/pages/admin-side/SiteSettings";
 
-import useUserStore from "@/store/useUserStore"; // ✅ Import the store
+
 import { HelmetProvider } from "react-helmet-async";
 import AppLayout from "@/pages/admin-side/AdminLayout/AppLayout";
 
 
 import { AppWrapper } from "@/component/common/PageMeta.js";
 import { ThemeProvider } from "@/context/ThemeContext";
-
+import "@/index.css"
 
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";

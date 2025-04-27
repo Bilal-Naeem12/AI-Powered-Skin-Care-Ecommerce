@@ -18,7 +18,7 @@ const CartTotal = ({ subtotal }) => {
           Subtotal:
         </Typography>
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
-        {import.meta.env.VITE_API_CURRENCY}  {subtotal}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-
         </Typography>
       </Box>
       <Box className="flex justify-between items-center py-3 border-b">
@@ -32,7 +32,7 @@ const CartTotal = ({ subtotal }) => {
           Total:
         </Typography>
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
-        {import.meta.env.VITE_API_CURRENCY}  {subtotal}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-
         </Typography>
       </Box>
     </Box>

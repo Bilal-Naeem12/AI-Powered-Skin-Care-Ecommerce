@@ -47,9 +47,9 @@ if (error || !user) {
 }
   return (
     <MainLayout>
-      <div className="flex flex-grow ">
+      <div className="flex grow ">
     <SidebarComponent sidebarOptions={profileSidebarOptions}/>
-    <div className="flex-grow p-4 bg-gray-100 overflow-auto min-h-screen">
+    <div className="grow p-4 bg-gray-100 overflow-auto min-h-screen">
   <Routes>
 
     {/* Render all routes */}
