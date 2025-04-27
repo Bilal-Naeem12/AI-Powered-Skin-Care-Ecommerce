@@ -31,8 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Product Details */}
         <div className="p-4">
-          <h3 className="text-lg font-bold">{product.name}</h3>
-          <p className="text-gray-600">
+          <h3 className="text-md font-bold">{product.name}</h3>
+          <p className="text-gray-600 text-sm">
   {product.description
     .split(" ")
     .slice(0, 10)
@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 </p>
 
           {/* <p className="text-gray-500 text-sm mt-2">{product.variants}</p> Assuming the first variant is being used */}
-          <p className="text-gray-900 font-bold mt-2">{import.meta.env.VITE_API_CURRENCY_Symbol} {product.price}/-</p>
+          <p className="text-gray-900 text-sm font-outfit mt-2">{import.meta.env.VITE_API_CURRENCY_Symbol} {product.price} /-</p>
         </div>
       </Link>
 

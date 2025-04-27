@@ -8,7 +8,10 @@ export default {
   important: true,
   
   theme: {
-    extend: {
+    extend: {colors: {
+      primary: "#FF69B4", // Add primary color
+	  secondary: "black", // Add primary color
+    },
       fontFamily: {
         sans: ['Outfit', ...defaultTheme.fontFamily.sans],
       },

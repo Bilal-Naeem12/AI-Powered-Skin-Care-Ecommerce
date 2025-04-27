@@ -4,6 +4,11 @@ layer(base);
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
+:root {
+  /* Light Theme */
+  --color-primary: #FF69B4;     /* (your original primary) */
+  --color-secondary: black;   /* (your original secondary) */
+}
 
 @theme {
   --font-*: initial;
@@ -53,6 +58,7 @@ layer(base);
 --color-brand-800: #a33f6c;
 --color-brand-900: #833257;
 --color-brand-950: #511c33;
+
 
 
   --color-blue-light-25: #f5fbff;
@@ -290,6 +296,25 @@ layer(base);
     display: none;
     -webkit-appearance: none;
   }
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+  .bg-secondary {
+    background-color: var(--color-secondary);
+  }
+  .text-primary {
+    color: var(--color-primary);
+  }
+  .text-secondary {
+    color: var(--color-secondary);
+  }
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+  .border-secondary {
+    border-color: var(--color-secondary);
+  }
+
 }
 
 .tableCheckbox:checked ~ span span {

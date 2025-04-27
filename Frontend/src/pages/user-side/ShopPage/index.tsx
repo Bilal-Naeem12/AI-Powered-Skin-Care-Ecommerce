@@ -11,14 +11,14 @@ const ShopPage = () => {
 
   return (
    <MainLayout>
-<div className=" w-10/12 mx-auto py-5">
+<div className="p-10 gap-4 flex flex-col mx-auto py-5 bg-white">
 <Breadcrumb
         paths={[
           { name: "Home", link: "/" },
           { name: "Skin care shop", link: "/shop" },
         ]}
       />
-           <h1 className="my-5 font-bold text-4xl">Shop</h1>
+           <h1 className=" font-bold text-4xl">Shop</h1>
       <Categories/>
    
 

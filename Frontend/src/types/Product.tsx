@@ -104,7 +104,8 @@ export interface Product {
   isDeleted?: boolean;
   createdAt?: string;   // ISO strings for JSON
   updatedAt?: string;
-
+ 
   /* virtual populate (optional) */
   reviews?: ProductReview[];
 }
+

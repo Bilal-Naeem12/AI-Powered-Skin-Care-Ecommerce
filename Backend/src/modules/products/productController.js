@@ -23,27 +23,42 @@ exports.createProduct = async (req, res) => {
 
 // **🔹 Get All Products with Filtering & Pagination**
 exports.getAllProducts = async (req, res) => {
-    try {
-        let { category, brand, minPrice, maxPrice, sort, page, limit } = req.query;
-        let filter = { isDeleted: false };
+  try {
+    let { category, brand, minPrice, maxPrice, skinType, availability, sort, page, limit } = req.query;
+    let filter = { isDeleted: false };
 
-        if (category) filter.category = category;
-        if (brand) filter.brand = brand;
-        if (minPrice || maxPrice) filter.price = { ...(minPrice && { $gte: minPrice }), ...(maxPrice && { $lte: maxPrice }) };
+    if (category) filter.category = category;
+    if (brand) filter.brand = brand;
+    if (minPrice || maxPrice)
+      filter.price = {
+        ...(minPrice && { $gte: Number(minPrice) }),
+        ...(maxPrice && { $lte: Number(maxPrice) }),
+      };
 
-        const sortOptions = sort ? { price: sort === "asc" ? 1 : -1 } : { createdAt: -1 };
-        const pageNum = parseInt(page) || 1;
-        const pageSize = parseInt(limit) || 10;
+    if (availability === "in") filter.isAvailable = true;
+    if (availability === "out") filter.isAvailable = false;
 
-        const products = await Product.find(filter)
-            .sort(sortOptions)
-            .skip((pageNum - 1) * pageSize)
-            .limit(pageSize);
+    if (skinType) filter.aiSkinSuitability = { $in: skinType.split(",") }; // Support multiple types
 
-        res.status(200).json({ products, page: pageNum, limit: pageSize });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    const sortOptions = sort
+      ? { price: sort === "asc" ? 1 : -1 }
+      : { createdAt: -1 };
+
+    const pageNum = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+
+    const products = await Product.find(filter)
+      .sort(sortOptions)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
+
+    const totalCount = await Product.countDocuments(filter);
+
+    res.status(200).json({ products, page: pageNum, limit: pageSize, totalCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // **🔹 Get Single Product by ID**

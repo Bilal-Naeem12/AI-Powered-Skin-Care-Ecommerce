@@ -1,49 +1,202 @@
-import React from "react";
+// src/components/Shop/FilterSidebar.tsx
+import React, { useState } from "react";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Checkbox,
+  FormControlLabel,
+  Slider,
+  Typography,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ProductCategory } from "@/types/Product";
 
-const FilterSidebar = () => {
+/* available values */
+const categories: ProductCategory[] = [
+  "Moisturizer", "Cleanser", "Serum", "Sunscreen", "Exfoliator", "Toner", "Mask", "Other"
+];
+const skinTypes = ["Oily", "Dry", "Combination", "Sensitive", "Normal"];
+const brands = ["CeraVe", "La Roche-Posay", "Neutrogena", "The Ordinary", "Other"];
+
+interface FilterSidebarProps {
+  selectedCategory: string | null;
+  setSelectedCategory: (cat: string | null) => void;
+  selectedBrand: string | null;
+  setSelectedBrand: (brand: string | null) => void;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  selectedSkinTypes: string[];
+  setSelectedSkinTypes: (types: string[]) => void;
+  availability: "in" | "out" | undefined;
+  setAvailability: (value: "in" | "out" | undefined) => void;
+  resetPage: () => void;
+}
+
+const FilterSidebar: React.FC<FilterSidebarProps> = ({
+  selectedCategory,
+  setSelectedCategory,
+  selectedBrand,
+  setSelectedBrand,
+  priceRange,
+  setPriceRange,
+  selectedSkinTypes,
+  setSelectedSkinTypes,
+  availability,
+  setAvailability,
+  resetPage,
+}) => {
+  const [expanded, setExpanded] = useState<string | false>(false);
+
+  const handleAccordionChange =
+    (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
+
+  const handleSkinTypeChange = (type: string) => {
+    const updated = selectedSkinTypes.includes(type)
+      ? selectedSkinTypes.filter((t) => t !== type)
+      : [...selectedSkinTypes, type];
+    setSelectedSkinTypes(updated);
+    resetPage();
+  };
+
   return (
-    <aside className="w-full md:w-1/4 border-r-2 border-gray-300 pr-3">
-      <h3 className="text-xl font-bold mb-4">Filter</h3>
+    <aside className="w-full md:w-1/4 p-4 border rounded-lg shadow-xl bg-white space-y-4">
+      <Typography variant="h6" className="font-bold mb-4">
+        Filter Products
+      </Typography>
 
       {/* Price Filter */}
-      <div className="mb-6">
-        <p className="font-medium mb-2">Price</p>
-        <input
-          type="range"
-          min="0"
-          max="5000"
-          className="w-full"
-        />
-      </div>
+      <Accordion expanded={expanded === "price"} onChange={handleAccordionChange("price")}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Price Range</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Slider
+            value={priceRange}
+            onChange={(_, newValue) => {
+              setPriceRange(newValue as [number, number]);
+              resetPage();
+            }}
+            valueLabelDisplay="auto"
+            min={0}
+            max={100}
+            step={50}
+          />
+          <div className="flex justify-between text-xs mt-2 text-gray-600">
+            <span>{import.meta.env.VITE_API_CURRENCY_Symbol} {priceRange[0]}</span>
+            <span>{import.meta.env.VITE_API_CURRENCY_Symbol} {priceRange[1]}</span>
+          </div>
+        </AccordionDetails>
+      </Accordion>
 
       {/* Availability */}
-      <div className="mb-6">
-        <p className="font-medium mb-2">Availability</p>
-        <div>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> In Stock
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Out of Stock
-          </label>
-        </div>
-      </div>
+      <Accordion expanded={expanded === "availability"} onChange={handleAccordionChange("availability")}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Availability</Typography>
+        </AccordionSummary>
+        <AccordionDetails className="space-y-1">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={availability === "in"}
+                onChange={() => {
+                  setAvailability(availability === "in" ? undefined : "in");
+                  resetPage();
+                }}
+                size="small"
+              />
+            }
+            label="In Stock"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={availability === "out"}
+                onChange={() => {
+                  setAvailability(availability === "out" ? undefined : "out");
+                  resetPage();
+                }}
+                size="small"
+              />
+            }
+            label="Out of Stock"
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Category */}
+      <Accordion expanded={expanded === "category"} onChange={handleAccordionChange("category")}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Category</Typography>
+        </AccordionSummary>
+        <AccordionDetails className="space-y-1">
+          {categories.map((cat) => (
+            <FormControlLabel
+              key={cat}
+              control={
+                <Checkbox
+                  checked={selectedCategory === cat}
+                  onChange={() => {
+                    setSelectedCategory(selectedCategory === cat ? null : cat);
+                    resetPage();
+                  }}
+                  size="small"
+                />
+              }
+              label={cat}
+            />
+          ))}
+        </AccordionDetails>
+      </Accordion>
 
       {/* Skin Type */}
-      <div className="mb-6">
-        <p className="font-medium mb-2">Skin Type</p>
-        <div>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Oily
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Dry
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" /> Combination
-          </label>
-        </div>
-      </div>
+      <Accordion expanded={expanded === "skinType"} onChange={handleAccordionChange("skinType")}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Skin Type</Typography>
+        </AccordionSummary>
+        <AccordionDetails className="space-y-1">
+          {skinTypes.map((type) => (
+            <FormControlLabel
+              key={type}
+              control={
+                <Checkbox
+                  checked={selectedSkinTypes.includes(type)}
+                  onChange={() => handleSkinTypeChange(type)}
+                  size="small"
+                />
+              }
+              label={type}
+            />
+          ))}
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Brands */}
+      <Accordion expanded={expanded === "brand"} onChange={handleAccordionChange("brand")}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Brands</Typography>
+        </AccordionSummary>
+        <AccordionDetails className="space-y-1">
+          {brands.map((brand) => (
+            <FormControlLabel
+              key={brand}
+              control={
+                <Checkbox
+                  checked={selectedBrand === brand}
+                  onChange={() => {
+                    setSelectedBrand(selectedBrand === brand ? null : brand);
+                    resetPage();
+                  }}
+                  size="small"
+                />
+              }
+              label={brand}
+            />
+          ))}
+        </AccordionDetails>
+      </Accordion>
     </aside>
   );
 };
