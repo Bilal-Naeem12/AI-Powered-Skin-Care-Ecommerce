@@ -3,10 +3,15 @@ import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
+import useUserStore from "@/store/useUserStore";
+import { useEffect } from "react";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-
+  const {checkLogin} = useUserStore()
+  useEffect(() => {
+    checkLogin(); // 🔥 Call it when the layout mounts
+  }, [checkLogin]);
   return (
     <div className="min-h-screen xl:flex">
       <div>

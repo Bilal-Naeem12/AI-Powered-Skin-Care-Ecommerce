@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import Home from "../pages/user-side/Home";
 import Login from "../pages/user-side/Login";
 import SignupPage from "../pages/user-side/Signup";
@@ -18,10 +18,27 @@ import ResetPasswordPageWrapper from "@/pages/user-side/ResetPasswordPage/ResetP
 import ForgotPasswordFormPage from "@/pages/user-side/ForgetPassword";
 import ProductImageUploader from "@/component/UI/ProductImageUploader";
 import AdminRouter from "./AdminRouter";
+import useUserStore from "@/store/useUserStore";
+
+
+const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAdmin } = useUserStore();
+  const location = useLocation();
+
+  if (isAdmin && !location.pathname.startsWith("/admin")) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 
 const AppRouter: React.FC = () => {
+  
+
   return (
     <Router>
+        <RedirectIfAdmin>
       <Routes>
         <Route path="/admin/*" element={<AdminRouter />} />
 
@@ -51,6 +68,7 @@ const AppRouter: React.FC = () => {
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </RedirectIfAdmin>
     </Router>
   );
 };

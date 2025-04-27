@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-
+import logo from "/assets/logo.png"
 // Assume these icons are imported from an icon library
 import {
   BoxCubeIcon,
@@ -29,67 +29,103 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    path: "/admin",
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
+    name: "Users",
     subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
+      { name: "User Management", path: "/admin/users" },
+      { name: "Sessions", path: "/admin/sessions" },
+      { name: "Addresses", path: "/admin/addresses" },
     ],
   },
+  {
+    icon: <TableIcon />,
+    name: "Products",
+    subItems: [
+      { name: "Products", path: "/admin/products" },
+      { name: "Categories", path: "/admin/categories" },
+      { name: "Brands", path: "/admin/brands" },
+      { name: "Inventory", path: "/admin/inventory" },
+      { name: "Discounts", path: "/admin/discounts" },
+      { name: "Promotions", path: "/admin/promotions" },
+    ],
+  },
+  {
+    icon: <ListIcon />,
+    name: "Admin Tools",
+    subItems: [
+      { name: "Admin Management", path: "/admin/admins" },
+      { name: "Audit Logs", path: "/admin/audit-logs" },
+    ],
+  },
+  {
+    icon: <PageIcon />,
+    name: "Orders & Payments",
+    subItems: [
+      { name: "Orders", path: "/admin/orders" },
+      { name: "Payments", path: "/admin/payments" },
+      { name: "Order Tracking", path: "/admin/order-tracking" },
+      { name: "Return Requests", path: "/admin/return-requests" },
+      { name: "Transactions", path: "/admin/transactions" },
+    ],
+  },  {
+    icon: <BoxCubeIcon />,
+    name: "Skin Analysis",
+    subItems: [
+      { name: "Skin Analysis", path: "/admin/skin-analysis" },
+      { name: "Skin Types", path: "/admin/skin-types" },
+      { name: "Recommendations", path: "/admin/recommendations" },
+      { name: "Allergen Settings", path: "/admin/allergens" },
+      { name: "Progress Tracking", path: "/admin/progress-tracking" },
+    ],
+  },
+ 
 ];
 
 const othersItems: NavItem[] = [
+  
   {
     icon: <PieChartIcon />,
-    name: "Charts",
+    name: "Customer Experience",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { name: "Cart", path: "/admin/cart" },
+      { name: "Wishlist", path: "/admin/wishlist" },
+      { name: "Wishlist Items", path: "/admin/wishlist-items" },
+      { name: "Reviews", path: "/admin/reviews" },
+      { name: "Review Replies", path: "/admin/review-replies" },
+      { name: "Feedback", path: "/admin/feedback" },
     ],
   },
   {
     icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Engagement",
     subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
+      { name: "Chatbot", path: "/admin/chatbot" },
+      { name: "Notifications", path: "/admin/notifications" },
+      { name: "Support Tickets", path: "/admin/support-tickets" },
+      { name: "Customer Support", path: "/admin/customer-support" },
     ],
   },
+  {
+    icon: <PageIcon />,
+    name: "Content",
+    subItems: [
+      { name: "Blog Articles", path: "/admin/blog" },
+      { name: "FAQs", path: "/admin/faqs" },
+    ],
+  },
+  {
+    icon: <PlugInIcon />,
+    name: "Programs & Loyalty",
+    subItems: [
+      { name: "Referral Program", path: "/admin/referrals" },
+      { name: "Loyalty Points", path: "/admin/loyalty-points" },
+      { name: "Subscription Management", path: "/admin/subscriptions" },
+    ],
+  },
+  
 ];
 
 const AppSidebar: React.FC = () => {
@@ -308,7 +344,7 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src={logo}
                 alt="Logo"
                 width={150}
                 height={40}
@@ -323,7 +359,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src={logo}
               alt="Logo"
               width={32}
               height={32}
@@ -368,7 +404,7 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+        
       </div>
     </aside>
   );

@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false); // State to control search bar visibility
   const [searchValue, setSearchValue] = useState(""); // State to track input value
   const searchRef = useRef<HTMLInputElement>(null); // Ref to track the input field
-
+  const {isAdmin} = useUserStore()
   // Toggle Drawer
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (event.type === "keydown" ) {
@@ -191,7 +191,9 @@ const Navbar: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
       
-      { isLoggedIn? <>
+      { isLoggedIn?
+      
+      <>
       
            <Link to={"/profile-page"}>
                 <MenuItem onClick={handleMenuClose}>

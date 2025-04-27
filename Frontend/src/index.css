@@ -41,18 +41,19 @@ layer(base);
   --color-white: #ffffff;
   --color-black: #101828;
 
-  --color-brand-25: #f2f7ff;
-  --color-brand-50: #ecf3ff;
-  --color-brand-100: #dde9ff;
-  --color-brand-200: #c2d6ff;
-  --color-brand-300: #9cb9ff;
-  --color-brand-400: #7592ff;
-  --color-brand-500: #465fff;
-  --color-brand-600: #3641f5;
-  --color-brand-700: #2a31d8;
-  --color-brand-800: #252dae;
-  --color-brand-900: #262e89;
-  --color-brand-950: #161950;
+--color-brand-25:  #fff5fa;
+--color-brand-50:  #ffeaf4;
+--color-brand-100: #ffd1e6;
+--color-brand-200: #ffaad0;
+--color-brand-300: #ff80b7;
+--color-brand-400: #ff5c9e;
+--color-brand-500: #ff69b4; /* Base */
+--color-brand-600: #e3579a;
+--color-brand-700: #c94d86;
+--color-brand-800: #a33f6c;
+--color-brand-900: #833257;
+--color-brand-950: #511c33;
+
 
   --color-blue-light-25: #f5fbff;
   --color-blue-light-50: #f0f9ff;

@@ -5,7 +5,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { ThemeToggleButton } from "@/component/common/ThemeToggleButton";
 import NotificationDropdown from "@/component/common/NotificationDropdown";
 import UserDropdown from "@/component/common/UserDropdown";
-
+import logo from "/assets/logo.png"
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
@@ -86,12 +86,12 @@ const AppHeader: React.FC = () => {
           <Link to="/" className="lg:hidden">
             <img
               className="dark:hidden"
-              src="./images/logo/logo.svg"
+              src={logo}
               alt="Logo"
             />
             <img
               className="hidden dark:block"
-              src="./images/logo/logo-dark.svg"
+              src={logo}
               alt="Logo"
             />
           </Link>

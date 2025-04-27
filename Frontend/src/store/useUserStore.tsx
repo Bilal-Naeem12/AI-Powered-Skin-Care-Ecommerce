@@ -26,8 +26,10 @@ const useUserStore = create<UserStore>()(
     },
 
     logout: () => {
+      toast.success("Logout")
       set({ user: null, isLoggedIn: false, isAdmin: false });
       localStorage.removeItem("user"); 
+      
     },
 
     checkLogin: () => {
