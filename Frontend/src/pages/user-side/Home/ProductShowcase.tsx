@@ -1,11 +1,31 @@
 import React from "react";
-import Button from "../../../component/UI/Button";
-import ProductCard from "../../../component/UI/ProductCard";
+import Button from "@/component/UI/Button";
+import ProductCard from "@/component/UI/ProductCard";
 import { MdArrowForward } from "react-icons/md";
-import products from "@/data/product"; // Import the dummy data
-import  Product  from "@/types/Product"; // Import the Product type
+import { Product } from "@/types/Product";
+import useFetchData from "@/hooks/useFetchData";
 
 const ProductShowcase: React.FC = () => {
+  const { data: products, loading, error } = useFetchData<Product[]>(
+    `${import.meta.env.VITE_API_BACKEND_URL}/products/featured`
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <p className="text-gray-600">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error || !products) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <p className="text-red-600">Failed to load products.</p>
+      </div>
+    );
+  }
+
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto px-6">
@@ -20,7 +40,7 @@ const ProductShowcase: React.FC = () => {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product: Product) => (
+          {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

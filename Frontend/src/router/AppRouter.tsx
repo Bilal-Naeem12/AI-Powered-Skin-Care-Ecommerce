@@ -14,15 +14,17 @@ import AboutUsPage from "../pages/user-side/AboutUsPage";
 import ProfilePage from "../pages/user-side/ProfilePage";
 import TestPage from "../pages/Test";
 import InpaitingTestPage from "../pages/Test/InpaitingTest";
-
-import ResetPasswordPage from "@/pages/user-side/ResetPasswordPage";
 import ResetPasswordPageWrapper from "@/pages/user-side/ResetPasswordPage/ResetPasswordPageWrapper";
 import ForgotPasswordFormPage from "@/pages/user-side/ForgetPassword";
+import ProductImageUploader from "@/component/UI/ProductImageUploader";
+import AdminRouter from "./AdminRouter";
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/admin/*" element={<AdminRouter />} />
+
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -40,6 +42,10 @@ const AppRouter: React.FC = () => {
         <Route
           path="/reset-password/:token" // Token is passed as a URL parameter
           element={<ResetPasswordPageWrapper />} // Render the ResetPasswordPage
+        />
+            <Route
+          path="/product/upload-images" // Token is passed as a URL parameter
+          element={<ProductImageUploader />} // Render the ResetPasswordPage
         />
 
         {/* Catch-all route for 404 Not Found */}

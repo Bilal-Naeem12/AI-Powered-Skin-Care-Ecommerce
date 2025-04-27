@@ -26,13 +26,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <img
           src={product.images[0]} // Assuming images is an array and the first one is the main image
           alt={product.name}
-          className="w-full h-48 object-cover"
+          className="w-full h-52 object-cover"
         />
 
         {/* Product Details */}
         <div className="p-4">
           <h3 className="text-lg font-bold">{product.name}</h3>
-          <p className="text-gray-600">{product.description}</p>
+          <p className="text-gray-600">
+  {product.description
+    .split(" ")
+    .slice(0, 10)
+    .join(" ")}
+  {product.description.split(" ").length > 10 && "..."}
+</p>
+
           {/* <p className="text-gray-500 text-sm mt-2">{product.variants}</p> Assuming the first variant is being used */}
           <p className="text-gray-900 font-bold mt-2">{import.meta.env.VITE_API_CURRENCY} {product.price}/-</p>
         </div>

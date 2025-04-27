@@ -1,7 +1,9 @@
 const reviewModel = require("../review/reviewModel");
 const Product = require("./productModel");
 const mongoose = require('mongoose');
-
+const productModel = require("./productModel");
+const uuid     = require("crypto").randomUUID;
+const cloud    = require("../../utils/cloudinary");
 // **🔹 Create a New Product**
 exports.createProduct = async (req, res) => {
     try {
@@ -218,9 +220,57 @@ exports.reduceStock = async (productId, quantity) => {
 // **🔹 Get Featured Products**
 exports.getFeaturedProducts = async (req, res) => {
     try {
-        const featuredProducts = await Product.find({ isFeatured: true, isDeleted: false }).limit(10);
+   
+        const featuredProducts = await productModel.find({ isFeatured: true, isDeleted: false }).limit(5);
         res.status(200).json(featuredProducts);
     } catch (error) {
+      console.error(error)
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.uploadImages =    async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product || product.isDeleted)
+      return res.status(404).json({ message: "Product not found." });
+
+    if (!req.files?.length)
+      return res.status(400).json({ message: "No files uploaded." });
+
+    // Correct async stream upload with Promise
+    const uploadedUrls = await Promise.all(
+      req.files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloud.uploader.upload_stream(
+            {
+              folder: "myShop/products",
+              public_id: uuid(),    // generate unique id
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result.secure_url); // ✅ resolve the URL
+            }
+          );
+          stream.end(file.buffer); // push file buffer into upload stream
+        });
+      })
+    );
+
+    // Add URLs to images array
+    product.images.push(...uploadedUrls);
+    product.updatedAt = new Date();
+    await product.save();
+
+    res.status(201).json({
+      message: `${uploadedUrls.length} image(s) uploaded.`,
+      images: uploadedUrls,
+    });
+
+  } catch (e) {
+    console.error("Image upload error:", e);
+    res.status(500).json({ error: "Server error uploading images." });
+  }
+}

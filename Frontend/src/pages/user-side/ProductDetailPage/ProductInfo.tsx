@@ -20,6 +20,7 @@ import useCartStore from "@/store/useCartStore";
 import { Product, ProductVariant } from "@/types/Product";
 import ReviewSection from "@/component/UI/ReviewSection";
 import image from "@/assets/anaylsis.png"
+import PageOverlay from "@/component/UI/PageOverlay";
 const ProductDetailPage: React.FC = () => {
   /* ----- routing + data ----- */
   const { id } = useParams<{ id: string }>();
@@ -54,18 +55,16 @@ const ProductDetailPage: React.FC = () => {
   };
 
   /* ----- loading / error UI ----- */
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <CircularProgress />
-      </div>
-    );
+ 
   if (error || !product)
     return <p className="text-center text-red-600">{error ?? "Not found"}</p>;
 
   /* ----- main render ----- */
   return (
+
     <div className="mx-auto max-w-7xl p-4 md:p-8">
+     <PageOverlay show={loading} />
+
       {/* top section */}
       <div className="grid md:grid-cols-2 gap-10">
         {/* images */}

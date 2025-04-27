@@ -1,33 +1,41 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware"; // Import devtools middleware
-import { User } from "@/types/User"; // Assuming you have a User type defined
-import { toast } from "react-toastify"; // For toast notifications
+import { devtools } from "zustand/middleware";
+import { User } from "@/types/User";
+import { toast } from "react-toastify";
 
 // Define the store state type
 interface UserStore {
-  user: User | null; // The user object or null if no user is logged in
-  isLoggedIn: boolean; // Boolean for the login status
-  setUser: (user: User) => void; // Set user after login
-  logout: () => void; // Logout the user and clear the store
-  checkLogin: () => void; // Check if user is logged in based on localStorage
+  user: User | null;           // Logged in user object
+  isLoggedIn: boolean;         // Whether user is logged in
+  isAdmin: boolean;            // Whether user is admin
+  setUser: (user: User) => void;
+  logout: () => void;
+  checkLogin: () => void;
 }
 
 const useUserStore = create<UserStore>()(
   devtools((set, get) => ({
     user: null,
     isLoggedIn: false,
+    isAdmin: false,
+
     setUser: (user: User) => {
-      set({ user, isLoggedIn: true });
-      localStorage.setItem("user", JSON.stringify(user)); // Save to localStorage
+      const isAdmin = user.role === "admin";
+      set({ user, isLoggedIn: true, isAdmin });
+      localStorage.setItem("user", JSON.stringify(user)); // Save user in localStorage
     },
+
     logout: () => {
-      set({ user: null, isLoggedIn: false });
+      set({ user: null, isLoggedIn: false, isAdmin: false });
       localStorage.removeItem("user"); 
     },
+
     checkLogin: () => {
-      const user = localStorage.getItem("user");
-      if (user) {
-        set({ user: JSON.parse(user), isLoggedIn: true });
+      const userString = localStorage.getItem("user");
+      if (userString) {
+        const user = JSON.parse(userString) as User;
+        const isAdmin = user.role === "admin";
+        set({ user, isLoggedIn: true, isAdmin });
       }
     },
   }))

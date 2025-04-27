@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "./Button";
 import useCartStore from "../../store/useCartStore"; // Import the Zustand store
-import Product from "@/types/Product"; // Import the Product interface
+import {Product} from "@/types/Product"; // Import the Product interface
 
 // Define the prop types for the ProductCard component
 interface ProductCardProps {
@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="flex-1">
         <h4 className="text-lg font-bold">{product.name}</h4>
         <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-        <div className="text-gray-800 font-bold">RS {product.price}/-</div>
+        <div className="text-gray-800 font-bold"> {import.meta.env.VITE_API_CURRENCY} {product.price}/-</div>
         <p className="text-sm text-primary">{product.category}</p> {/* Assuming category is used here */}
         <Button variant="black" className="px-2 py-1 my-5" onClick={handleAddToCart}>
           ADD TO CART

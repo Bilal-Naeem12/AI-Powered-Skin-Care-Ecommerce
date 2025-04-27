@@ -62,7 +62,12 @@ const LoginForm: React.FC = () => {
       // Check if the response was successful
       if (response.status === 200) {
         // Handle success (Redirect user, show success toast)
-        navigate('/'); // Redirect to homepage
+      // Redirect based on role
+  if (response.data.user.role === "admin") {
+    navigate("/admin"); // Redirect admin to dashboard
+  } else {
+    navigate("/"); // Redirect normal users to homepage
+  }
         useUserStore.getState().setUser(response.data.user);
         // Show success notification
         toast.success(response.data.message || "Login successful!");

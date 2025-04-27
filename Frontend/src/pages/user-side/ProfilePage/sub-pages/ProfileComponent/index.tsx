@@ -45,7 +45,7 @@ const ProfileComponent: React.FC = () => {
       {/* Card */}
       <div className="rounded-xl shadow-lg bg-white dark:bg-neutral-800 overflow-hidden">
         {/* Header */}
-        <div className="bg-white dark:bg-[#75abd8] text-white p-6 flex flex-col md:flex-row items-center gap-4">
+        <div className=" bg-[#75abd8] text-white p-6 flex flex-col md:flex-row items-center gap-4">
           <img
             src={profileImage || "/assets/default-profile.png"}
             alt={`${first_name} ${last_name}`}
