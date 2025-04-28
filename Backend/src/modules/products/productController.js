@@ -23,7 +23,10 @@ exports.createProduct = async (req, res) => {
 
 // **🔹 Get All Products with Filtering & Pagination**
 exports.getAllProducts = async (req, res) => {
+
+  
   try {
+
     let { category, brand, minPrice, maxPrice, skinType, availability, sort, page, limit } = req.query;
     let filter = { isDeleted: false };
 
@@ -67,10 +70,38 @@ exports.getProductById = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product || product.isDeleted) return res.status(404).json({ message: "Product not found" });
 
-        res.status(200).json(product);
+
+    res.status(200).json( product );
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};
+// src/modules/products/productController.js
+
+exports.getRelatedProductsById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product || product.isDeleted)
+      return res.status(404).json({ message: "Product not found" });
+
+    // Fetch random 4 products from same category, excluding current product
+    const relatedProducts = await Product.aggregate([
+      {
+        $match: {
+          _id: { $ne: product._id },          // Exclude current product
+          category: product.category,
+          isDeleted: false
+        }
+      },
+      { $sample: { size: 4 } }                // Random 4 related products
+    ]);
+
+    res.status(200).json({ relatedProducts });
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // **🔹 Update a Product**

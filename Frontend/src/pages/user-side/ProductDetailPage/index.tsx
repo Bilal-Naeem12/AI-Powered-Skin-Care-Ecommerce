@@ -5,6 +5,7 @@ import RelatedProducts from "./RelatedProducts";
 import MainLayout from "../../../component/Layout/MainLayout";
 
 const ProductDetailPage = () => {
+  
   return (
     <MainLayout>
     <div className="container mx-auto px-4 py-8">
@@ -12,7 +13,7 @@ const ProductDetailPage = () => {
       <ProductInfo />
 
       {/* Related Products */}
-      <RelatedProducts />
+      <RelatedProducts  />
     </div>
     </MainLayout>
   );
