@@ -12,7 +12,7 @@ async def detect_puffy_eyes(file: UploadFile = File(...)):
     try:
         image = Image.open(io.BytesIO(await file.read()))
         detections = predict_puffy_eyes(image)
-        return JSONResponse(content={"result": detections})
+        return JSONResponse(content={detections})
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

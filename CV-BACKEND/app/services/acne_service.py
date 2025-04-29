@@ -26,12 +26,11 @@ def predict_acne(image: Image.Image):
 
 
     # Dynamically calculate slice size (approx. 1/3rd of the image dimension)
-    slice_height = max(128, original_height // 3)
-    slice_width = max(128, original_width // 3)
-
+    slice_height = 320
+    slice_width = 320
     # Dynamically calculate overlap (e.g., 20% of slice size as ratio to image size)
-    overlap_height_ratio = min(0.1, slice_height / original_height)
-    overlap_width_ratio = min(0.1, slice_width / original_width)
+    overlap_height_ratio = 0.4
+    overlap_width_ratio = 0.4
 
     logging.info(f"[SAHI] Using slice size ({slice_width}x{slice_height}) with overlap ({overlap_width_ratio:.2f}, {overlap_height_ratio:.2f})")
 
