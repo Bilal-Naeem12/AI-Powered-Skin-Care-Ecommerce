@@ -19,6 +19,7 @@ import ForgotPasswordFormPage from "@/pages/user-side/ForgetPassword";
 import ProductImageUploader from "@/component/UI/ProductImageUploader";
 import AdminRouter from "./AdminRouter";
 import useUserStore from "@/store/useUserStore";
+import AcneSeverityTestPage from "@/pages/Test/acneSeverityTest";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,6 +56,8 @@ const AppRouter: React.FC = () => {
         <Route path="/profile-page/*" element={<ProfilePage />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
+        <Route path="/test-acne-severity" element={< AcneSeverityTestPage/>} />
+
         <Route path="/forget-password" element={<ForgotPasswordFormPage />} />
         <Route
           path="/reset-password/:token" // Token is passed as a URL parameter
