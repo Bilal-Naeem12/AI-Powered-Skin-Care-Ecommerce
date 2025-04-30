@@ -51,7 +51,7 @@ const AnalyzePage: React.FC = () => {
 
           {/* Inpainting Card */}
           <Link
-            to="/ai-tools-page/inpainting"
+            to="/ai-tools-page/inpainting "
             className="group block p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition"
           >
             <h3 className="text-xl font-semibold text-gray-800 group-hover:text-green-600 mb-2">

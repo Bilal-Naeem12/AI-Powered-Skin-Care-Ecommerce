@@ -13,7 +13,7 @@ interface SkinAnalysisState {
   loading: boolean;
   error: string | null;
 
-  analyzeSkin: (file: File) => Promise<void>;
+  analyzeSkin: (formData: FormData) => Promise<void>;
   clearResult: () => void;
 
   maxSpots: number;
@@ -32,10 +32,9 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         loading: false,
         error: null,
 
-        analyzeSkin: async (file) => {
+        analyzeSkin: async (formData) => {
           set({ loading: true, error: null });
-          const formData = new FormData();
-          formData.append("file", file);
+          
           try {
             const resp = await axios.post<SkinAnalysisResult>(
               `${import.meta.env.VITE_API_FASTAPI}/skin_analysis/predict`,
