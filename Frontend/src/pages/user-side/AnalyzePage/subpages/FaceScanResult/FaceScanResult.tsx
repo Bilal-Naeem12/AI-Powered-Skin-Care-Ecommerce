@@ -2,6 +2,13 @@
 import React, { useState } from "react";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 import { Classification, Classifications, Detections } from "@/types/SkinAnalysisResult";
+const severityLabelMap: Record<string, string> = {
+  "level -1": "Clear",
+  "level 0": "Mild",
+  "level 1": "Moderate",
+  "level 2": "Severe",
+  "level 3": "Very Severe"
+};
 
 
 
@@ -67,10 +74,11 @@ const FaceScanResult: React.FC = () => {
               key={name}
               className="p-4 bg-gray-50 rounded-lg border shadow-sm"
             >
-              <p className="capitalize text-gray-600">{name.replace("_", " ")}</p>
-              <p className="text-2xl font-bold text-gray-800">
-                {cls.label} <span className="text-gray-500">({cls.score})</span>
-              </p>
+              <p className="capitalize text-gray-600">{name.replace("_", " ")} (score)</p>
+              <p className="text-2xl font-bold text-gray-800 capitalize">
+  {(name === "acne_severity" ? severityLabelMap[cls.label] || cls.label : cls.label)}
+  <span className="text-gray-500"> ({cls.score})</span>
+</p>
             </div>
           ))}
         </div>
@@ -91,12 +99,15 @@ const FaceScanResult: React.FC = () => {
                 <p className="font-medium mb-2 capitalize">
                   {name.replace("_", " ")} scores
                 </p>
-                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                  {Object.entries(cls.all_scores).map(([lbl, sc]) => (
-                    <li key={lbl}>
-                      {lbl}: {sc}
-                    </li>
-                  ))}
+                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1 capitalize">
+                {Object.entries(cls.all_scores).map(([lbl, sc]) => {
+  const mappedLabel = severityLabelMap[lbl] || lbl;
+  return (
+    <li key={lbl}>
+      {mappedLabel}: {sc}
+    </li>
+  );
+})}
                 </ul>
               </div>
             ))}

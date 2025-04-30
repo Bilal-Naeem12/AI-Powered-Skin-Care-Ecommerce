@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "../../../component/UI/Button";
 import { MdArrowForward } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   const heroImage = "/assets/Hero-Section-Image.jpg";
@@ -19,9 +20,9 @@ const HeroSection = () => {
             A combination of nature and advanced technology. Vegan, natural,
             skin-friendly, and rich in effective biotechnological ingredients.
           </p>
-          <Button variant="white" className="mt-10">
+         <Link to={"/ai-tools-page"}>  <Button  variant="white" className="mt-10">
             Discover More <MdArrowForward />
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </section>

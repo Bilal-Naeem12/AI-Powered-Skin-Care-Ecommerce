@@ -23,28 +23,46 @@ exports.createProduct = async (req, res) => {
 
 // **🔹 Get All Products with Filtering & Pagination**
 exports.getAllProducts = async (req, res) => {
-
-  
   try {
+    let {
+      category,
+      brand,
+      minPrice,
+      maxPrice,
+      skinType,
+      availability,
+      sort,
+      page,
+      limit,
+      name, // <-- search term
+    } = req.query;
 
-    let { category, brand, minPrice, maxPrice, skinType, availability, sort, page, limit } = req.query;
     let filter = { isDeleted: false };
 
     if (category) filter.category = category;
     if (brand) filter.brand = brand;
-    if (minPrice || maxPrice)
+
+    if (minPrice || maxPrice) {
       filter.price = {
         ...(minPrice && { $gte: Number(minPrice) }),
         ...(maxPrice && { $lte: Number(maxPrice) }),
       };
+    }
 
     if (availability === "in") filter.isAvailable = true;
     if (availability === "out") filter.isAvailable = false;
 
-    if (skinType) filter.aiSkinSuitability = { $in: skinType.split(",") }; // Support multiple types
+    if (skinType) {
+      filter.aiSkinSuitability = { $in: skinType.split(",") };
+    }
+
+    // 🔍 Search by name (case-insensitive partial match)
+    if (name) {
+      filter.name = { $regex: name, $options: "i" };
+    }
 
     const sortOptions = sort
-      ? { price: sort === "asc" ? 1 : -1 }
+      ? { price: sort === "asc" ? 1 : sort === "desc" ? -1 : -1 }
       : { createdAt: -1 };
 
     const pageNum = parseInt(page) || 1;
@@ -57,12 +75,18 @@ exports.getAllProducts = async (req, res) => {
 
     const totalCount = await Product.countDocuments(filter);
 
-    res.status(200).json({ products, page: pageNum, limit: pageSize, totalCount });
+    res.status(200).json({
+      products,
+      page: pageNum,
+      limit: pageSize,
+      totalCount,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // **🔹 Get Single Product by ID**
 exports.getProductById = async (req, res) => {

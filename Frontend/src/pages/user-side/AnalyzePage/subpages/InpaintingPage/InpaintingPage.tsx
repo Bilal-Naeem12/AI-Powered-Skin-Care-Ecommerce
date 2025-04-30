@@ -65,7 +65,7 @@ const InpaintingPage: React.FC = () => {
               <img
                 src={URL.createObjectURL(file)}
                 alt="Original"
-                className="w-full h-64 object-contain rounded border"
+                className="w-full h-auto object-contain rounded border"
               />
             ) : (
               <p className="text-sm text-gray-500">Upload an image above</p>
@@ -89,7 +89,7 @@ const InpaintingPage: React.FC = () => {
               <img
                 src={`data:image/jpeg;base64,${result.inpainted_image}`}
                 alt="Inpainted"
-                className="w-full h-64 object-contain rounded border"
+                className="w-full h-auto object-contain rounded border"
               />
             ) : (
               <p className="text-sm text-gray-500">

@@ -22,7 +22,7 @@ function FaceScanResultPage() {
     <div className="md:col-span-3">
       <FaceScanResult />
       {/* <PersonalizedRoutine /> */}
-      <SkinHealthGauge/>
+      {/* <SkinHealthGauge/> */}
     </div>
 
     {/* Right Column */}

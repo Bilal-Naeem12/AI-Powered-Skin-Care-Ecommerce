@@ -28,11 +28,11 @@ export default function Home() {
           <StatisticsChart />
         </div>
 
-        <div className="col-span-12 xl:col-span-5">
+        {/* <div className="col-span-12 xl:col-span-5">
           <DemographicCard />
-        </div>
+        </div> */}
 
-        <div className="col-span-12 xl:col-span-7">
+        <div className="col-span-12 xl:col-span-12">
           <RecentOrders />
         </div>
       </div>

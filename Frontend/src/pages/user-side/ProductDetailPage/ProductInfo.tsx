@@ -72,7 +72,7 @@ const ProductDetailPage: React.FC = () => {
           <img
           src={product?.images[mainIdx]?? image}
             alt={product.name}
-            className="rounded-lg w-full h-[480px] object-cover shadow-sm"
+            className="rounded-lg w-full h-[480px] object-contain shadow-sm"
           />
           <div className="flex gap-2 overflow-x-auto">
             {product.images.map((src) => (
@@ -81,7 +81,7 @@ const ProductDetailPage: React.FC = () => {
                 src={src || ""
                 }
                 alt={product.name}
-                className="w-20 h-20 object-cover rounded-sm border cursor-pointer hover:opacity-80"
+                className="w-20 h-20 object-contain rounded-sm border cursor-pointer hover:opacity-80"
                 onClick={() => {
                   
                   const imgs = [...product.images];

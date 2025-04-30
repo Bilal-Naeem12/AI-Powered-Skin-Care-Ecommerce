@@ -23,11 +23,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="border rounded-lg shadow-xs overflow-hidden hover:shadow-md transition">
       <Link to={`/product/${product._id}`}> {/* Product Image */}
-        <img
-          src={product.images[0]} // Assuming images is an array and the first one is the main image
-          alt={product.name}
-          className="w-full h-52 object-contain"
-        />
+      {product.images && (
+  <img
+    src={Array.isArray(product.images) ? product.images[0] : product.images}
+    alt={product.name}
+    className="w-full h-40 object-contain rounded-t-md"
+  />
+)}
 
         {/* Product Details */}
         <div className="p-4">
