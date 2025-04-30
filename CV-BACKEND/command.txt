@@ -1,4 +1,4 @@
-conda activate fastapi-yolo
+conda activate myenv
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 
