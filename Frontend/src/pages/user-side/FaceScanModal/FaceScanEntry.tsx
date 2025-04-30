@@ -8,7 +8,8 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { SkinAnalysisResponse } from "@/types/PredictionResponse";
+import { SkinAnalysisResult } from "@/types/SkinAnalysisResult";
+import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 
 type Step = "choice" | "preview" | "uploading";
 
@@ -25,6 +26,13 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     setDetectedImage,
     setDetections,
   } = useFaceScanStore();
+  const {
+    result,
+    loading,
+    error,
+    analyzeSkin,
+    clearResult,
+  } = useSkinAnalysisStore();
 
   const navigate = useNavigate();
 
@@ -47,13 +55,10 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     fd.append("file", file);
 
     try {
-      const resp = await axios.post<SkinAnalysisResponse>(
-        `${import.meta.env.VITE_API_FASTAPI}/analyze_skin/predict`,
-        fd,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      clearResult();               // reset any prior result
+    await analyzeSkin(file); 
 
-      setDetectedImage(`data:image/jpeg;base64,${resp.data.scanned_image}`);
+      // setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
       // setDetections(resp.data.acne.detections.concat(resp.data.puffy_eyes.detections));
       closeAll();
       navigate("/analyze-page");
@@ -128,7 +133,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
             <img
               src={previewUrl}
               alt="preview"
-              className="w-full h-72 object-fit rounded-md border"
+              className="w-full h-72 object-contain rounded-md border"
             />
 
             <div className="flex gap-3">

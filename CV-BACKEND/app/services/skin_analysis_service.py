@@ -1,67 +1,83 @@
-# app/services/skin_analysis_service.py
+# File: app/services/skin_analysis_service.py
 """
-High-level service that runs both acne- and puffy-eyes detection, draws colour-
-coded boxes on a single copy of the image, and returns a unified result.
+Runs detection & classification and returns nested JSON:
+{
+  detections: { acne: {objects: [...]}, puffy_eyes: {...} },
+  classifications: { acne_severity: {...}, skin_type: {...} },
+  scanned_image: base64JPEG
+}
 """
-import base64
-import io
-import logging
+import base64, io, logging
 from typing import Dict, Any
-
 from PIL import Image, ImageDraw
 
 from app.services.acne_service import predict_acne
 from app.services.puffy_eyes_service import predict_puffy_eyes
+from app.services.acne_severity_service import predict_acne_severity
+from app.services.skin_type_service import predict_skin_type
 
 
 def skin_analysis(image: Image.Image) -> Dict[str, Any]:
-    """
-    Args
-    ----
-    image : PIL.Image
-        Raw image uploaded by the client.
-
-    Returns
-    -------
-    Dict
-        {
-          "acne": <output-of-predict_acne>,
-          "puffy_eyes": <output-of-predict_puffy_eyes>,
-          "scanned_image": "<base64-jpeg>"
-        }
-    """
-
     try:
-        # --- run models on copies so they don’t interfere ----------------
-        acne_result = predict_acne(image.copy())
-        puffy_result = predict_puffy_eyes(image.copy())
+        # run individual services on copies
+        acne_out     = predict_acne(image.copy())
+        puffy_out    = predict_puffy_eyes(image.copy())
+        severity_out = predict_acne_severity(image.copy())
+        type_out     = predict_skin_type(image.copy())
 
-        # --- prepare combined image --------------------------------------
+        # detections grouping
+        detections = {
+            "acne":       {"objects": acne_out.get("detections", [])},
+            "puffy_eyes": {"objects": puffy_out.get("detections", [])},
+        }
+
+        # normalize severity output whether nested or flat
+        if "severity" in severity_out and isinstance(severity_out["severity"], dict):
+            sev = severity_out["severity"]
+        else:
+            sev = severity_out
+
+        # normalize skin_type output whether nested or flat
+        if "label" not in type_out and "skin_type" in type_out:
+            st = type_out["skin_type"]
+        else:
+            st = type_out
+
+        # classifications grouping
+        classifications = {
+            "acne_severity": {
+                "label":      sev.get("label"),
+                "score":      sev.get("score"),
+                "all_scores": sev.get("all_scores", {}),
+            },
+            "skin_type": {
+                "label":      st.get("label"),
+                "score":      st.get("score"),
+                "all_scores": st.get("all_scores", {}),
+            },
+        }
+
+        # annotate combined image
         combined = image.copy().convert("RGB")
         draw = ImageDraw.Draw(combined)
 
-        # acne boxes → RED
-        for det in acne_result["detections"]:
-            x1, y1, x2, y2 = det["bbox"]
-            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+        # draw acne boxes (red)
+        for obj in detections["acne"]["objects"]:
+            x1, y1, x2, y2 = obj.get("bbox", [0,0,0,0])
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=2)
 
-        # puffy-eyes boxes → GREEN
-        for det in puffy_result["detections"]:
-            x1, y1, x2, y2 = det["bbox"]
-            draw.rectangle([x1, y1, x2, y2], outline="green", width=3)
+        # draw puffy-eyes boxes (green)
+        for obj in detections["puffy_eyes"]["objects"]:
+            x1, y1, x2, y2 = obj.get("bbox", [0,0,0,0])
+            draw.rectangle([x1, y1, x2, y2], outline="green", width=2)
 
-        # encode combined image
+        # encode to base64
         buf = io.BytesIO()
         combined.save(buf, format="JPEG")
-        combined_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+        img_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-        return {
-            "acne": acne_result,
-            "puffy_eyes": puffy_result,
-            "scanned_image": combined_b64,
-        }
+        return {"detections": detections, "classifications": classifications, "scanned_image": img_b64}
 
-    except Exception as exc:
+    except Exception as e:
         logging.exception("Skin analysis failed")
-        # Let the router or higher-level handler turn this into an HTTP error
-        raise RuntimeError(f"Skin analysis failed: {exc}") from exc
+        raise RuntimeError(f"Skin analysis failed: {e}") from e

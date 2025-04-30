@@ -20,6 +20,8 @@ import ProductImageUploader from "@/component/UI/ProductImageUploader";
 import AdminRouter from "./AdminRouter";
 import useUserStore from "@/store/useUserStore";
 import AcneSeverityTestPage from "@/pages/Test/acneSeverityTest";
+import SkinTypeTestPage from "@/pages/Test/skinTypeTest";
+import SkinAnalysisTestPage from "@/pages/Test/skinAnalysisTestPage";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -57,6 +59,8 @@ const AppRouter: React.FC = () => {
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
         <Route path="/test-acne-severity" element={< AcneSeverityTestPage/>} />
+        <Route path="/test-skin-type" element={< SkinTypeTestPage/>} />
+        <Route path="/test-skin-analysis" element={< SkinAnalysisTestPage/>} />
 
         <Route path="/forget-password" element={<ForgotPasswordFormPage />} />
         <Route

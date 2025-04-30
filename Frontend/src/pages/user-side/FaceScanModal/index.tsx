@@ -7,7 +7,7 @@ import ResultButtons from "./ResultButtons";
 import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { PredictionResponse, SkinAnalysisResponse } from "@/types/PredictionResponse";
+import {  SkinAnalysisResult } from "@/types/SkinAnalysisResult";
 
 const FaceScanModal: React.FC = () => {
   /* ------------ local state ------------------------------------------------ */
@@ -110,8 +110,8 @@ const FaceScanModal: React.FC = () => {
       close();
       showLoading();
 
-      const resp = await axios.post<SkinAnalysisResponse>(
-        `${import.meta.env.VITE_API_FASTAPI}/analyze_skin/predict`,
+      const resp = await axios.post<SkinAnalysisResult>(
+        `${import.meta.env.VITE_API_FASTAPI}/skin_analysis/predict`,
         fd,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

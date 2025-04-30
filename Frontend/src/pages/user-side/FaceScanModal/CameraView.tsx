@@ -46,7 +46,7 @@ const CameraView: React.FC<Props> = ({
           <img
             src={capturedImage}
             alt="Captured"
-            className="object-cover w-full h-full rounded-lg"
+            className="object-contain w-full h-full rounded-lg"
           />
         ) : (
           <FaceScanner ref={faceRef} />

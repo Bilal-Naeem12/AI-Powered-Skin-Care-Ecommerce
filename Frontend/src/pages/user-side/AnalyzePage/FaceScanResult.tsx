@@ -1,32 +1,108 @@
-import React from "react";
-import useFaceScanStore from "../../../store/useFaceScanStore"; // Adjust path as needed
-import anaylsispic from "@/assets/anaylsis.png"; // Adjust path as needed
+// src/components/FaceScanResult.tsx
+import React, { useState } from "react";
+import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import anaylsispic from "@/assets/anaylsis.png";
+import { Classification, Classifications, Detections } from "@/types/SkinAnalysisResult";
 
-const FaceScanResult = () => {
-  
-const { detectedImage } = useFaceScanStore();
+
+
+const FaceScanResult: React.FC = () => {
+  const { result } = useSkinAnalysisStore();
+  const [showScores, setShowScores] = useState(false);
+
+  if (!result) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        No analysis yet. Upload an image to see results.
+      </div>
+    );
+  }
+
+  const { detections, classifications, scanned_image } = result;
 
   return (
-    <div className="p-4 border rounded-lg shadow-xs">
-      <h3 className="text-lg font-bold mb-4">Face Scan Results</h3>
-    
-  <img
-    src={detectedImage 
-    || anaylsispic
-    }
-    alt="Detected Result"
-    className="w-full rounded-lg mb-4"
-  />
+    <div className="space-y-6 px-6 pb-6 bg-white rounded-xl shadow-lg">
+      <h2 className="text-2xl font-extrabold text-gray-800 text-center">
+        Face Scan Results
+      </h2>
 
-      <div className="flex gap-5 items-center text-sm">
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-red-500 rounded-full"></span>
-          <span>Acne</span>
+      {/* Annotated Image */}
+      <img
+  src={`data:image/jpeg;base64,${scanned_image}`}
+  alt="Annotated result"
+  className="w-fit h-auto object-contain rounded-md border"
+/>
+
+      {/* Detections */}
+      <h3 className="text-xl font-semibold text-gray-800">Detections</h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {(["acne", "puffy_eyes"] as (keyof Detections)[]).map((key) => {
+          const objs = detections[key].objects;
+          const color = key === "acne" ? "red" : "green";
+          const title = key === "acne" ? "Acne Spots" : "Puffy Eyes";
+
+          return (
+            <div
+              key={key}
+              className="p-4 bg-gray-50 rounded-lg border-l-4"
+              style={{ borderColor: color === "red" ? "#ef4444" : "#10b981" }}
+            >
+              <h3 className="text-md font-semibold text-gray-700 mb-2">
+                {title} ({objs.length})
+              </h3>
+            
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Classifications */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-800">Classifications</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {(
+            Object.entries(classifications) as [keyof Classifications, Classifications][]
+          ).map(([name, cls ]) => (
+            <div
+              key={name}
+              className="p-4 bg-gray-50 rounded-lg border shadow-sm"
+            >
+              <p className="capitalize text-gray-600">{name.replace("_", " ")}</p>
+              <p className="text-2xl font-bold text-gray-800">
+                {cls.label} <span className="text-gray-500">({cls.score})</span>
+              </p>
+            </div>
+          ))}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 bg-green-500 rounded-full"></span>
-          <span>Puffy Eyes</span>
-        </div>
+
+        <button
+          onClick={() => setShowScores((v) => !v)}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          {showScores ? "Hide" : "Show"} all confidence scores
+        </button>
+
+        {showScores && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {(
+              Object.entries(classifications) as [keyof Classifications, Classification][]
+            ).map(([name, cls]) => (
+              <div key={name} className="p-3 bg-white rounded-lg border">
+                <p className="font-medium mb-2 capitalize">
+                  {name.replace("_", " ")} scores
+                </p>
+                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                  {Object.entries(cls.all_scores).map(([lbl, sc]) => (
+                    <li key={lbl}>
+                      {lbl}: {sc}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
