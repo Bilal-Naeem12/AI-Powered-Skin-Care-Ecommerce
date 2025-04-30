@@ -9,6 +9,7 @@ import logging
 from PIL import Image
 from app.services.acne_service import predict_acne
 from app.services.puffy_eyes_service import predict_puffy_eyes
+from app.services.acne_severity_service import predict_acne_severity
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -92,6 +93,26 @@ def apply_inpainting(image: Image, mask: np.array, target_size=(512, 512)):
 def process_inpainting(image: Image, model_type: str):
     """Detect acne/puffy eyes, inpaint, and return both labeled and cleaned images at original resolution."""
     try:
+        # 1) Check acne severity before proceeding
+        sev_out = predict_acne_severity(image.copy())["severity"]
+        # parse level number from label e.g. "level 4"
+        lvl = int(sev_out["label"].split()[-1])
+        if lvl >= 3:
+            return {
+                "error": "Acne severity too high for inpainting",
+                "acne_severity": sev_out
+            }
+
+        # 2) Detect regions & get labeled overlay
+        mask, labeled_b64 = detect_regions(image.copy(), model_type)
+        if mask is None:
+            return {"labeled_image": labeled_b64, "inpainted_image": None}
+
+        # 3) Apply inpainting at reduced resolution
+        inpainted_small = apply_inpainting(image, mask)
+        if inpainted_small is None:
+            raise RuntimeError("Inpainting failed, no cleaned image generated.")
+
         logger.info(f"Mode Type: {model_type}")
         # keep original size
         orig_w, orig_h = image.size

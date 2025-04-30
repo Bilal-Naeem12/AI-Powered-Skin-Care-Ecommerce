@@ -61,7 +61,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
       // setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
       // setDetections(resp.data.acne.detections.concat(resp.data.puffy_eyes.detections));
       closeAll();
-      navigate("/ai-tools-page");
+      navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ upload-analysis failed", err);
     } finally {
