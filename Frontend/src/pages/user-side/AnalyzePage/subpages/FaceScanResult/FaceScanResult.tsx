@@ -1,7 +1,6 @@
 // src/components/FaceScanResult.tsx
 import React, { useState } from "react";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
-import anaylsispic from "@/assets/anaylsis.png";
 import { Classification, Classifications, Detections } from "@/types/SkinAnalysisResult";
 
 
@@ -22,7 +21,7 @@ const FaceScanResult: React.FC = () => {
 
   return (
     <div className="space-y-6 px-6 pb-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl font-extrabold text-gray-800 text-center">
+      <h2 className="text-2xl font-extrabold text-gray-800 text-start">
         Face Scan Results
       </h2>
 

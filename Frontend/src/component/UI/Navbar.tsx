@@ -116,9 +116,9 @@ const Navbar: React.FC = () => {
               Shop
             </Typography>
           </Link>
-          <Link to={"/analyze-page"}>
+          <Link to={"/ai-tools-page"}>
             <Typography variant="body1" sx={{ cursor: "pointer", color: "gray", "&:hover": { color: "#FF69B4" } }}>
-              Analyze
+              AI Tools
             </Typography>
           </Link>
           <Link to={"/about-us"}>

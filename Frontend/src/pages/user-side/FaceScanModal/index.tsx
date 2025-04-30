@@ -120,7 +120,7 @@ const FaceScanModal: React.FC = () => {
       // setDetections(result.detections);
       setDetectedImage(`data:image/jpeg;base64,${result.scanned_image}`);
 
-      navigate("/analyze-page");
+      navigate("/ai-tools-page");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);
     } finally {

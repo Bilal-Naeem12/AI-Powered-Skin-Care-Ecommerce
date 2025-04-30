@@ -22,6 +22,8 @@ import useUserStore from "@/store/useUserStore";
 import AcneSeverityTestPage from "@/pages/Test/acneSeverityTest";
 import SkinTypeTestPage from "@/pages/Test/skinTypeTest";
 import SkinAnalysisTestPage from "@/pages/Test/skinAnalysisTestPage";
+import FaceScanResultPage from "@/pages/user-side/AnalyzePage/subpages/FaceScanResult";
+import InpaintingPage from "@/pages/user-side/AnalyzePage/subpages/InpaintingPage/InpaintingPage";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -50,7 +52,10 @@ const AppRouter: React.FC = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/cart-page" element={<CartPage />} />
         <Route path="/checkout-page" element={<CheckoutPage />} />
-        <Route path="/analyze-page" element={<AnalyzePage />} />
+        <Route path="/ai-tools-page" element={<AnalyzePage />} />
+        <Route path="/ai-tools-page/skin-analysis" element={<FaceScanResultPage />} />
+        <Route path="/ai-tools-page/inpainting" element={<InpaintingPage />} />
+
         <Route path="/contact-us-page" element={<ContactUsPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />

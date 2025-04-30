@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <img
           src={product.images[0]} // Assuming images is an array and the first one is the main image
           alt={product.name}
-          className="w-full h-52 object-cover"
+          className="w-full h-52 object-contain"
         />
 
         {/* Product Details */}
