@@ -66,6 +66,13 @@ const FaceScanner = forwardRef((props, ref) => {
     });
 
     faceMesh.onResults((results) => {
+      if (
+                  !canvasRef.current ||
+                !overlayRef.current ||
+                !results.image
+              ) {
+              return;
+          }
       const ctx = canvasRef.current?.getContext("2d");
       const overlay = overlayRef.current?.getContext("2d");
       if (!ctx || !results.image || !overlay) return;
@@ -129,6 +136,7 @@ const FaceScanner = forwardRef((props, ref) => {
         cameraRef.current = null;
         console.log("📷 Camera stopped on unmount");
       }
+      faceMesh.close();  
     };
   }, []);
 

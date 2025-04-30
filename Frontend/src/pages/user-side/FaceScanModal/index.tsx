@@ -8,6 +8,7 @@ import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {  SkinAnalysisResult } from "@/types/SkinAnalysisResult";
+import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 
 const FaceScanModal: React.FC = () => {
   /* ------------ local state ------------------------------------------------ */
@@ -27,7 +28,17 @@ const FaceScanModal: React.FC = () => {
     resetCapturedImage,
     setFaceRef,
     closeModal,
+    showLoading,
+    hideLoading,
   } = useFaceScanStore();
+
+  const {
+    result,
+    loading,
+    error,
+    analyzeSkin,
+    clearResult,
+  } = useSkinAnalysisStore();
 
   const navigate = useNavigate();
 
@@ -85,15 +96,7 @@ const FaceScanModal: React.FC = () => {
 
   /* ------------ analyse ---------------------------------------------------- */
   const handleAnalyze = async () => {
-    const {
-      capturedImage,
-      setDetectedImage,
-      setDetections,
-      showLoading,
-      hideLoading,
-      closeModal: close,
-    } = useFaceScanStore.getState();
-
+    
     if (!capturedImage) return;
 
     // base64 → blob
@@ -109,18 +112,11 @@ const FaceScanModal: React.FC = () => {
     try {
       close();
       showLoading();
-
-      const resp = await axios.post<SkinAnalysisResult>(
-        `${import.meta.env.VITE_API_FASTAPI}/skin_analysis/predict`,
-        fd,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      const result = resp.data;
-      // setDetections(result.detections);
-      setDetectedImage(`data:image/jpeg;base64,${result.scanned_image}`);
-
-      navigate("/ai-tools-page");
+      clearResult();               // reset any prior result
+      await analyzeSkin(fd); 
+  
+     
+      navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);
     } finally {

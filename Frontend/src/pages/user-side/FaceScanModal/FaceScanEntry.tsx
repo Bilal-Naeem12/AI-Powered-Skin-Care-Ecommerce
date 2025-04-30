@@ -56,9 +56,9 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
 
     try {
       clearResult();               // reset any prior result
-    await analyzeSkin(file); 
+    await analyzeSkin(fd); 
 
-      // setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
+      setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
       // setDetections(resp.data.acne.detections.concat(resp.data.puffy_eyes.detections));
       closeAll();
       navigate("/ai-tools-page/skin-analysis");
