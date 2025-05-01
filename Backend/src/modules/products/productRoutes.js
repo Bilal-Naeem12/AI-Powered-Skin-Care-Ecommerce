@@ -28,7 +28,7 @@ router.post("/create", validateCreateProduct, validateResult, createProduct);  /
 router.get("/", getAllProducts);  // Get all products with filters
 
 router.get("/:id", getProductById);  // Get a product by ID
-router.put("/:id", validateUpdateProduct, validateResult, updateProduct);  // Update product
+router.put("/:id", upload.array('images'), updateProduct);  // Update product
 router.delete("/:id", softDeleteProduct);  // Soft delete product
 router.put("/restore/:id", restoreProduct);  // Restore deleted product
 router.get("/:id/related", getRelatedProductsById);  // Get a product by ID

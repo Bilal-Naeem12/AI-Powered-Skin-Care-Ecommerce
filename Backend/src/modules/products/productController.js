@@ -4,6 +4,14 @@ const mongoose = require('mongoose');
 const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
 const cloud    = require("../../utils/cloudinary");
+function extractPublicIdFromUrl(url) {
+  // e.g. url = https://res.cloudinary.com/…/myShop/products/abc123.jpg
+  // we pull out "myShop/products/abc123"
+  const parts = url.split("/");
+  const lastTwo = parts.slice(-2).join("/");    // e.g. "products/abc123.jpg"
+  return lastTwo.replace(/\.[^/.]+$/, "");       // strip extension
+}
+
 // **🔹 Create a New Product**
 exports.createProduct = async (req, res) => {
     try {
@@ -130,20 +138,99 @@ exports.getRelatedProductsById = async (req, res) => {
 
 // **🔹 Update a Product**
 exports.updateProduct = async (req, res) => {
-    try {
-        const updateData = req.body;
-        if (updateData.discount?.percentage) {
-            updateData.discount.discountedPrice = updateData.price - (updateData.price * updateData.discount.percentage) / 100;
-        }
-
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
-        if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
-
-        res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  try {
+    // 1️⃣ Parse the JSON payload (data)
+    let updateData = {};
+    if (typeof req.body.data === "string") {
+      try {
+        updateData = JSON.parse(req.body.data);
+      } catch {
+        console.warn("Could not parse req.body.data:", req.body.data);
+      }
+    } else {
+      updateData = req.body.data || req.body;
     }
+
+    // 2️⃣ Parse removedUrls field
+    let removedUrls = [];
+    if (req.body.removedUrls) {
+      const raw = req.body.removedUrls;
+      if (typeof raw === "string") {
+        try {
+          removedUrls = JSON.parse(raw);
+        } catch {
+          console.warn("Could not parse removedUrls:", raw);
+        }
+      } else if (Array.isArray(raw)) {
+        removedUrls = raw;
+      }
+    }
+    console.log("🗑️ Removing URLs:", removedUrls);
+
+    // 3️⃣ Fetch product
+    const product = await Product.findById(req.params.id);
+    if (!product || product.isDeleted) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    // 4️⃣ Delete images from Cloudinary & DB
+    for (const url of removedUrls) {
+      const publicId = extractPublicIdFromUrl(url);
+      try {
+        await cloud.uploader.destroy(publicId);
+        console.log("Deleted Cloudinary publicId:", publicId);
+      } catch (err) {
+        console.warn("Cloudinary destroy error for", publicId, err);
+      }
+      product.images = product.images.filter((u) => u !== url);
+    }
+
+    // 5️⃣ Upload new files
+    if (req.files && req.files.length) {
+      console.log("📤 Uploading files:", req.files.length);
+      const uploaded = await Promise.all(
+        req.files.map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const stream = cloud.uploader.upload_stream(
+                {
+                  folder: "myShop/products",
+                  public_id: uuid(),
+                  resource_type: "image",
+                },
+                (err, result) => (err ? reject(err) : resolve(result.secure_url))
+              );
+              stream.end(file.buffer);
+            })
+        )
+      );
+      console.log("Uploaded URLs:", uploaded);
+      product.images.push(...uploaded);
+    }
+
+    // 6️⃣ Recompute discountedPrice
+    if (updateData.discount?.percentage != null) {
+      const pct = Number(updateData.discount.percentage);
+      const price = Number(updateData.price);
+      updateData.discount.discountedPrice = +(
+        price -
+        (price * pct) / 100
+      ).toFixed(2);
+    }
+
+    // 7️⃣ Apply other updates & save
+    Object.assign(product, updateData);
+    product.updatedAt = new Date();
+    await product.save();
+
+    console.log("✅ Product updated:", product._id);
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (error) {
+    console.error("❌ updateProduct error:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
+
 
 // **🔹 Soft Delete a Product**
 exports.softDeleteProduct = async (req, res) => {

@@ -14,7 +14,7 @@ import { useDeleteData } from "@/hooks/useDeleteData";
 import DeleteProductModal from "./Modals/DeleteProductModal";
 import EditProductModal from "./Modals/EditProductModal";
 import { toast } from "react-toastify";
-
+import { ProductFormValues } from "./Modals/EditProductModal";
 export default function ManageProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -65,29 +65,45 @@ export default function ManageProducts() {
     setEditOpen(true);
   };
 
-  const handleSave = async (updated: any, images: File[]) => {
-    if (!editProduct) return;
-    try {
-      // Update product fields
-      await axios.put(
-        `${import.meta.env.VITE_API_BACKEND_URL}/products/${editProduct._id}`,
-        updated
-      );
-      // Upload images if provided
-      if (images.length) {
-        const form = new FormData();
-        images.forEach(img => form.append('images', img));
-        await axios.post(
-          `${import.meta.env.VITE_API_BACKEND_URL}/products/${editProduct._id}/images`,
-          form
-        );
+  const handleSave = async (
+    values: ProductFormValues,
+    newFiles: File[],
+    removedUrls: string[]
+  ) => {
+    // 1️⃣ Build multipart payload
+    const form = new FormData();
+    form.append("data", JSON.stringify(values));
+    form.append("removedUrls", JSON.stringify(removedUrls));
+    newFiles.forEach((file) => form.append("images", file));
+  
+    // 2️⃣ DEBUG: log every form key/value
+    console.group("🛠️ handleSave FormData");
+    form.forEach((val, key) => {
+      console.log(key, val);
+      if (key === "removedUrls") {
+        try {
+          console.log("→ parsed removedUrls:", JSON.parse(val as string));
+        } catch {
+          console.warn("→ removedUrls parse failed:", val);
+        }
       }
-      toast.success("Product updated successfully");
-      setReload(r => !r);
+    });
+    console.groupEnd();
+  
+    // 3️⃣ Submit
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_BACKEND_URL}/products/${editProduct?._id}`,
+        form,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      console.log("🚀 update response:", res.data);
+      toast.success("Product updated");
+      setReload((r) => !r);
       setEditOpen(false);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update product");
+    } catch (e) {
+      console.error("❌ handleSave error:", e);
+      toast.error("Update failed");
     }
   };
   return (

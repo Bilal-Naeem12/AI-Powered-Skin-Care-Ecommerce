@@ -4,15 +4,27 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Grid,
+  TextField,
   Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+  Divider,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product, ProductVariant } from "@/types/Product";
-import ProductImageUploader from "@/component/UI/ProductImageUploader";
 
-// Zod schema for product update
+// Zod schema
+export type ProductFormValues = z.infer<typeof schema>;
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().min(10, "Description is required"),
@@ -27,21 +39,22 @@ const schema = z.object({
     "Other",
   ]),
   brand: z.string().min(1, "Brand is required"),
-  price: z.coerce.number().min(0, "Price must be >= 0"),
+  price: z.coerce.number().min(0, "Price must be ≥ 0"),
   discount: z
     .object({
       percentage: z.coerce.number().min(0).max(100),
       discountedPrice: z.coerce.number().min(0),
     })
     .optional(),
-  stock: z.coerce.number().min(0, "Stock must be >= 0"),
+  stock: z.coerce.number().min(0, "Stock must be ≥ 0"),
   isAvailable: z.boolean(),
+  isFeatured: z.boolean().optional(),
   variants: z
     .array(
       z.object({
         size: z.string().min(1, "Size is required"),
-        price: z.coerce.number().min(0, "Price must be >= 0"),
-        stock: z.coerce.number().min(0, "Stock must be >= 0"),
+        price: z.coerce.number().min(0, "Variant price ≥ 0"),
+        stock: z.coerce.number().min(0, "Variant stock ≥ 0"),
       })
     )
     .optional(),
@@ -49,7 +62,6 @@ const schema = z.object({
   aiSkinSuitability: z.array(z.string()).optional(),
   usageInstructions: z.string().optional(),
   precautions: z.string().optional(),
-  isFeatured: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -57,281 +69,398 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSave: (data: FormData, images: File[]) => void;
+  onSave: (data: FormData, newFiles: File[], removedUrls: string[]) => void;
   initialData: Product | null;
 }
 
-const EditProductModal: React.FC<Props> = ({ open, onClose, onSave, initialData }) => {
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: initialData || {},
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "variants",
-  });
-
-  const [images, setImages] = useState<File[]>([]);
-
-  // Populate form when initialData changes
-  useEffect(() => {
-    if (initialData) {
-      // Reset form fields
-      reset({
-        ...initialData,
-        discount: initialData.discount,
-        variants: initialData.variants as ProductVariant[],
-        ingredients: initialData.ingredients,
-        aiSkinSuitability: initialData.aiSkinSuitability,
-        usageInstructions: initialData.usageInstructions,
-        precautions: initialData.precautions,
-        isAvailable: initialData.isAvailable,
-        isFeatured: initialData.isFeatured,
-      } as any);
-    }
-  }, [initialData, reset]);
-
-  // Handle local image files
-  const handleSelectImages: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (!e.target.files) return;
-    setImages(Array.from(e.target.files));
-  };
-
-  const submitHandler = (data: FormData) => {
-    onSave(data, images);
-  };
-
+ function EditProductModal({
+    open, onClose, onSave, initialData
+  }: Props) {
+    const { control, handleSubmit, reset, formState:{errors} } =
+      useForm<FormData>({
+        resolver: zodResolver(schema),
+        defaultValues: initialData || {}
+      });
+    const { fields, append, remove } = useFieldArray({ control, name:"variants" });
+  
+    // image state
+    const [existing, setExisting]   = useState<string[]>([]);
+    const [removed, setRemoved]     = useState<string[]>([]);
+    const [newFiles, setNewFiles]   = useState<File[]>([]);
+  
+    // when initialData changes, reset form and images
+    useEffect(()=>{
+      if(!initialData) return;
+      reset(initialData as any);
+      setExisting(initialData.images || []);
+      setRemoved([]);
+      setNewFiles([]);
+    },[initialData, reset]);
+  
+    const removeExisting = (url:string)=>{
+      setExisting(e=>e.filter(u=>u!==url));
+      setRemoved(r=>[...r,url]);
+    };
+  
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+      // <input type="file" multiple>
+      const files = e.target.files;
+      if(!files) return;
+      setNewFiles(n=>[...n, ...Array.from(files)]);
+    };
+  
+    const removeNewFile = (idx:number)=>{
+      setNewFiles(n=>n.filter((_,i)=>i!==idx));
+    };
+  
+    const submit = (data:FormData)=>{
+      onSave(data, newFiles, removed);
+    };
+  
+  
   return (
-    <Dialog open={open} onClose={onClose} className=" w-full" fullWidth>
-      <DialogTitle>Edit Product Details</DialogTitle>
-      <DialogContent className="space-y-6 w-full">
-        {/* Core Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">Name</label>
-            <input
-              {...register("name")}
-              className="mt-1 block w-full border rounded p-2"
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>Edit Product</DialogTitle>
+      <Divider />
+      <DialogContent>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          {/* Name & Brand */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Name"
+                  fullWidth
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
             />
-            {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Brand</label>
-            <input
-              {...register("brand")}
-              className="mt-1 block w-full border rounded p-2"
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="brand"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Brand"
+                  fullWidth
+                  error={!!errors.brand}
+                  helperText={errors.brand?.message}
+                />
+              )}
             />
-            {errors.brand && <p className="text-red-500 text-xs">{errors.brand.message}</p>}
-          </div>
-        </div>
+          </Grid>
 
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea
-            {...register("description")}
-            rows={3}
-            className="mt-1 block w-full border rounded p-2"
-          />
-          {errors.description && (
-            <p className="text-red-500 text-xs">{errors.description.message}</p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium">Category</label>
-            <select
-              {...register("category")}
-              className="mt-1 block w-full border rounded p-2"
-            >
-              {[
-                "Moisturizer",
-                "Cleanser",
-                "Serum",
-                "Sunscreen",
-                "Exfoliator",
-                "Toner",
-                "Mask",
-                "Other",
-              ].map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            {errors.category && <p className="text-red-500 text-xs">{errors.category.message}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Price</label>
-            <input
-              type="number"
-              step="0.01"
-              {...register("price", { valueAsNumber: true })}
-              className="mt-1 block w-full border rounded p-2"
+          {/* Description */}
+          <Grid item xs={12}>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Description"
+                  multiline
+                  rows={3}
+                  fullWidth
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                />
+              )}
             />
-            {errors.price && <p className="text-red-500 text-xs">{errors.price.message}</p>}
-          </div>
+          </Grid>
 
-          <div>
-            <label className="block text-sm font-medium">Stock</label>
-            <input
-              type="number"
-              {...register("stock", { valueAsNumber: true })}
-              className="mt-1 block w-full border rounded p-2"
+          {/* Category, Price, Stock */}
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth error={!!errors.category}>
+              <InputLabel>Category</InputLabel>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} label="Category">
+                    {schema.shape.category.options.map((opt) => (
+                      <MenuItem key={opt} value={opt}>
+                        {opt}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              <Typography variant="caption" color="error">
+                {errors.category?.message}
+              </Typography>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6} md={2}>
+            <Controller
+              name="price"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Price"
+                  type="number"
+                  fullWidth
+                  error={!!errors.price}
+                  helperText={errors.price?.message}
+                />
+              )}
             />
-            {errors.stock && <p className="text-red-500 text-xs">{errors.stock.message}</p>}
-          </div>
-        </div>
-
-        {/* Discount */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">Discount %</label>
-            <input
-              type="number"
-              {...register("discount.percentage", { valueAsNumber: true })}
-              className="mt-1 block w-full border rounded p-2"
+          </Grid>
+          <Grid item xs={6} md={2}>
+            <Controller
+              name="stock"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Stock"
+                  type="number"
+                  fullWidth
+                  error={!!errors.stock}
+                  helperText={errors.stock?.message}
+                />
+              )}
             />
-            {errors.discount?.percentage && (
-              <p className="text-red-500 text-xs">{errors.discount.percentage.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Discounted Price</label>
-            <input
-              type="number"
-              {...register("discount.discountedPrice", { valueAsNumber: true })}
-              className="mt-1 block w-full border rounded p-2"
+          </Grid>
+
+          {/* Discount */}
+          <Grid item xs={6} md={3}>
+            <Controller
+              name="discount.percentage"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Discount %"
+                  type="number"
+                  fullWidth
+                  error={!!errors.discount?.percentage}
+                  helperText={errors.discount?.percentage?.message}
+                />
+              )}
             />
-            {errors.discount?.discountedPrice && (
-              <p className="text-red-500 text-xs">{errors.discount.discountedPrice.message}</p>
-            )}
-          </div>
-        </div>
+          </Grid>
+          <Grid item xs={6} md={3}>
+            <Controller
+              name="discount.discountedPrice"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Discounted Price"
+                  type="number"
+                  fullWidth
+                  error={!!errors.discount?.discountedPrice}
+                  helperText={errors.discount?.discountedPrice?.message}
+                />
+              )}
+            />
+          </Grid>
 
-        {/* Flags */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center">
-            <input type="checkbox" {...register("isAvailable")} className="mr-2" />
-            <label>Available</label>
-          </div>
-          <div className="flex items-center">
-            <input type="checkbox" {...register("isFeatured")} className="mr-2" />
-            <label>Featured</label>
-          </div>
-        </div>
+          {/* Flags */}
+          <Grid item xs={12} md={4}>
+            <FormControlLabel
+              control={
+                <Controller
+                  name="isAvailable"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} checked={field.value} />}
+                />
+              }
+              label="Available"
+            />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="isFeatured"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} checked={field.value || false} />}
+                />
+              }
+              label="Featured"
+            />
+          </Grid>
 
-        {/* Variants */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-medium">Variants</span>
-            <button
-              type="button"
+          {/* Variants */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1">Variants</Typography>
+            {fields.map((item, idx) => (
+              <Grid container spacing={1} key={item.id} alignItems="center" sx={{ mb: 1 }}>
+                <Grid item xs>
+                  <Controller
+                    name={`variants.${idx}.size`}
+                    control={control}
+                    render={({ field }) => <TextField {...field} placeholder="Size" fullWidth />}
+                  />
+                </Grid>
+                <Grid item xs>
+                  <Controller
+                    name={`variants.${idx}.price`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField {...field} placeholder="Price" type="number" fullWidth />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs>
+                  <Controller
+                    name={`variants.${idx}.stock`}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField {...field} placeholder="Stock" type="number" fullWidth />
+                    )}
+                  />
+                </Grid>
+                <Grid item>
+                  <IconButton color="error" onClick={() => remove(idx)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            ))}
+            <Button
+              variant="text"
               onClick={() => append({ size: "", price: 0, stock: 0 })}
-              className="text-sm text-brand-500 hover:underline"
             >
               + Add Variant
-            </button>
-          </div>
-          {fields.map((field, index) => (
-            <div key={field.id} className="grid grid-cols-3 gap-4 mb-2">
-              <input
-                placeholder="Size"
-                {...register(`variants.${index}.size` as const)}
-                className="border rounded p-2"
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                {...register(`variants.${index}.price`, { valueAsNumber: true })}
-                className="border rounded p-2"
-              />
-              <input
-                type="number"
-                placeholder="Stock"
-                {...register(`variants.${index}.stock`, { valueAsNumber: true })}
-                className="border rounded p-2"
-              />
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                className="text-red-500 text-sm mt-1"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
+            </Button>
+          </Grid>
 
-        {/* Ingredients & Tags */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">Ingredients (comma separated)</label>
-            <input
-  {...register("ingredients", {
-    setValueAs: (val) =>
-      typeof val === "string"
-        ? val.split(",").map((s) => s.trim())
-        : val,
-  })}
-  className="mt-1 block w-full border rounded p-2"
-/>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">AI Skin Tags (comma separated)</label>
-            <input
-  {...register("aiSkinSuitability", {
-    setValueAs: (val) =>
-      typeof val === "string"
-        ? val.split(",").map((s) => s.trim())
-        : val,
-  })}
-  className="mt-1 block w-full border rounded p-2"
-/>
-          </div>
-        </div>
+          {/* Ingredients & AI Tags */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="ingredients"
+              control={control}
+              render={({ field }) => {
+                const val = Array.isArray(field.value) ? field.value.join(", ") : "";
+                return (
+                  <TextField
+                    label="Ingredients (comma separated)"
+                    value={val}
+                    onChange={(e) =>
+                      field.onChange(e.target.value.split(",").map((s) => s.trim()))
+                    }
+                    fullWidth
+                  />
+                );
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="aiSkinSuitability"
+              control={control}
+              render={({ field }) => {
+                const val = Array.isArray(field.value) ? field.value.join(", ") : "";
+                return (
+                  <TextField
+                    label="AI Skin Tags (comma separated)"
+                    value={val}
+                    onChange={(e) =>
+                      field.onChange(e.target.value.split(",").map((s) => s.trim()))
+                    }
+                    fullWidth
+                  />
+                );
+              }}
+            />
+          </Grid>
 
-        {/* Usage & Precautions */}
-        <div>
-          <label className="block text-sm font-medium">Usage Instructions</label>
-          <textarea
-            {...register("usageInstructions")}
-            rows={2}
-            className="mt-1 block w-full border rounded p-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Precautions</label>
-          <textarea
-            {...register("precautions")}
-            rows={2}
-            className="mt-1 block w-full border rounded p-2"
-          />
-        </div>
+          {/* Usage & Precautions */}
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="usageInstructions"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Usage Instructions"
+                  multiline
+                  rows={2}
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Controller
+              name="precautions"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Precautions"
+                  multiline
+                  rows={2}
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
 
-        {/* Image Uploader
-        {initialData?._id && (
-          <ProductImageUploader productId={initialData._id} />
-        )} */}
+          {/* Images */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" gutterBottom>Images</Typography>
+            <Grid container spacing={1}>
+              {existing.map(url=>(
+                <Grid item key={url} sx={{position:"relative"}}>
+                  <img src={url} alt="" style={{width:96,height:96,objectFit:"cover",borderRadius:4}}/>
+                  <IconButton
+                    size="small"
+                    onClick={()=>removeExisting(url)}
+                    sx={{position:"absolute", top:0, right:0}}
+                  >
+                    <DeleteIcon fontSize="small"/>
+                  </IconButton>
+                </Grid>
+              ))}
+              {newFiles.map((file,idx)=>(
+                <Grid item key={idx} sx={{position:"relative"}}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt=""
+                    style={{width:96,height:96,objectFit:"cover",borderRadius:4}}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={()=>removeNewFile(idx)}
+                    sx={{position:"absolute", top:0, right:0}}
+                  >
+                    <DeleteIcon fontSize="small"/>
+                  </IconButton>
+                </Grid>
+              ))}
+            </Grid>
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{mt:1}}
+            >
+              Upload Images
+              <input
+                hidden
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+          </Grid>
+        </Grid>
       </DialogContent>
-      <DialogActions className="px-4 pb-4">
-        <Button onClick={onClose} variant="outlined">
+      <DialogActions sx={{ p: 2 }}>
+        <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button
-          onClick={handleSubmit(submitHandler)}
-          variant="contained"
-          className="bg-brand-500 hover:bg-brand-600"
-        >
-          Save All Changes
+        <Button onClick={handleSubmit(submit)} variant="contained">
+          Save Changes
         </Button>
       </DialogActions>
     </Dialog>
