@@ -116,9 +116,9 @@ export default function ManageProducts() {
     <div className="overflow-hidden rounded-2xl border bg-white p-6 dark:bg-gray-900">
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Manage Products</h2>
-        <button onClick={()=>handleAddClick(  )}>
+        {/* <button onClick={()=>handleAddClick(  )}>
           Add Product
-        </button>
+        </button> */}
         <input
           type="text"
           placeholder="Search by name..."
@@ -214,7 +214,7 @@ export default function ManageProducts() {
         initialData={editProduct}
         onSave={handleSave}
       />
-
+{/* 
 <AddProductModal
   open={addOpen}
   onClose={()=>setAddOpen(false)}
@@ -224,8 +224,7 @@ export default function ManageProducts() {
     files.forEach(f => form.append("images", f))
     await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/products`, form, { headers:{ "Content-Type":"multipart/form-data" } })
     // refresh & close…
-  }}
-/>
+  }}  /> */}
     </div>
   );
 }

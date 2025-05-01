@@ -5,11 +5,12 @@ const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
 const cloud    = require("../../utils/cloudinary");
 function extractPublicIdFromUrl(url) {
-  // e.g. url = https://res.cloudinary.com/…/myShop/products/abc123.jpg
-  // we pull out "myShop/products/abc123"
-  const parts = url.split("/");
-  const lastTwo = parts.slice(-2).join("/");    // e.g. "products/abc123.jpg"
-  return lastTwo.replace(/\.[^/.]+$/, "");       // strip extension
+  const parts = url.split("/upload/")[1].split("/");
+  // parts[0] is "v1611111111", the version – drop it
+  parts.shift();
+  // re-join the rest and strip off the extension
+  const fullPath = parts.join("/");
+  return fullPath.replace(/\.[a-zA-Z0-9]+$/, "");
 }
 
 // **🔹 Create a New Product**
@@ -139,97 +140,83 @@ exports.getRelatedProductsById = async (req, res) => {
 // **🔹 Update a Product**
 exports.updateProduct = async (req, res) => {
   try {
-    // 1️⃣ Parse the JSON payload (data)
+    // ── 1) parse JSON payload ─────────────────────────────
     let updateData = {};
     if (typeof req.body.data === "string") {
-      try {
-        updateData = JSON.parse(req.body.data);
-      } catch {
-        console.warn("Could not parse req.body.data:", req.body.data);
-      }
+      updateData = JSON.parse(req.body.data);
     } else {
       updateData = req.body.data || req.body;
     }
 
-    // 2️⃣ Parse removedUrls field
-    let removedUrls = [];
+    // ── 2) parse removedUrls ───────────────────────────────
+    let removed = [];
     if (req.body.removedUrls) {
-      const raw = req.body.removedUrls;
-      if (typeof raw === "string") {
-        try {
-          removedUrls = JSON.parse(raw);
-        } catch {
-          console.warn("Could not parse removedUrls:", raw);
-        }
-      } else if (Array.isArray(raw)) {
-        removedUrls = raw;
+      if (typeof req.body.removedUrls === "string") {
+        removed = JSON.parse(req.body.removedUrls);
+      } else if (Array.isArray(req.body.removedUrls)) {
+        removed = req.body.removedUrls;
       }
     }
-    console.log("🗑️ Removing URLs:", removedUrls);
+    console.log("Removing URLs:", removed);
 
-    // 3️⃣ Fetch product
+    // ── 3) load product ────────────────────────────────────
     const product = await Product.findById(req.params.id);
     if (!product || product.isDeleted) {
-      return res.status(404).json({ message: "Product not found." });
+      return res.status(404).json({ message: "Not found" });
     }
 
-    // 4️⃣ Delete images from Cloudinary & DB
-    for (const url of removedUrls) {
+    // ── 4) remove flagged URLs from Cloudinary + from product.images ──
+    for (let url of removed) {
       const publicId = extractPublicIdFromUrl(url);
       try {
         await cloud.uploader.destroy(publicId);
-        console.log("Deleted Cloudinary publicId:", publicId);
-      } catch (err) {
-        console.warn("Cloudinary destroy error for", publicId, err);
+      } catch (e) {
+        console.warn("Could not destroy", publicId, e);
       }
-      product.images = product.images.filter((u) => u !== url);
+      product.images = product.images.filter(u => u !== url);
     }
 
-    // 5️⃣ Upload new files
+    if (Array.isArray(updateData.images)) {
+      product.images = updateData.images;
+    }
+
+    // ── 5) upload any new files ────────────────────────────
     if (req.files && req.files.length) {
-      console.log("📤 Uploading files:", req.files.length);
       const uploaded = await Promise.all(
-        req.files.map(
-          (file) =>
-            new Promise((resolve, reject) => {
-              const stream = cloud.uploader.upload_stream(
-                {
-                  folder: "myShop/products",
-                  public_id: uuid(),
-                  resource_type: "image",
-                },
-                (err, result) => (err ? reject(err) : resolve(result.secure_url))
-              );
-              stream.end(file.buffer);
-            })
+        req.files.map(file =>
+          new Promise((resolve, reject) => {
+            const stream = cloud.uploader.upload_stream(
+              { folder: "myShop/products", public_id: uuid() },
+              (err, result) => err ? reject(err) : resolve(result.secure_url)
+            );
+            stream.end(file.buffer);
+          })
         )
       );
-      console.log("Uploaded URLs:", uploaded);
+      console.log("Newly uploaded URLs:", uploaded);
       product.images.push(...uploaded);
     }
 
-    // 6️⃣ Recompute discountedPrice
-    if (updateData.discount?.percentage != null) {
-      const pct = Number(updateData.discount.percentage);
-      const price = Number(updateData.price);
-      updateData.discount.discountedPrice = +(
-        price -
-        (price * pct) / 100
-      ).toFixed(2);
+    // ── 6) respect the client-sent order in updateData.images ───
+  
+
+    // ── 8) recalc discount if needed ──────────────────────
+    if (product.discount?.percentage != null) {
+      const p = product.price;
+      const pct = product.discount.percentage;
+      product.discount.discountedPrice = +(p - (p*pct)/100).toFixed(2);
     }
 
-    // 7️⃣ Apply other updates & save
-    Object.assign(product, updateData);
     product.updatedAt = new Date();
     await product.save();
 
-    console.log("✅ Product updated:", product._id);
-    res.status(200).json({ message: "Product updated successfully", product });
-  } catch (error) {
-    console.error("❌ updateProduct error:", error);
-    res.status(500).json({ error: error.message });
+    res.json({ message: "Updated", product });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 };
+
 
 
 // **🔹 Soft Delete a Product**
