@@ -179,7 +179,7 @@ exports.updateProduct = async (req, res) => {
     if (Array.isArray(updateData.images)) {
       product.images = updateData.images;
     }
-
+    product.set(updateData);
     // ── 5) upload any new files ────────────────────────────
     if (req.files && req.files.length) {
       const uploaded = await Promise.all(
