@@ -11,6 +11,8 @@ export type ProductCategory =
   | "Exfoliator"
   | "Toner"
   | "Mask"
+  | "Gel"
+  | "Cream"
   | "Other";
 
 /** Discount sub-document */

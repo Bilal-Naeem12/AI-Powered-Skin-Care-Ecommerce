@@ -37,6 +37,8 @@ const schema = z.object({
     "Exfoliator",
     "Toner",
     "Mask",
+    "Gel",
+    "Cream",
     "Other",
   ]),
   brand: z.string().min(1, "Brand is required"),
