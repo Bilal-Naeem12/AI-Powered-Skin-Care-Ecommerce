@@ -18,7 +18,7 @@ const Shop: React.FC = () => {
   const [availability, setAvailability] = useState<"in" | "out" | undefined>(undefined);
 
   // Construct URL
-  let url = `${import.meta.env.VITE_API_BACKEND_URL}/products?page=${page}&limit=6`;
+  let url = `${import.meta.env.VITE_API_BACKEND_URL}/products?page=${page}&limit=12`;
   if (sortOption) url += `&sort=${sortOption}`;
   if (selectedCategory) url += `&category=${selectedCategory}`;
   if (selectedBrand) url += `&brand=${selectedBrand}`;

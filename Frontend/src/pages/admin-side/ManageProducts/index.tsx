@@ -116,7 +116,7 @@ export default function ManageProducts() {
     <div className="overflow-hidden rounded-2xl border bg-white p-6 dark:bg-gray-900">
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Manage Products</h2>
-        <button onClick={()=>handleAddClick()}>
+        <button onClick={()=>handleAddClick(  )}>
           Add Product
         </button>
         <input

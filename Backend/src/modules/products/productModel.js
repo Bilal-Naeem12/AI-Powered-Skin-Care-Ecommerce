@@ -14,7 +14,7 @@ const ProductSchema = new mongoose.Schema({
     category: {
         type: String,
         required: [true, "Category is required"],
-        enum: ["Moisturizer", "Cleanser", "Serum", "Sunscreen", "Exfoliator", "Toner", "Mask", "Other"]
+        enum: ["Moisturizer", "Cleanser", "Serum", "Sunscreen", "Exfoliator", "Toner", "Mask","Gel","Cream","Moisturizer", "Other"]
     },
     brand: {
         type: String,
@@ -48,10 +48,19 @@ const ProductSchema = new mongoose.Schema({
         }
     ],
 
+    skinProblems: {
+        type: [String],
+        enum: {
+          values: ["Dark Circles","Acne"],
+          message: "{VALUE} is not a supported skin problem"
+        },
+        default: []
+      },
+
     // **Images**
     images: {
         type: [String], // URLs of product images
-        validate: [arrayLimit, "At least one product image is required"]
+        // validate: [arrayLimit, "At least one product image is required"]
     },
 
     // **Ingredients & Allergen Safety**
