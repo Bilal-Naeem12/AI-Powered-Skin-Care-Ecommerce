@@ -1,4 +1,3 @@
-# File: app/services/inpainting_service.py
 import cv2
 import numpy as np
 import os
@@ -15,39 +14,69 @@ from app.services.acne_severity_service import predict_acne_severity
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Target size for model inputs
+MODEL_INPUT_SIZE = (512, 512)
 
-def detect_regions(image: Image, model_type: str):
-    """Use acne or puffy eyes service to detect regions and generate a mask."""
+def _resize_b64_image(b64_str: str, size: tuple) -> str:
+    """Decode base64 image, resize, and re-encode to base64."""
+    img_data = base64.b64decode(b64_str)
+    buf = io.BytesIO(img_data)
+    img = Image.open(buf)
+    img = img.resize(size, Image.LANCZOS)
+    out_buf = io.BytesIO()
+    img.save(out_buf, format="JPEG")
+    return base64.b64encode(out_buf.getvalue()).decode("utf-8")
+
+
+def detect_regions(image: Image.Image, model_type: str, target_size=MODEL_INPUT_SIZE):
+    """Detect regions on a resized copy, return mask and labeled image at original resolution."""
     try:
-        logger.info(f"🔍 Running detection for {model_type} model")
+        orig_w, orig_h = image.size
+        logger.info(f"🔍 Running detection for {model_type} on resized image {target_size}")
 
+        # Resize for detection
+        resized_img = image.resize(target_size, Image.LANCZOS)
+
+        # Run detection on resized
         if model_type == "acne":
-            result = predict_acne(image)
+            result = predict_acne(resized_img)
         elif model_type == "puffy_eyes":
-            result = predict_puffy_eyes(image)
+            result = predict_puffy_eyes(resized_img)
         else:
             raise ValueError(f"Invalid model type '{model_type}'. Choose 'acne' or 'puffy_eyes'.")
 
         detections = result.get("detections", [])
+        labeled_b64 = result.get("labeled_image")
+
         if not detections:
             logger.warning("⚠️ No detections found!")
-            return None, result.get("labeled_image")
+            # Resize labeled image back if exists
+            if labeled_b64:
+                labeled_b64 = _resize_b64_image(labeled_b64, (orig_w, orig_h))
+            return None, labeled_b64
 
-        # Create mask at original resolution
-        mask = np.zeros((image.height, image.width), dtype=np.uint8)
+        # Create mask at resized resolution
+        mask_small = np.zeros((target_size[1], target_size[0]), dtype=np.uint8)
         for det in detections:
             x1, y1, x2, y2 = [int(coord) for coord in det["bbox"]]
-            mask[y1:y2, x1:x2] = 255
+            mask_small[y1:y2, x1:x2] = 255
 
-        logger.info(f"✅ Mask created with {len(detections)} detections")
-        return mask, result.get("labeled_image")
+        # Scale mask to original resolution
+        mask = cv2.resize(mask_small, (orig_w, orig_h), interpolation=cv2.INTER_NEAREST)
+        logger.info(f"✅ Mask created with {len(detections)} detections (original size)")
+
+        # Resize labeled image back to original resolution
+        if labeled_b64:
+            labeled_b64 = _resize_b64_image(labeled_b64, (orig_w, orig_h))
+
+        return mask, labeled_b64
 
     except Exception as e:
-        logger.error(f"❌ Error in detect_regions: {str(e)}")
+        logger.error(f"❌ Error in detect_regions: {e}")
         return None, None
 
 
-def apply_inpainting(image: Image, mask: np.array, target_size=(512, 512)):
+def apply_inpainting(image: Image.Image, mask: np.ndarray, target_size=MODEL_INPUT_SIZE):
     """Use IOPaint for inpainting detected regions. Returns inpainted PIL image at target_size."""
     try:
         if mask is None:
@@ -66,7 +95,7 @@ def apply_inpainting(image: Image, mask: np.array, target_size=(512, 512)):
         cv2.imwrite("temp_mask.png", resized_mask)
         os.makedirs("temp_output", exist_ok=True)
 
-        # Run IOPaint
+        # Run IOPaint CLI
         subprocess.run([
             "iopaint", "run",
             "--model=lama",
@@ -80,46 +109,47 @@ def apply_inpainting(image: Image, mask: np.array, target_size=(512, 512)):
         if not os.path.exists(out_path):
             raise FileNotFoundError("Inpainted image was not generated.")
 
-        # Load back as PIL
+        # Load back as PIL image
         inpainted = Image.open(out_path).convert("RGB")
         logger.info("✅ Inpainting successful!")
         return inpainted
 
     except Exception as e:
-        logger.error(f"❌ Error in apply_inpainting: {str(e)}")
+        logger.error(f"❌ Error in apply_inpainting: {e}")
         return None
 
 
-def process_inpainting(image: Image, model_type: str):
+def process_inpainting(image: Image.Image, model_type: str):
     """Detect acne/puffy eyes, inpaint, and return both labeled and cleaned images at original resolution."""
     try:
         # 1) Check acne severity before proceeding
         sev_out = predict_acne_severity(image.copy())["severity"]
-        # parse level number from label e.g. "level 4"
         lvl = int(sev_out["label"].split()[-1])
         if lvl >= 3:
             return {
                 "error": "Acne severity too high for inpainting",
                 "acne_severity": sev_out
             }
-        logger.info(f"Mode Type: {model_type}")
-        # keep original size
+        logger.info(f"Model Type: {model_type}")
+
+        # Keep original size
         orig_w, orig_h = image.size
 
-        # detect regions & get labeled overlay (orig size)
+        # Detect regions & get labeled overlay at original resolution
         mask, labeled_b64 = detect_regions(image.copy(), model_type)
+
         if mask is None:
             return {"labeled_image": labeled_b64, "inpainted_image": None}
 
-        # apply inpainting at resized resolution
+        # Apply inpainting at model input resolution
         inpainted_resized = apply_inpainting(image, mask)
         if inpainted_resized is None:
             raise RuntimeError("Inpainting failed, no cleaned image generated.")
 
-        # scale back to original resolution
+        # Scale back to original resolution
         inpainted_original = inpainted_resized.resize((orig_w, orig_h), Image.LANCZOS)
 
-        # encode cleaned image to base64
+        # Encode cleaned image to base64
         buf = io.BytesIO()
         inpainted_original.save(buf, format="JPEG")
         clean_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
@@ -127,5 +157,5 @@ def process_inpainting(image: Image, model_type: str):
         return {"labeled_image": labeled_b64, "inpainted_image": clean_b64}
 
     except Exception as e:
-        logger.error(f"❌ Error in process_inpainting: {str(e)}")
+        logger.error(f"❌ Error in process_inpainting: {e}")
         return {"error": str(e)}

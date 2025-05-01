@@ -5,7 +5,6 @@ import { z, ZodTypeAny } from 'zod';
 
 export function useFormSubmit<T extends ZodTypeAny>(apiUrl: string,reset?:any) {
   const onSubmit = async (values: z.infer<T>) => {
-    console.log("heloo")
     try {
       console.log(values)
       const response = await axios.post(apiUrl, values);

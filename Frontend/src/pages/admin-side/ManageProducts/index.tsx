@@ -15,6 +15,7 @@ import DeleteProductModal from "./Modals/DeleteProductModal";
 import EditProductModal from "./Modals/EditProductModal";
 import { toast } from "react-toastify";
 import { ProductFormValues } from "./Modals/EditProductModal";
+import AddProductModal from "./Modals/AddProductModal";
 export default function ManageProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -26,7 +27,9 @@ export default function ManageProducts() {
   const { onDelete } = useDeleteData();
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [editOpen, setEditOpen] = useState(false);
-
+  const [addProduct, setAddProduct] = useState<Product | null>(null);
+  const [addOpen, setAddOpen] = useState(true);
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -65,6 +68,9 @@ export default function ManageProducts() {
     setEditOpen(true);
   };
 
+  const handleAddClick = () => {
+    setAddOpen(true);
+  };
   const handleSave = async (
     values: ProductFormValues,
     newFiles: File[],
@@ -77,18 +83,18 @@ export default function ManageProducts() {
     newFiles.forEach((file) => form.append("images", file));
   
     // 2️⃣ DEBUG: log every form key/value
-    console.group("🛠️ handleSave FormData");
-    form.forEach((val, key) => {
-      console.log(key, val);
-      if (key === "removedUrls") {
-        try {
-          console.log("→ parsed removedUrls:", JSON.parse(val as string));
-        } catch {
-          console.warn("→ removedUrls parse failed:", val);
-        }
-      }
-    });
-    console.groupEnd();
+    // console.group("🛠️ handleSave FormData");
+    // form.forEach((val, key) => {
+    //   console.log(key, val);
+    //   if (key === "removedUrls") {
+    //     try {
+    //       console.log("→ parsed removedUrls:", JSON.parse(val as string));
+    //     } catch {
+    //       console.warn("→ removedUrls parse failed:", val);
+    //     }
+    //   }
+    // });
+    // console.groupEnd();
   
     // 3️⃣ Submit
     try {
@@ -110,6 +116,9 @@ export default function ManageProducts() {
     <div className="overflow-hidden rounded-2xl border bg-white p-6 dark:bg-gray-900">
       <header className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Manage Products</h2>
+        <button onClick={()=>handleAddClick()}>
+          Add Product
+        </button>
         <input
           type="text"
           placeholder="Search by name..."
@@ -205,6 +214,18 @@ export default function ManageProducts() {
         initialData={editProduct}
         onSave={handleSave}
       />
+
+<AddProductModal
+  open={addOpen}
+  onClose={()=>setAddOpen(false)}
+  onAdd={async (data, files)=>{
+    const form = new FormData()
+    form.append("data", JSON.stringify(data))
+    files.forEach(f => form.append("images", f))
+    await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/products`, form, { headers:{ "Content-Type":"multipart/form-data" } })
+    // refresh & close…
+  }}
+/>
     </div>
   );
 }

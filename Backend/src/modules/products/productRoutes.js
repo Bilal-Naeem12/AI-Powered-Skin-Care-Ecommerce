@@ -24,7 +24,7 @@ const upload = multer({ storage: multer.memoryStorage() }); // in-RAM buffer
 router.get("/featured", getFeaturedProducts);  // Get all featured products
 
 // **🔹 Product Routes**
-router.post("/create", validateCreateProduct, validateResult, createProduct);  // Create product
+router.post("/", createProduct);  // Create product
 router.get("/", getAllProducts);  // Get all products with filters
 
 router.get("/:id", getProductById);  // Get a product by ID

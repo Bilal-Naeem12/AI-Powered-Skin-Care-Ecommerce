@@ -78,7 +78,7 @@ interface Props {
  function EditProductModal({
     open, onClose, onSave, initialData
   }: Props) {
-    const { control, handleSubmit, reset, formState:{errors} } =
+    const { control, handleSubmit, reset, formState:{errors,isSubmitting} } =
       useForm<FormData>({
         resolver: zodResolver(schema),
         defaultValues: initialData || {}
@@ -426,8 +426,8 @@ interface Props {
         <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
-        <Button onClick={handleSubmit(submit)} variant="contained">
-          Save Changes
+        <Button onClick={handleSubmit(submit)} className={`${isSubmitting?"disabled":""}`}  variant="contained">
+        {isSubmitting?"Submitting ..." :  "Save Changes"}
         </Button>
       </DialogActions>
     </Dialog>
