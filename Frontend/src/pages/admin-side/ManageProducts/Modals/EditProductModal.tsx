@@ -23,6 +23,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product, ProductVariant } from "@/types/Product";
 
+import EditProductModalImagesSection from "./EditProductModalImagesSection"
 // Zod schema
 export type ProductFormValues = z.infer<typeof schema>;
 const schema = z.object({
@@ -58,6 +59,7 @@ const schema = z.object({
       })
     )
     .optional(),
+    images:z.array(z.string()),
   ingredients: z.array(z.string()).optional(),
   aiSkinSuitability: z.array(z.string()).optional(),
   usageInstructions: z.string().optional(),
@@ -84,37 +86,42 @@ interface Props {
     const { fields, append, remove } = useFieldArray({ control, name:"variants" });
   
     // image state
-    const [existing, setExisting]   = useState<string[]>([]);
-    const [removed, setRemoved]     = useState<string[]>([]);
+ 
     const [newFiles, setNewFiles]   = useState<File[]>([]);
-  
+    const [existingUrls, setExistingUrls] = useState<string[]>([])
+    const [removedUrls, setRemovedUrls] = useState<string[]>([])
+    
     // when initialData changes, reset form and images
     useEffect(()=>{
       if(!initialData) return;
       reset(initialData as any);
-      setExisting(initialData.images || []);
-      setRemoved([]);
+      setExistingUrls(initialData.images || []);
+      setRemovedUrls([]);
       setNewFiles([]);
     },[initialData, reset]);
   
-    const removeExisting = (url:string)=>{
-      setExisting(e=>e.filter(u=>u!==url));
-      setRemoved(r=>[...r,url]);
-    };
-  
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
-      // <input type="file" multiple>
-      const files = e.target.files;
-      if(!files) return;
-      setNewFiles(n=>[...n, ...Array.from(files)]);
-    };
-  
-    const removeNewFile = (idx:number)=>{
-      setNewFiles(n=>n.filter((_,i)=>i!==idx));
-    };
-  
+    useEffect(() => {
+        if (!initialData) return
+        reset(initialData as any)
+        setExistingUrls(initialData.images || [])
+        setRemovedUrls([])
+        setNewFiles([])
+      }, [initialData, reset])
+    
+      function handleMarkRemoved(url: string) {
+        setExistingUrls(urls =>
+          // only remove if it wasn't already removed
+          urls.includes(url) ? urls.filter(u => u !== url) : urls
+        );
+        setRemovedUrls(prev =>
+          // only add once
+          prev.includes(url) ? prev : [...prev, url]
+        );
+      }
+   
+   
     const submit = (data:FormData)=>{
-      onSave(data, newFiles, removed);
+      onSave({...data,images:existingUrls} , newFiles, removedUrls);
     };
   
   
@@ -406,53 +413,13 @@ interface Props {
           </Grid>
 
           {/* Images */}
-          <Grid item xs={12}>
-            <Typography variant="subtitle1" gutterBottom>Images</Typography>
-            <Grid container spacing={1}>
-              {existing.map(url=>(
-                <Grid item key={url} sx={{position:"relative"}}>
-                  <img src={url} alt="" style={{width:96,height:96,objectFit:"cover",borderRadius:4}}/>
-                  <IconButton
-                    size="small"
-                    onClick={()=>removeExisting(url)}
-                    sx={{position:"absolute", top:0, right:0}}
-                  >
-                    <DeleteIcon fontSize="small"/>
-                  </IconButton>
-                </Grid>
-              ))}
-              {newFiles.map((file,idx)=>(
-                <Grid item key={idx} sx={{position:"relative"}}>
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt=""
-                    style={{width:96,height:96,objectFit:"cover",borderRadius:4}}
-                  />
-                  <IconButton
-                    size="small"
-                    onClick={()=>removeNewFile(idx)}
-                    sx={{position:"absolute", top:0, right:0}}
-                  >
-                    <DeleteIcon fontSize="small"/>
-                  </IconButton>
-                </Grid>
-              ))}
-            </Grid>
-            <Button
-              variant="outlined"
-              component="label"
-              sx={{mt:1}}
-            >
-              Upload Images
-              <input
-                hidden
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-          </Grid>
+          <EditProductModalImagesSection
+  existingUrls={existingUrls}
+  newFiles={newFiles}
+  setNewFiles={setNewFiles}
+  setExistingUrls={setExistingUrls}      // add this!
+  onMarkRemoved={handleMarkRemoved}
+/>
         </Grid>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>

@@ -97,7 +97,7 @@ export default function ManageProducts() {
         form,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      console.log("🚀 update response:", res.data);
+      // console.log("🚀 update response:", res.data);
       toast.success("Product updated");
       setReload((r) => !r);
       setEditOpen(false);
