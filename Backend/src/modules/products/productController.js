@@ -437,11 +437,11 @@ const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
     if (puffyEyesDetected) skinProblemTags.push("Dark Circles");
     console.log(skinProblemTags)
     const excludedIngredients = user.allergenPreferences || [];
-    
+    console.log(excludedIngredients)
     const filters = {
       isDeleted: false,
       isAvailable: true,
-      ingredients: { $not: { $elemMatch: { $in: excludedIngredients } } },
+  
       $or: [
         // 1. Products explicitly matching the skin problem
         { skinProblem: { $in: skinProblemTags } },
@@ -456,8 +456,21 @@ const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
       ]
     };
     // Get all matching products
-    const allProducts = await Product.find(filters);
+    const potentialProducts = await Product.find(filters);
 
+
+
+
+   
+const allergenRegexes = excludedIngredients.map((allergen) =>
+  new RegExp(allergen, "i") // i = case-insensitive
+);
+
+const allProducts = potentialProducts.filter((product) =>
+  !product.ingredients?.some((ing) =>
+    allergenRegexes.some((regex) => regex.test(ing))
+  )
+);
     // Organize by routine step
     const routine = {
       step1: {

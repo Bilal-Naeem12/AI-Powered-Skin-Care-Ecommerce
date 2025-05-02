@@ -12,6 +12,7 @@ import {
   Menu,
   MenuItem,
   InputBase,
+  Badge,
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -30,6 +31,7 @@ import { Login, LoginOutlined } from "@mui/icons-material";
 import useFetchAuthData from "@/hooks/useFetchAuthData";
 import { User } from "@/types/User";
 import useUserStore from "@/store/useUserStore";
+import useCartStore from "@/store/useCartStore";
 
 // Type for Menu Anchor Element
 type AnchorElType = null | HTMLElement;
@@ -42,6 +44,7 @@ const Navbar: React.FC = () => {
   const searchRef = useRef<HTMLInputElement>(null); // Ref to track the input field
   const {isAdmin} = useUserStore()
   // Toggle Drawer
+  const totalItems = useCartStore((state) => state.getTotalItems());
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (event.type === "keydown" ) {
       return;
@@ -172,10 +175,29 @@ const Navbar: React.FC = () => {
           )}
           
           <Link to="/cart-page">
-            <IconButton>
-              <ShoppingCartOutlinedIcon sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }} />
-            </IconButton>
-          </Link>
+      <IconButton>
+        <Badge
+          badgeContent={totalItems}
+          color="secondary"
+          overlap="circular"
+          showZero={false}
+          sx={{
+            "& .MuiBadge-badge": {
+              fontSize: "0.75rem",
+              fontWeight: "bold",
+              backgroundColor: "#FF69B4",
+              color: "white",
+              top: 0,
+              right: 0,
+            },
+          }}
+        >
+          <ShoppingCartOutlinedIcon
+            sx={{ color: "gray", "&:hover": { color: "#FF69B4" } }}
+          />
+        </Badge>
+      </IconButton>
+    </Link>
           <IconButton onClick={handleMenuOpen}>
             <Person2Outlined sx={{ fontSize: "1.7rem", color: "gray", "&:hover": { color: "#FF69B4" } }} />
           </IconButton>
@@ -203,13 +225,15 @@ const Navbar: React.FC = () => {
                   </Typography>
                 </MenuItem>
               </Link>
-                 <MenuItem onClick={handleMenuClose}>
-                <SettingsIcon sx={{ marginRight: 2 }} />
+              <Link to={"/profile-page/account-settings"}>    <MenuItem onClick={handleMenuClose}>
+ 
+              <SettingsIcon sx={{ marginRight: 2 }} />
                 <Typography fontSize={14} color="gray">
                   Settings
                 </Typography>
+          
               </MenuItem>
-              
+              </Link>  
                 <MenuItem  onClick={() => {
   handleLogout();
   handleMenuClose(); // Close the menu dropdown if needed

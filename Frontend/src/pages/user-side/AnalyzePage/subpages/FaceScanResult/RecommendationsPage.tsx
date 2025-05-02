@@ -49,7 +49,7 @@ const RecommendationsPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
-        Your Personalized Routine
+        Your Personalized Products
       </h2>
 
       <div className="bg-gray-50 rounded-md shadow-sm px-4 py-4 mb-8 border border-gray-200">

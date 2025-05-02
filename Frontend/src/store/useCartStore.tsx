@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware"; // Import devtools middleware
-import Product from "@/types/Product"; // Import the Product type from the correct path
+import {Product} from "@/types/Product"; // Import the Product type from the correct path
 import { CartItem } from "@/types/CartItem";
 import { toast } from 'react-toastify'; // Make sure you have this import
 
