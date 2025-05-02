@@ -9,7 +9,8 @@ const {
     addReview,
     getProductReviews,
     reduceStock,
-    getFeaturedProducts,uploadImages,getRelatedProductsById
+    getFeaturedProducts,uploadImages,getRelatedProductsById,
+    recommendProducts
 } = require("./productController");
 
 const multer   = require("multer");
@@ -26,6 +27,7 @@ router.get("/featured", getFeaturedProducts);  // Get all featured products
 // **🔹 Product Routes**
 router.post("/", createProduct);  // Create product
 router.get("/", getAllProducts);  // Get all products with filters
+router.post("/recommend", authMiddleware, recommendProducts);
 
 router.get("/:id", getProductById);  // Get a product by ID
 router.put("/:id", upload.array('images'), updateProduct);  // Update product

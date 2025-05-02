@@ -101,7 +101,7 @@ export interface Product {
   /* e-commerce metadata */
   soldCount?: number;
   isFeatured?: boolean;
-
+  skinProblem?:string
   /* soft deletion & timestamps */
   isDeleted?: boolean;
   createdAt?: string;   // ISO strings for JSON

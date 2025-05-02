@@ -9,7 +9,7 @@ MODEL_PATH = "app/models/puffy_eyes_model.pt"
 model = YOLO(MODEL_PATH)
 
 # Set confidence threshold
-CONFIDENCE_THRESHOLD = 0.2
+CONFIDENCE_THRESHOLD = 0.1
 MAX_SHOW = 2  # only show up to 2 detections
 
 def predict_puffy_eyes(image: Image):

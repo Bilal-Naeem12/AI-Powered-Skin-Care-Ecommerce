@@ -12,6 +12,7 @@ function extractPublicIdFromUrl(url) {
   const fullPath = parts.join("/");
   return fullPath.replace(/\.[a-zA-Z0-9]+$/, "");
 }
+const User = require("../users/userModel")
 
 // **🔹 Create a New Product**
 exports.createProduct = async (req, res) => {
@@ -418,3 +419,78 @@ exports.uploadImages =    async (req, res) => {
     res.status(500).json({ error: "Server error uploading images." });
   }
 }
+
+exports.recommendProducts = async (req, res) => {
+  try {
+    const { detections, classifications } = req.body;
+  
+    const userId = req.user.id; // requires authMiddleware
+    const user = await User.findById(userId);
+
+    const rawSkinType = classifications?.skin_type?.label || "";
+const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
+    const acneDetected = detections?.acne?.bbox?.length > 0;
+    const puffyEyesDetected = detections?.puffy_eyes?.bbox?.length > 0;
+    const skinProblemTags = [];
+
+    if (acneDetected) skinProblemTags.push("Acne");
+    if (puffyEyesDetected) skinProblemTags.push("Dark Circles");
+    console.log(skinProblemTags)
+    const excludedIngredients = user.allergenPreferences || [];
+    
+    const filters = {
+      isDeleted: false,
+      isAvailable: true,
+      ingredients: { $not: { $elemMatch: { $in: excludedIngredients } } },
+      $or: [
+        // 1. Products explicitly matching the skin problem
+        { skinProblem: { $in: skinProblemTags } },
+    
+        // 2. Products matching skin type BUT with no specific skinProblem set
+        {
+          $and: [
+            { aiSkinSuitability: { $in: [skinType] } },
+            { $or: [{ skinProblem: null }, { skinProblem: "" }] }
+          ]
+        }
+      ]
+    };
+    // Get all matching products
+    const allProducts = await Product.find(filters);
+
+    // Organize by routine step
+    const routine = {
+      step1: {
+        title: "Cleanse Your Skin",
+        category: "Cleanser",
+        products: allProducts.filter(p => p.category === "Cleanser"),
+      },
+      step2: {
+        title: "Apply Treatment Gel",
+        category: "Gel",
+        products: allProducts.filter(p => p.category === "Gel"),
+      },
+      step3: {
+        title: "Use a Targeted Serum",
+        category: "Serum",
+        products: allProducts.filter(p => p.category === "Serum"),
+      },
+      step4: {
+        title: "Seal with Cream",
+        category: "Cream",
+        products: allProducts.filter(p => p.category === "Cream"),
+      },
+    };
+    
+
+    res.json({
+      success: true,
+      skinType,
+      problemsDetected: skinProblemTags,
+      routine,
+    });
+  } catch (err) {
+    console.error("🔴 Recommendation error:", err);
+    res.status(500).json({ success: false, message: "Recommendation failed" });
+  }
+};
