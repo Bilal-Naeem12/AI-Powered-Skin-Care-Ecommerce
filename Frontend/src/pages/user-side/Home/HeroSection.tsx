@@ -17,9 +17,10 @@ const HeroSection = () => {
             Highly Effective Skin Care
           </h1>
           <p className="my-4 text-lg md:text-xl">
-            A combination of nature and advanced technology. Vegan, natural,
-            skin-friendly, and rich in effective biotechnological ingredients.
+          Discover your best skin with AI-driven analysis that identifies key concerns and recommends tailored solutions — all designed to enhance your natural glow.
+       
           </p>
+          <p className=" italic my-4">   We analyze. You glow. Simple, intelligent skincare starts here.</p>
          <Link to={"/ai-tools-page"}>  <Button  variant="white" className="mt-10">
             Discover More <MdArrowForward />
           </Button></Link>

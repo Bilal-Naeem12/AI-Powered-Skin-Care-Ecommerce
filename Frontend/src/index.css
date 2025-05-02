@@ -317,6 +317,20 @@ layer(base);
 
 }
 
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 80s linear infinite;
+  }
+}
 .tableCheckbox:checked ~ span span {
   @apply opacity-100;
 }

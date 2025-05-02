@@ -122,15 +122,7 @@ def apply_inpainting(image: Image.Image, mask: np.ndarray, target_size=MODEL_INP
 def process_inpainting(image: Image.Image, model_type: str):
     """Detect acne/puffy eyes, inpaint, and return both labeled and cleaned images at original resolution."""
     try:
-        # 1) Check acne severity before proceeding
-        sev_out = predict_acne_severity(image.copy())["severity"]
-        lvl = int(sev_out["label"].split()[-1])
-        if lvl >= 3:
-            return {
-                "error": "Acne severity too high for inpainting",
-                "acne_severity": sev_out
-            }
-        logger.info(f"Model Type: {model_type}")
+       
 
         # Keep original size
         orig_w, orig_h = image.size

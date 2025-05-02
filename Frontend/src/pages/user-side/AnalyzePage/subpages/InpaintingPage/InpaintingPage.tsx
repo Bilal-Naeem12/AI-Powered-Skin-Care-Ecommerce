@@ -54,7 +54,7 @@ const InpaintingPage: React.FC = () => {
             {loading ? "Processing…" : "Start Inpainting"}
           </button>
         </div>
-        {error && <p className="text-red-500">{error}</p>}
+        {/* {error && <p className="text-red-500">{error}</p>} */}
 
         {/* Side-by-side cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -4,6 +4,7 @@ import ProductCard from "@/component/UI/ProductCard";
 import { MdArrowForward } from "react-icons/md";
 import { Product } from "@/types/Product";
 import useFetchData from "@/hooks/useFetchData";
+import { Link } from "react-router-dom";
 
 const ProductShowcase: React.FC = () => {
   const { data: products, loading, error } = useFetchData<Product[]>(
@@ -47,9 +48,9 @@ const ProductShowcase: React.FC = () => {
 
         {/* All Products Button */}
         <div className="mt-12 text-center">
-          <Button variant="secondary" className="flex items-center justify-center">
+       <Link to={"/shop"}>   <Button variant="secondary" className="flex items-center justify-center">
             All Products <MdArrowForward />
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </section>

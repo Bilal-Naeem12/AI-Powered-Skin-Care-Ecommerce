@@ -115,7 +115,7 @@ const FaceScanModal: React.FC = () => {
       clearResult();               // reset any prior result
       await analyzeSkin(fd); 
   
-     
+      closeModal()
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);

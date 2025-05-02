@@ -45,7 +45,7 @@ const useInpaintingStore = create<InpaintingState>()(
           } catch (e: any) {
             const msg = e.response?.data?.detail || e.message || "Unknown error";
             set({ error: msg });
-            toast.error("Inpainting failed: " + "Severity too high");
+            toast.error("Inpainting failed: " + msg);
           } finally {
             set({ loading: false });
           }

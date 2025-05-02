@@ -8,7 +8,17 @@ export default {
   important: true,
   
   theme: {
-    extend: {colors: {
+    extend: {
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      colors: {
       primary: "#FF69B4", // Add primary color
 	  secondary: "black", // Add primary color
     },

@@ -16,16 +16,7 @@ async def remove_skin_issues(file: UploadFile = File(...), model_type: str = For
 
         # Load image
         image = Image.open(io.BytesIO(await file.read()))
- # Check severity if acne
-        if model_type == "acne":
-            severity_result = predict_acne_severity(image.copy())["severity"]
-            severity_level = int(severity_result["label"].split()[-1])  # e.g., "level 4" → 4
 
-            if severity_level >= 3:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Acne severity too high for inpainting"
-                )
         # Process inpainting
         result = process_inpainting(image, model_type)
 
