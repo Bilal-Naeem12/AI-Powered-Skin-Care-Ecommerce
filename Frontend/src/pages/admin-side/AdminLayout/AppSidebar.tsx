@@ -36,8 +36,8 @@ const navItems: NavItem[] = [
     name: "Users",
     subItems: [
       { name: "User Management", path: "/admin/users" },
-      { name: "Sessions", path: "/admin/sessions" },
-      { name: "Addresses", path: "/admin/addresses" },
+      { name: "Deleted Users",  path: "/admin/users/deleted" },
+      { name: "My Profile",     path: "/admin/profile" },
     ],
   },
   {

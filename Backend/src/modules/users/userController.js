@@ -4,6 +4,17 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendEmail } = require('../../services/emailService');
 
+
+// controllers/userController.js  (inside exports.getAllUsers)
+const buildUserQuery = ({ name, deleted }) => {
+  const q = { isDeleted: deleted === "true" };     // ⭐ NEW
+  if (name) {
+    const regex = new RegExp(name.trim(), "i");
+    q.$or = [{ first_name: regex }, { last_name: regex }, { email: regex }];
+  }
+  return q;
+};
+
 // **🔹 User Registration**
 exports.registerUser = async (req, res) => {
     try {
@@ -254,30 +265,61 @@ exports.softDeleteAccount = async (req, res) => {
 
 // **🔹 Get All Users (Admin)**
 exports.getAllUsers = async (req, res) => {
-    try {
-        const users = await User.find().select("-password -refreshToken");
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const { page = 1, limit = 15, name,deleted } = req.query;
+
+    const query = buildUserQuery({ name,deleted });
+
+    const totalCount = await User.countDocuments(query);
+    const users = await User.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .select("-password -refreshToken");
+
+    res.json({ users, page: Number(page), limit: Number(limit), totalCount });
+  } catch (err) {
+    console.error("getAllUsers:", err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // **🔹 Change User Role (Admin)**
 exports.changeUserRole = async (req, res) => {
-    try {
-        const { userId, newRole } = req.body;
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ message: "User not found" });
+  try {
+    const { userId, newRole } = req.body;
+    if (!["user", "admin"].includes(newRole))
+      return res.status(400).json({ message: "Invalid role." });
 
-        user.role = newRole;
-        await user.save();
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-        res.status(200).json({ message: "User role updated." });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    user.role = newRole;
+    await user.save();
+
+    res.json({ message: "User role updated." });
+  } catch (err) {
+    console.error("changeUserRole:", err);
+    res.status(500).json({ error: err.message });
+  }
 };
+exports.adminSoftDeleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const user = await User.findById(id);
+    if (!user || user.isDeleted)
+      return res.status(404).json({ message: "User not found." });
+
+    user.isDeleted = true;
+    await user.save();
+
+    res.json({ message: "User deleted." });
+  } catch (err) {
+    console.error("adminSoftDeleteUser:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 exports.logoutUser = (req, res) => {
     res.clearCookie("accessToken", {
@@ -290,4 +332,16 @@ exports.logoutUser = (req, res) => {
     });
   
     return res.status(200).json({ message: "Logout successful." });
+  };
+
+
+  exports.restoreSoftDeletedUser = async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user || !user.isDeleted) {
+      return res.status(404).json({ message: "User not found or not deleted." });
+    }
+    user.isDeleted = false;
+    await user.save();
+    res.json({ message: "User restored." });
   };

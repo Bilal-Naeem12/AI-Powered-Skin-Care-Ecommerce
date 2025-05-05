@@ -319,7 +319,7 @@ layer(base);
 
 @layer utilities {
   @keyframes marquee {
-    0% {
+    100% {
       transform: translateX(100%);
     }
     100% {

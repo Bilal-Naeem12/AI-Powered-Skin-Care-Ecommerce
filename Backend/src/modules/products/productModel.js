@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema, model, Types } = require("mongoose");
 
 const ProductSchema = new mongoose.Schema({
     name: {
@@ -11,11 +12,12 @@ const ProductSchema = new mongoose.Schema({
         required: [true, "Product description is required"],
         trim: true
     },
+ 
     category: {
-        type: String,
-        required: [true, "Category is required"],
-        enum: ["Moisturizer", "Cleanser", "Serum", "Sunscreen", "Exfoliator", "Toner", "Mask","Gel","Cream","Moisturizer", "Other"]
-    },
+         type : Types.ObjectId,
+            ref  : "Category",
+           index: true,          // for fast lookups
+          },
     brand: {
         type: String,
         required: [true, "Brand is required"]
@@ -48,7 +50,7 @@ const ProductSchema = new mongoose.Schema({
         }
     ],
 
-    skinProblems: {
+    skinProblem: {
         type: [String],
         enum: {
           values: ["Dark Circles","Acne"],
@@ -132,5 +134,11 @@ ProductSchema.virtual("reviews", {
     localField: "_id",
     foreignField: "productId"
   });
-  
+  ProductSchema.pre(/^find/, function (next) {
+    this.populate({
+      path: "category",
+      select: "name imageUrl",
+    });
+    next();
+  });
 module.exports = mongoose.model("Product", ProductSchema);

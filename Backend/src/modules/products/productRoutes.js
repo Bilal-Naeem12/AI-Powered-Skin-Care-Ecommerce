@@ -14,7 +14,6 @@ const {
 } = require("./productController");
 
 const multer   = require("multer");
-const { validateCreateProduct, validateUpdateProduct, validateResult } = require("./productValidator");
 const { authMiddleware } = require("../../middleware/authMiddleware");
 const validateReviewMiddleware = require("../../middleware/validateReviewMiddleware");
 

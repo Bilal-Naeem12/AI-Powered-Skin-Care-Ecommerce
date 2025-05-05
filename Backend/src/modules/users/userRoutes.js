@@ -12,6 +12,8 @@ const {
   getAllUsers,
   changeUserRole,
   logoutUser,
+  adminSoftDeleteUser,
+  restoreSoftDeletedUser
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -39,4 +41,18 @@ router.delete("/profile", authMiddleware, softDeleteAccount);  // Soft Delete Ac
 router.get("/admin/all-users", authMiddleware, roleMiddleware("admin"), getAllUsers);  // Get All Users
 router.put("/admin/change-role", authMiddleware, roleMiddleware("admin"), changeUserRole);  // Change User Role
 router.post("/logout", logoutUser);  // Logout
+router.delete(
+  "/admin/soft-delete/:id",       // matches DELETE call from UI
+  authMiddleware,
+  roleMiddleware("admin"),
+  adminSoftDeleteUser
+);
+
+router.put(
+  "/admin/restore/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  restoreSoftDeletedUser
+);
+
 module.exports = router;

@@ -20,7 +20,7 @@ const reviewFlagRoutes = require("../modules/reviewFlag/reviewFlagRoutes");
 const shippingRoutes = require("../modules/shipping/shippingRoutes");
 const systemConfigRoutes = require("../modules/systemConfig/systemConfigRoutes");
 const userRoutes = require("../modules/users/userRoutes");
-
+const categoryRoutes = require("../modules/category/categoryRoutes")
 const router = express.Router();
 
 // **Main Router** - Combine all module routes under /api/{moduleName}
@@ -30,6 +30,8 @@ router.use("/admins", adminRoutes);
 router.use("/audit-logs", auditLogRoutes);
 router.use("/banners", bannerRoutes);
 router.use("/coupons", couponRoutes);
+router.use("/categories",categoryRoutes );
+
 router.use("/discounts", discountRoutes);
 router.use("/gift-cards", giftCardRoutes);
 router.use("/invoices", invoiceRoutes);
