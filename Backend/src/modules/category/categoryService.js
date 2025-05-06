@@ -1,14 +1,26 @@
 const Category = require("./categoryModel");
 
-exports.create = (payload) => Category.create(payload);
+/**
+ * Generic “list” with pagination
+ * @param {Object} filter  mongoose filter object
+ * @param {Number} page
+ * @param {Number} limit
+ */
+exports.find = (filter = {}, page = 1, limit = 15) => {
+  const skip = (page - 1) * limit;
+  return Category.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();                 // → plain JS objects
+};
 
-exports.getAll = (filter = {}) =>
-  Category.find({ isDeleted: false, ...filter }).sort({ name: 1 });
+exports.count = (filter = {}) => Category.countDocuments(filter);
 
-exports.getById = (id) => Category.findOne({ _id: id, isDeleted: false });
-
-exports.update = (id, data) =>
-  Category.findByIdAndUpdate(id, data, { new: true, runValidators: true });
-
+/* optional helpers used elsewhere ---------------------------------- */
+exports.getById = (id) => Category.findById(id);
+exports.create  = (payload) => Category.create(payload);
+exports.update  = (id, payload) =>
+  Category.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 exports.softDelete = (id) =>
   Category.findByIdAndUpdate(id, { isDeleted: true }, { new: true });

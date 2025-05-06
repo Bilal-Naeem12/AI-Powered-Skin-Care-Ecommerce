@@ -9,9 +9,37 @@ exports.createCategory = async (req, res) => {
   }
 };
 
-exports.getCategories = async (req, res) => {
-  const cats = await service.getAll();
-  res.json(cats);
+exports.getCategories = async (req, res, next) => {
+  try {
+    /* ---------- query parsing -------------------------------------- */
+    const hasPaging = "page" in req.query || "limit" in req.query;
+
+    const page  = Math.max(parseInt(req.query.page  || "1", 10), 1);
+    const limit = Math.max(parseInt(req.query.limit || "15", 10), 1);
+
+    const search = (req.query.name || "").trim();
+
+    /* ---------- filter --------------------------------------------- */
+    const filter = {};
+    if (search) filter.name = new RegExp(search, "i");
+
+    /* ---------- fetch ---------------------------------------------- */
+    if (!hasPaging) {
+      // 👉  NO pagination → return plain array
+      const categories = await service.find(filter);   // full list
+      return res.json(categories);
+    }
+
+    // 👉  WITH pagination
+    const [categories, totalCount] = await Promise.all([
+      service.find(filter, page, limit),               // paginated
+      service.count(filter),
+    ]);
+
+    res.json({ categories, totalCount, page, limit });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.getCategory = async (req, res) => {
