@@ -156,7 +156,7 @@ export default function ManageProducts() {
                         <span>{prod.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{prod.category}</TableCell>
+                    <TableCell>{prod.category.name}</TableCell>
                     <TableCell>{prod.brand}</TableCell>
                     <TableCell>${prod.discount?.discountedPrice ?? prod.price.toFixed(2)}</TableCell>
                     <TableCell>

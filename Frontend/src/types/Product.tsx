@@ -1,34 +1,23 @@
 /* --------------------------------------------------------- */
-/*  Product model — keep in one place and re-use everywhere  */
+/*  Product model (front‑end) – after category refactor      */
 /* --------------------------------------------------------- */
 
-/** Allowed categories (keeps typo-free code) */
-export type ProductCategory =
-  | "Moisturizer"
-  | "Cleanser"
-  | "Serum"
-  | "Sunscreen"
-  | "Exfoliator"
-  | "Toner"
-  | "Mask"
-  | "Gel"
-  | "Cream"
-  | "Other";
+import type { Category } from "./Category";   // new Category shape
 
-/** Discount sub-document */
+/** Discount sub‑doc */
 export interface Discount {
-  percentage: number;      // e.g. 10 → 10 %
-  discountedPrice?: number; // optional, shown only when > 0
+  percentage: number;
+  discountedPrice?: number;
 }
 
 /** Variant (size / package) */
 export interface ProductVariant {
-  size: string;            // "50 ml", "100 g", …
+  size: string;
   price: number;
   stock: number;
 }
 
-/** ★ buckets = histogram */
+/** ★ histogram */
 export interface RatingBuckets {
   1: number;
   2: number;
@@ -37,7 +26,7 @@ export interface RatingBuckets {
   5: number;
 }
 
-/** Review (if you .populate("reviews")) */
+/** Review (when populated) */
 export interface ProductReview {
   _id: string;
   userId: {
@@ -65,14 +54,24 @@ export interface ProductReview {
   isDeleted?: boolean;
 }
 
-/** Full product object returned by your API */
+/* ------------------------------------------------------------------ */
+/*  Product – API response shape                                      */
+/* ------------------------------------------------------------------ */
+
 export interface Product {
   _id: string;
 
   /* core data */
   name: string;
   description: string;
-  category: ProductCategory;
+
+  /**
+   * Category reference
+   * – If not populated: ObjectId as string
+   * – If populated   : Category object
+   */
+  category: Category;
+
   brand: string;
 
   /* pricing & stock */
@@ -89,6 +88,9 @@ export interface Product {
   ingredients?: string[];
   aiSkinSuitability?: string[];
 
+  /* AI‑detected skin problems (array after rename) */
+  skinProblem?: string[];
+
   /* ratings */
   averageRating?: number;
   reviewCount?: number;
@@ -98,16 +100,29 @@ export interface Product {
   usageInstructions?: string;
   precautions?: string;
 
-  /* e-commerce metadata */
+  /* e‑commerce metadata */
   soldCount?: number;
   isFeatured?: boolean;
-  skinProblem?:string
-  /* soft deletion & timestamps */
+
+  /* soft delete & timestamps */
   isDeleted?: boolean;
-  createdAt?: string;   // ISO strings for JSON
+  createdAt?: string;
   updatedAt?: string;
- 
+
   /* virtual populate (optional) */
   reviews?: ProductReview[];
 }
 
+/* ------------------------------------------------------------------ */
+/*  Payloads – helper types for forms                                 */
+/* ------------------------------------------------------------------ */
+
+export type ProductCreatePayload = Omit<
+  Product,
+  "_id" | "averageRating" | "reviewCount" | "ratingBuckets" | "soldCount" |
+  "isDeleted" | "createdAt" | "updatedAt" | "reviews"
+>;
+
+export type ProductUpdatePayload = Partial<ProductCreatePayload> & {
+  _id: string;
+};

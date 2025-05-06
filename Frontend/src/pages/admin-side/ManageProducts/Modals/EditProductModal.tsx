@@ -24,22 +24,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Product, ProductVariant } from "@/types/Product";
 
 import EditProductModalImagesSection from "./EditProductModalImagesSection"
+import CategorySelect from "@/component/comboboxes/CategorySelect";
 // Zod schema
+
+
+const normalise = (data: Props["initialData"]): Partial<FormData> | {} => {
+  if (!data) return {};
+  return {
+    ...data,
+    category: typeof data.category === "object" ? data.category._id : data.category ?? "",
+  };
+};
 export type ProductFormValues = z.infer<typeof schema>;
+
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().min(10, "Description is required"),
-  category: z.enum([
-    "Moisturizer",
-    "Cleanser",
-    "Serum",
-    "Sunscreen",
-    "Exfoliator",
-    "Toner",
-    "Mask",
-    "Gel",
-    "Cream",
-    "Other",
+  category:  z.union([
+   z.string(),
+    z.object({
+      _id : z.string(),
+      name: z.string(),
+      imageUrl: z.string().url().optional().nullable(),
+    }),
   ]),
   brand: z.string().min(1, "Brand is required"),
   price: z.coerce.number().min(0, "Price must be ≥ 0"),
@@ -83,7 +90,7 @@ interface Props {
     const { control, handleSubmit, reset, formState:{errors,isSubmitting} } =
       useForm<FormData>({
         resolver: zodResolver(schema),
-        defaultValues: initialData || {}
+        defaultValues: normalise(initialData) || {}
       });
     const { fields, append, remove } = useFieldArray({ control, name:"variants" });
   
@@ -123,7 +130,8 @@ interface Props {
    
    
     const submit = (data:FormData)=>{
-      onSave({...data,images:existingUrls} , newFiles, removedUrls);
+ 
+      onSave({...data,category : data.category ,images:existingUrls} , newFiles, removedUrls);
     };
   
   
@@ -188,19 +196,8 @@ interface Props {
           <Grid item xs={12} md={4}>
             <FormControl fullWidth error={!!errors.category}>
               <InputLabel>Category</InputLabel>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field} label="Category">
-                    {schema.shape.category.options.map((opt) => (
-                      <MenuItem key={opt} value={opt}>
-                        {opt}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
-              />
+              <CategorySelect control={control} name="category" />
+
               <Typography variant="caption" color="error">
                 {errors.category?.message}
               </Typography>
