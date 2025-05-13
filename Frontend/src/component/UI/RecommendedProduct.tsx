@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="mt-2 text-sm font-medium text-black">
           {import.meta.env.VITE_API_CURRENCY_Symbol} {product.price.toFixed(2)}
         </div>
-        <p className="text-xs text-primary uppercase mt-1">{product.category}</p>
+        <p className="text-xs text-primary uppercase mt-1">{product.category.name}</p>
         <Button variant="black" className="mt-3 px-3 py-1 text-sm" onClick={() => addProductToCart(product)}>
           Add to Cart
         </Button>

@@ -229,7 +229,7 @@ const ProductDetailPage: React.FC = () => {
             <h2 className="text-xl font-semibold mb-2">Product details</h2>
             <ul className="list-disc pl-6 space-y-1 text-gray-700">
               <li>Brand: {product.brand}</li>
-              <li>Category: {product.category}</li>
+              <li>Category: {product.category.name}</li>
               <li>Sold: {product.soldCount ?? 0} pcs.</li>
               <li>Created: {new Date(product.createdAt!).toLocaleDateString()}</li>
             </ul>

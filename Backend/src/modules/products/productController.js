@@ -114,21 +114,23 @@ exports.getProductById = async (req, res) => {
 
 exports.getRelatedProductsById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).lean();
 
     if (!product || product.isDeleted)
       return res.status(404).json({ message: "Product not found" });
 
-    // Fetch random 4 products from same category, excluding current product
+    // Ensure category is in ObjectId format
+    const categoryId = new mongoose.Types.ObjectId(product.category._id || product.category);
+
     const relatedProducts = await Product.aggregate([
       {
         $match: {
-          _id: { $ne: product._id },          // Exclude current product
-          category: product.category,
+          _id: { $ne: product._id },
+          category: categoryId,
           isDeleted: false
         }
       },
-      { $sample: { size: 4 } }                // Random 4 related products
+      { $sample: { size: 4 } }
     ]);
 
     res.status(200).json({ relatedProducts });
@@ -137,7 +139,6 @@ exports.getRelatedProductsById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 // **🔹 Update a Product**
 exports.updateProduct = async (req, res) => {
   try {
@@ -471,27 +472,28 @@ const allProducts = potentialProducts.filter((product) =>
     allergenRegexes.some((regex) => regex.test(ing))
   )
 );
+
     // Organize by routine step
     const routine = {
       step1: {
         title: "Cleanse Your Skin",
         category: "Cleanser",
-        products: allProducts.filter(p => p.category === "Cleanser"),
+        products: allProducts.filter(p => p.category.name.name === "Cleanser"),
       },
       step2: {
         title: "Apply Treatment Gel",
         category: "Gel",
-        products: allProducts.filter(p => p.category === "Gel"),
+        products: allProducts.filter(p => p.category.name === "Gel"),
       },
       step3: {
         title: "Use a Targeted Serum",
         category: "Serum",
-        products: allProducts.filter(p => p.category === "Serum"),
+        products: allProducts.filter(p => p.category.name === "Serum"),
       },
       step4: {
         title: "Seal with Cream",
         category: "Cream",
-        products: allProducts.filter(p => p.category === "Cream"),
+        products: allProducts.filter(p => p.category.name === "Cream"),
       },
     };
     
