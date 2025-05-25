@@ -6,7 +6,7 @@ exports.createOrder = async (req, res, next) => {
   try {
     const order = await orderService.placeOrder({
       userId: req.user._id,
-      items: req.body.items,
+      items: req.body.cartItems,
       paymentPayload: req.body.payment, // { paymentGateway, transactionId, ... }
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
@@ -27,7 +27,12 @@ exports.updateOrderStatus = async (req, res, next) => {
     });
     res.json(order);
   } catch (err) {
-    next(err);
+ const msg = err.message || "";
+    if (msg.includes("not found")) {
+      return res.status(404).json({ message: msg });
+    }
+    console.error("Order status update error:", err);
+    res.status(500).json({ message: "Failed to update order status." });
   }
 };
 
@@ -40,7 +45,21 @@ exports.cancelOrder = async (req, res, next) => {
     });
     res.json(order);
   } catch (err) {
-    next(err);
+     const msg = err.message || "";
+
+    if (msg.includes("not found")) {
+      return res.status(404).json({ status: "error", message: msg });
+    }
+
+    if (msg.includes("already cancelled")) {
+      return res.status(409).json({ status: "error", message: msg });
+    }
+
+    // fallback error
+    console.error("Unexpected error:", err);
+    return res.status(500).json({ status: "error", message: "Something went wrong. Try again later." });
+  
+  
   }
 };
 

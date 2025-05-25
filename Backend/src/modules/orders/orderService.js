@@ -89,7 +89,10 @@ exports.updateOrderStatus = async ({ orderId, shippingStatus,orderStatus, update
   const order = await Order.findById(orderId);
   if (!order || !order.shippingId) throw new Error("Order/Shipping not found");
 
-  const shipping = await Shipping.findById(order.shippingId);
+
+  const shipping = await Shipping.findOne({ orderId });
+  if (!shipping) throw new Error("Shipping info not found for this order");
+
   shipping.shippingStatus = shippingStatus;
    order.statusHistory.push({
       what: orderStatus,

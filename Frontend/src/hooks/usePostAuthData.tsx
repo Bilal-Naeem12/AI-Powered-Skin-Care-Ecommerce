@@ -12,7 +12,7 @@ const usePostAuthData = <T, R>() => {
   const { logout } = useUserStore();
   const navigate = useNavigate();
 
-  const postData = async (url: string, payload: R) => {
+  const postData = async (url: string, payload: R  ,successMessage?: string ) => {
     setLoading(true);
     setError(null);
 
@@ -22,6 +22,7 @@ const usePostAuthData = <T, R>() => {
     try {
       const response = await tryRequest();
       setData(response.data);
+         toast.success(successMessage || "Submission successful!");
     } catch (err: any) {
       if (err.response?.status === 403) {
         try {

@@ -1,49 +1,107 @@
-import React from "react";
-import { Box, Typography, Button, Radio, RadioGroup, FormControlLabel } from "@mui/material";
-import { CartItem } from "@/types/CartItem"; // Import CartItem type
-import useCartStore from "../../../store/useCartStore"; // Import Zustand store
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  RadioProps,
+} from "@mui/material";
+import useCartStore from "../../../store/useCartStore";
+import useOrderStore from "../../../store/useOrderStore";
+import { CartItem } from "@/types/CartItem";
+import { PaymentGateway } from "@/types/Payment";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
+import usePostAuthData from "@/hooks/usePostAuthData";
+import { useNavigate } from "react-router-dom";
+import PageOverlay from "@/component/UI/PageOverlay";
+
+const paymentGateways: PaymentGateway[] = [
+  "Stripe",
+  "PayPal",
+  "Google Pay",
+  "Apple Pay",
+  "Bank Transfer",
+  "Cash on Delivery",
+];
 
 const OrderSummary: React.FC = () => {
-  // Access cart items and subtotal from Zustand store
-  const { cart, getTotalPrice } = useCartStore();
+  const { cart, getTotalPrice ,clearCart} = useCartStore();
+  const { order } = useOrderStore();
+  const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>("Cash on Delivery");
+const { postData, loading } = usePostAuthData<any, any>(); // adjust types if needed
+const [showOverlay, setShowOverlay] = useState(false);
 
-  // Calculate subtotal dynamically based on cart items from Zustand store
+const navigate = useNavigate();
+
+
+
+  const handlePlaceOrder =async () => {
+    const payload = {
+      userId: (order.userId as any)?._id || order.userId,
+      cartItems: cart.map((item: CartItem) => ({
+        productId: typeof item.product === "string" ? item.product : item.product._id,
+        quantity: item.quantity,
+        selectedVariant: item.selectedVariant,
+        priceAtTimeOfOrder: typeof item.product === "string" ? 0 : item.product.price,
+      })),
+      paymentMethod: selectedGateway,
+      payment: {
+        paymentGateway: selectedGateway,
+      },
+      shippingAddress: order.shipping?.shippingAddress,
+    };
+   setShowOverlay(true); // Show loading screen
+
+  await postData(
+    `${import.meta.env.VITE_API_BACKEND_URL}/orders`,
+    payload,
+    "🎉 Order placed successfully!"
+  );
+
+  // Post success cleanup and redirect after overlay hides (2s)
+  setTimeout(() => {
+    clearCart();
+    navigate("/");
+  }, 2000);
+  };
+
   const subtotal = getTotalPrice().toFixed(2);
 
   return (
     <Box className="bg-white rounded-lg shadow-md p-6">
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        className="mb-6"
-        style={{ fontFamily: "Poppins, sans-serif" }}
-      >
+      <Typography variant="h5" fontWeight="bold" className="mb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
         Order Summary
       </Typography>
 
-      {/* Cart Items */}
       {cart.map((item: CartItem) => (
         <Box
-          key={item.product._id}
+          key={typeof item.product === "string" ? item.product : item.product._id}
           className="flex justify-between items-center mb-4"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
           <Box className="flex items-center gap-4">
-            <img
-              src={item.product.images[0]}
-              alt={item.product.name}
-              className="w-16 h-16 rounded-lg object-cover"
-            />
-            <Typography>{item.product.name}</Typography>
+            {typeof item.product !== "string" && (
+              <>
+                <img
+                  src={item.product.images[0]}
+                  alt={item.product.name}
+                  className="w-16 h-16 rounded-lg object-cover"
+                />
+                <Typography>{item.product.name}</Typography>
+              </>
+            )}
           </Box>
-          <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price * item.quantity}/-</Typography>
+          <Typography>
+            {import.meta.env.VITE_API_CURRENCY_Symbol}  {typeof item.product === "string" ? 0 : item.product.price * item.quantity}/-
+          </Typography>
         </Box>
       ))}
 
-      {/* Subtotal and Shipping */}
       <Box className="flex justify-between items-center py-3 border-t">
         <Typography>Subtotal:</Typography>
-        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-</Typography>
+        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol} {subtotal}/-</Typography>
       </Box>
       <Box className="flex justify-between items-center py-3 border-b">
         <Typography>Shipping:</Typography>
@@ -51,10 +109,9 @@ const OrderSummary: React.FC = () => {
       </Box>
       <Box className="flex justify-between items-center py-3">
         <Typography>Total:</Typography>
-        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-</Typography>
+        <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol} {subtotal}/-</Typography>
       </Box>
 
-      {/* Payment Options */}
       <Typography
         variant="h6"
         fontWeight="bold"
@@ -63,25 +120,27 @@ const OrderSummary: React.FC = () => {
       >
         Payment Method
       </Typography>
-      <RadioGroup defaultValue="cash" className="mt-4">
-        <FormControlLabel
-          value="bank"
-          control={<Radio />}
-          label="Bank"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        />
-        <FormControlLabel
-          value="cash"
-          control={<Radio />}
-          label="Cash on delivery"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        />
+      <RadioGroup
+        value={selectedGateway}
+        onChange={(e) => setSelectedGateway(e.target.value as PaymentGateway)}
+        className="mt-4"
+      >
+        {paymentGateways.map((gateway) => (
+          <FormControlLabel
+            key={gateway}
+            value={gateway}
+            control={<Radio />}
+            label={gateway}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          />
+        ))}
       </RadioGroup>
 
-      {/* Place Order Button */}
       <Button
         variant="contained"
         fullWidth
+         disabled={loading}
+        onClick={handlePlaceOrder}
         style={{
           backgroundColor: "black",
           color: "white",
@@ -90,8 +149,11 @@ const OrderSummary: React.FC = () => {
           fontFamily: "Poppins, sans-serif",
         }}
       >
-        Place Order
+  {loading ? "Placing Order..." : "Place Order"}
       </Button>
+
+      <PageOverlay show={showOverlay} />
+
     </Box>
   );
 };
