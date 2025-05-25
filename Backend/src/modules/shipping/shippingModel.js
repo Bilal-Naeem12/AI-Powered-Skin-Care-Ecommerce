@@ -34,7 +34,7 @@ const ShippingSchema = new mongoose.Schema({
     },
     shippingStatus: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"],
+        enum: ["Pending", "Processing", "Out for Delivery", "Delivered", "Cancelled","Returned"],
         default: "Pending"
     },
     deliveryConfirmation: {
@@ -75,16 +75,16 @@ ShippingSchema.pre("save", function (next) {
 });
 
 /* ── Sync shippingStatus with Order.deliveryStatus ─────────────── */
-ShippingSchema.pre("save", async function (next) {
-  if (this.isModified("shippingStatus")) {
-    await mongoose.model("Order").findByIdAndUpdate(
-      this.orderId,
-      { deliveryStatus: this.shippingStatus },
-      { new: false }
-    );
-  }
-  this.updatedAt = Date.now();
-  next();
-});
+// ShippingSchema.pre("save", async function (next) {
+//   if (this.isModified("shippingStatus")) {
+//     await mongoose.model("Order").findByIdAndUpdate(
+//       this.orderId,
+//       { deliveryStatus: this.shippingStatus },
+//       { new: false }
+//     );
+//   }
+//   this.updatedAt = Date.now();
+//   next();
+// });
 
 module.exports = mongoose.model("Shipping", ShippingSchema);

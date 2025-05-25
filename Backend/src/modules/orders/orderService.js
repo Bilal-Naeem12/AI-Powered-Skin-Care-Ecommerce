@@ -85,14 +85,19 @@ exports.placeOrder = async ({
  * 2.  UPDATE ORDER STATUS  (admin)                               *
  *    – delegates to Shipping so single source of truth           *
  * ────────────────────────────────────────────────────────────── */
-exports.updateOrderStatus = async ({ orderId, shippingStatus, updatedBy }) => {
+exports.updateOrderStatus = async ({ orderId, shippingStatus,orderStatus, updatedBy }) => {
   const order = await Order.findById(orderId);
   if (!order || !order.shippingId) throw new Error("Order/Shipping not found");
 
   const shipping = await Shipping.findById(order.shippingId);
-  shipping.status = shippingStatus;
+  shipping.shippingStatus = shippingStatus;
+   order.statusHistory.push({
+      what: orderStatus,
+      at: new Date(),
+      by:updatedBy
+    });
   await shipping.save();
-
+await order.save()
   // statusHistory is pushed by Shipping hook
   return await Order.withAll(orderId);
 };
@@ -101,48 +106,55 @@ exports.updateOrderStatus = async ({ orderId, shippingStatus, updatedBy }) => {
  * 3.  CANCEL ORDER                                              *
  * ────────────────────────────────────────────────────────────── */
 exports.cancelOrder = async ({ orderId, reason, updatedBy }) => {
-  const order = await Order.withAll(orderId);
-  if (!order) throw new Error("Order not found");
-  if (order.statusHistory.some(e => e.what === "Cancelled"))
-    throw new Error("Order already cancelled");
-
   const session = await mongoose.startSession();
   session.startTransaction();
+
   try {
-    /* restore stock */
+    const order = await Order.findById(orderId).session(session);
+    if (!order) throw new Error("Order not found");
+    if (order.isCancelled) throw new Error("Order already cancelled");
+
+    // restore stock
     for (const it of order.items) {
       const prod = await Product.findById(it.productId).session(session);
       await prod.adjustStock(-it.quantity, it.selectedVariant, session);
     }
 
-    /* mark Shipping + Payment */
-    if (order.shippingId) {
-      const sh = await Shipping.findById(order.shippingId).session(session);
-      sh.status = "Cancelled";
-      await sh.save({ session });
-    }
-    if (order.paymentId) {
-      const pay = await Payment.findById(order.paymentId).session(session);
-      pay.status = "Refunded";
-      await pay.save({ session });
+    // cancel shipping
+    const shipping = await Shipping.findOne({ orderId }).session(session);
+    if (shipping) {
+      shipping.shippingStatus = "Cancelled";
+      await shipping.save({ session });
     }
 
-    /* add cancel event */
-    await Order.findByIdAndUpdate(
-      orderId,
-      { $push: { statusHistory: { what: "Cancelled", at: new Date(), by: updatedBy } } },
-      { session }
-    );
+    // refund payment
+    const payment = await Payment.findOne({ orderId }).session(session);
+    if (payment) {
+      payment.paymentStatus = "Refunded";
+      await payment.save({ session });
+    }
+
+    // mark order cancelled
+    order.isCancelled   = true;
+    order.refundReason  = reason;
+    order.statusHistory.push({
+      what: "Cancelled",
+      at: new Date(),
+      by:updatedBy
+    });
+    await order.save({ session });
 
     await session.commitTransaction();
     session.endSession();
-    return await Order.withAll(orderId);
-  } catch (e) {
+
+    return await Order.withAll(orderId);   // populated order
+  } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    throw e;
+    throw err;
   }
 };
+
 
 /* ────────────────────────────────────────────────────────────── *
  * 4.  SIMPLE FETCHERS                                           *

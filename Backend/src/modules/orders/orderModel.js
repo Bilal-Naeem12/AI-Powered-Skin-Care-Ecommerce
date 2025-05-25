@@ -13,7 +13,8 @@ const ItemSchema = new Schema(
 );
 
 const OrderSchema = new Schema(
-  {
+  { 
+   isCancelled:{type: Boolean},
     orderNumber: { type: String, unique: true, required: true, index: true },
     userId:      { type: Types.ObjectId, ref: "User", required: true, index: true },
 
@@ -26,14 +27,17 @@ const OrderSchema = new Schema(
     invoiceId:   { type: Types.ObjectId, ref: "Invoice"  },
 
     /* order-level timeline (optional but useful) */
-    statusHistory: [
-      {
-        what:       { type: String, enum: ["Created","Paid","Shipped","Delivered","Cancelled"] },
-        at:         { type: Date,   default: Date.now },
-        by:         { type: Types.ObjectId, ref: "User" }
-      }
-    ],
+   statusHistory: [
+  {
+    what: {
+      type: String,
+     enum: ["Created","Unpaid","Paid","Cancelled","Closed"],
 
+    },
+    updatedAt: { type: Date, default: Date.now },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+  }
+],
     placedAt:  { type: Date, default: Date.now }
   },
   { timestamps: true }

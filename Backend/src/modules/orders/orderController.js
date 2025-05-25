@@ -21,8 +21,9 @@ exports.updateOrderStatus = async (req, res, next) => {
   try {
     const order = await orderService.updateOrderStatus({
       orderId: req.params.id,
-      status: req.body.status,
-      updatedBy: req.user.userId,
+      orderStatus:req.body.orderStatus,
+      shippingStatus: req.body.shippingStatus,
+      updatedBy: req.user._id,
     });
     res.json(order);
   } catch (err) {
@@ -35,7 +36,7 @@ exports.cancelOrder = async (req, res, next) => {
     const order = await orderService.cancelOrder({
       orderId: req.params.id,
       reason: req.body.reason,
-      updatedBy: req.user.userId,
+      updatedBy: req.user._id,
     });
     res.json(order);
   } catch (err) {

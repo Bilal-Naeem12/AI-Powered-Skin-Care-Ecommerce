@@ -79,18 +79,7 @@ PaymentSchema.pre("save", function (next) {
   next();
 });
 
-/* ── Sync order paymentStatus ─────────────────────────────────── */
-PaymentSchema.pre("save", async function (next) {
-  if (this.isModified("paymentStatus")) {
-    await mongoose.model("Order").findByIdAndUpdate(
-      this.orderId,
-      { paymentStatus: this.paymentStatus },
-      { new: false }
-    );
-  }
-  this.updatedAt = Date.now();
-  next();
-});
+
 
 
 module.exports = mongoose.model("Payment", PaymentSchema);
