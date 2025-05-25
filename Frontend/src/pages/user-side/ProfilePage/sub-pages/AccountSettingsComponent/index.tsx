@@ -21,6 +21,7 @@ import useUserStore from "@/store/useUserStore";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { User } from "@/types/User";
+import ProfilePicUploader from "@/component/UI/ProfilePicUploader";
 
 interface ApiResponse {
   user: User;
@@ -223,7 +224,13 @@ const allergenPrefs     = watch("allergenPreferences");
   /* ----------------------------- JSX ------------------------------------- */
   return (
     <Card sx={{ maxWidth: 900, mx: "auto" }}>
+
+  
       <CardHeader title="Account Settings" />
+           <ProfilePicUploader
+                  profilePic={watch("profileImage") || ""}
+                  onChange={(url) =>setValue("profileImage", url)}
+                />
       <CardContent
         component="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -447,16 +454,6 @@ const allergenPrefs     = watch("allergenPreferences");
   ))}
 </Grid>
 
-          {/* ---------- profile img ---------- */}
-          <Grid item xs={12}>
-            <TextField
-              label="Profile image URL"
-              fullWidth
-              error={!!errors.profileImage}
-              helperText={errors.profileImage?.message}
-              {...register("profileImage")}
-            />
-          </Grid>
 
           {/* ---------- submit ---------- */}
           <Grid item xs={12}>

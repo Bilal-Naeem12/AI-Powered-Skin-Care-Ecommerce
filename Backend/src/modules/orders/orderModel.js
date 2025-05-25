@@ -1,109 +1,78 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const { Schema, Types } = mongoose;
 
-const OrderSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
-    items: [
-        {
-            productId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Product",
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: [1, "Quantity cannot be less than 1"]
-            },
-            selectedVariant: {
-                type: String, // Example: "50ml", "100ml"
-                default: null
-            },
-            priceAtTimeOfOrder: {
-                type: Number,
-                required: true
-            }
-        }
+/* items sub-doc */
+const ItemSchema = new Schema(
+  {
+    productId:      { type: Types.ObjectId, ref: "Product", required: true },
+    quantity:       { type: Number, required: true, min: 1 },
+    selectedVariant:{ type: String },
+    priceAtTimeOfOrder:{ type: Number, required: true }
+  },
+  { _id: false }
+);
+
+const OrderSchema = new Schema(
+  {
+    orderNumber: { type: String, unique: true, required: true, index: true },
+    userId:      { type: Types.ObjectId, ref: "User", required: true, index: true },
+
+    items:       [ItemSchema],
+    totalAmount: { type: Number, required: true },
+
+    /* pointers -- the ONLY way to reach payment / shipping / invoice */
+    paymentId:   { type: Types.ObjectId, ref: "Payment"  },
+    shippingId:  { type: Types.ObjectId, ref: "Shipping" },
+    invoiceId:   { type: Types.ObjectId, ref: "Invoice"  },
+
+    /* order-level timeline (optional but useful) */
+    statusHistory: [
+      {
+        what:       { type: String, enum: ["Created","Paid","Shipped","Delivered","Cancelled"] },
+        at:         { type: Date,   default: Date.now },
+        by:         { type: Types.ObjectId, ref: "User" }
+      }
     ],
-    totalAmount: {
-        type: Number,
-        required: true
-    },
-    paymentStatus: {
-        type: String,
-        enum: ["Pending", "Completed", "Failed", "Refunded"],
-        default: "Pending"
-    },
-    paymentMethod: {
-        type: String,
-        enum: ["Credit Card", "Debit Card", "PayPal", "Google Pay", "Apple Pay", "Cash on Delivery"],
-        required: true
-    },
-    transactionId: {
-        type: String, // Stores payment gateway transaction ID
-        default: null
-    },
 
-    // **Shipping & Delivery Information**
-    shippingAddress: {
-        street: { type: String, required: true },
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        country: { type: String, required: true },
-        postal_code: { type: String, required: true }
-    },
-    trackingNumber: {
-        type: String,
-        default: null
-    },
-    estimatedDeliveryDate: {
-        type: Date
-    },
-    deliveryStatus: {
-        type: String,
-        enum: ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"],
-        default: "Pending"
-    },
+    placedAt:  { type: Date, default: Date.now }
+  },
+  { timestamps: true }
+);
 
-    // **Order History & Lifecycle**
-    orderPlacedAt: {
-        type: Date,
-        default: Date.now
-    },
-    shippedAt: {
-        type: Date
-    },
-    deliveredAt: {
-        type: Date
-    },
-    cancelledAt: {
-        type: Date
-    },
+/* virtual shortcuts */
+OrderSchema.virtual("payment",  { localField: "paymentId",  ref: "Payment",  foreignField: "_id", justOne: true });
+OrderSchema.virtual("shipping", { localField: "shippingId", ref: "Shipping", foreignField: "_id", justOne: true });
+OrderSchema.virtual("invoice",  { localField: "invoiceId",  ref: "Invoice",  foreignField: "_id", justOne: true });
 
-    // **Cancellation & Refund Handling**
-    isCancelled: {
-        type: Boolean,
-        default: false
-    },
-    isRefunded: {
-        type: Boolean,
-        default: false
-    },
-    refundReason: {
-        type: String,
-        default: null
+/* compute total & reserve stock */
+OrderSchema.pre("validate", async function (next) {
+  try {
+    const session = this.$session?.();
+    let sum = 0;
+
+    for (const it of this.items) {
+      const product = await mongoose.model("Product").findById(it.productId).session(session);
+      if (!product || product.isDeleted) throw new Error("Product not found");
+      await product.adjustStock(it.quantity, it.selectedVariant, session);
+      sum += it.priceAtTimeOfOrder * it.quantity;
     }
+    this.totalAmount = sum;
+    next();
+  } catch (e) { next(e); }
 });
 
-// **Auto-update timestamps when the order status changes**
-OrderSchema.pre('save', function (next) {
-    if (this.deliveryStatus === "Shipped") this.shippedAt = new Date();
-    if (this.deliveryStatus === "Delivered") this.deliveredAt = new Date();
-    if (this.deliveryStatus === "Cancelled") this.cancelledAt = new Date();
-    next();
-});
+/* helper to fetch a full order */
+OrderSchema.statics.withAll = function (id) {
+  return this.findById(id)
+    .populate("items.productId")
+    .populate("paymentId")
+    .populate("shippingId")
+    .populate("invoiceId")
+    /* owner basic info */
+    .populate("userId", "first_name last_name email");
+};
+
+
+
 
 module.exports = mongoose.model("Order", OrderSchema);

@@ -141,4 +141,25 @@ ProductSchema.virtual("reviews", {
     });
     next();
   });
+
+
+  ProductSchema.methods.adjustStock = async function (
+  qty,
+  variant = null,
+  session = null
+) {
+  if (variant) {
+    const v = this.variants.find(v => v.size === variant);
+    if (!v || v.stock < qty) throw new Error("Variant out of stock");
+    v.stock -= qty;
+  } else {
+    if (this.stock < qty) throw new Error("Product out of stock");
+    this.stock -= qty;
+  }
+  this.soldCount += qty;
+  await this.save({ session });
+};
+
+ProductSchema.index({ name: 1, brand: 1 });
+
 module.exports = mongoose.model("Product", ProductSchema);

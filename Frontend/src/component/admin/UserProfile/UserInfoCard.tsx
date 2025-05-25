@@ -10,10 +10,12 @@ import { z } from "zod";
 import { useFormUpdateAuth } from "@/hooks/useFormUpdateAuth";
 import { Button, Input } from "@mui/material";
 import { useEffect } from "react";
+import ProfilePicUploader from "@/component/UI/ProfilePicUploader";
 
 
 
 export const userInfoSchema = z.object({
+  profileImage:z.string(),
   first_name: z.string().min(2, "First name required"),
   last_name : z.string().min(2, "Last name required"),
   email     : z.string().email("Invalid e‑mail"),
@@ -32,9 +34,12 @@ export default function UserInfoCard() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+       setValue,
+    watch
   } = useForm<UserInfoPayload>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: {
+      profileImage:user?.profileImage?? "",
       first_name: user?.first_name ?? "",
       last_name : user?.last_name ?? "",
       email     : user?.email ?? "",
@@ -55,6 +60,7 @@ export default function UserInfoCard() {
     if (!isOpen || !user) return;
   
     reset({
+       profileImage:user?.profileImage?? "",
       first_name: user.first_name,
       last_name : user.last_name,
       email     : user.email,
@@ -71,6 +77,7 @@ export default function UserInfoCard() {
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
             Personal Information
           </h4>
+           
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             {[
               ["First Name", user?.first_name],
@@ -104,6 +111,10 @@ export default function UserInfoCard() {
           <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
             Edit Personal Information
           </h4>
+           <ProfilePicUploader
+                            profilePic={watch("profileImage") || ""}
+                            onChange={(url) =>setValue("profileImage", url)}
+                          />
           <div className="grid grid-cols-1 gap-6 mt-6 lg:grid-cols-2">
             <div>
               <Label>First Name</Label>

@@ -187,4 +187,10 @@ UserSchema.methods.softDelete = async function () {
     await this.save();
 };
 
+UserSchema.virtual("orders", {
+  ref: "Order",
+  localField: "_id",
+  foreignField: "userId",
+});
+
 module.exports = mongoose.model('User', UserSchema);

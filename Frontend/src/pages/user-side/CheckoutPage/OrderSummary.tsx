@@ -8,7 +8,7 @@ const OrderSummary: React.FC = () => {
   const { cart, getTotalPrice } = useCartStore();
 
   // Calculate subtotal dynamically based on cart items from Zustand store
-  const subtotal = getTotalPrice();
+  const subtotal = getTotalPrice().toFixed(2);
 
   return (
     <Box className="bg-white rounded-lg shadow-md p-6">

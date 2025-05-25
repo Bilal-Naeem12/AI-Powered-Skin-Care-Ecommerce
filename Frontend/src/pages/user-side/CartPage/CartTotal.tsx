@@ -1,7 +1,11 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
+
+
 const CartTotal = ({ subtotal }) => {
+    const formattedSubtotal = parseFloat(subtotal).toFixed(2);
+
   return (
     <Box className="bg-white rounded-lg shadow-md p-6">
       <Typography
@@ -18,7 +22,7 @@ const CartTotal = ({ subtotal }) => {
           Subtotal:
         </Typography>
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
-        {import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {formattedSubtotal}/-
         </Typography>
       </Box>
       <Box className="flex justify-between items-center py-3 border-b">
@@ -32,7 +36,7 @@ const CartTotal = ({ subtotal }) => {
           Total:
         </Typography>
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
-        {import.meta.env.VITE_API_CURRENCY_Symbol}  {subtotal}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {formattedSubtotal}/-
         </Typography>
       </Box>
     </Box>

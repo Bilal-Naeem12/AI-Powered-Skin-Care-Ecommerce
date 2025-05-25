@@ -16,13 +16,14 @@ const ShippingSchema = new mongoose.Schema({
         city: { type: String, required: true },
         state: { type: String, required: true },
         country: { type: String, required: true },
-        postalCode: { type: String, required: true }
+        postal_code: { type: String, required: true }
     },
-    trackingNumber: {
-        type: String,
-        unique: true,
-        default: null
-    },
+ trackingNumber: {
+  type: String,
+  unique: true,
+  sparse: true
+}
+,
     carrier: {
         type: String,
         enum: ["DHL", "FedEx", "UPS", "USPS", "Other"],
@@ -33,7 +34,7 @@ const ShippingSchema = new mongoose.Schema({
     },
     shippingStatus: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered", "Returned"],
+        enum: ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered", "Cancelled"],
         default: "Pending"
     },
     deliveryConfirmation: {
@@ -58,10 +59,32 @@ const ShippingSchema = new mongoose.Schema({
     }
 });
 
-// **Middleware: Auto-update timestamps on save**
-ShippingSchema.pre('save', function (next) {
-    this.updatedAt = Date.now();
-    next();
+/* ── Auto-generate tracking number ─────────────────────────────── */
+ShippingSchema.pre("validate", async function (next) {
+  if (!this.trackingNumber) {
+    const uniqueSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+    this.trackingNumber = `TRK-${Date.now()}-${uniqueSuffix}`;
+  }
+  next();
+});
+
+/* ── Auto-update timestamps ────────────────────────────────────── */
+ShippingSchema.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+/* ── Sync shippingStatus with Order.deliveryStatus ─────────────── */
+ShippingSchema.pre("save", async function (next) {
+  if (this.isModified("shippingStatus")) {
+    await mongoose.model("Order").findByIdAndUpdate(
+      this.orderId,
+      { deliveryStatus: this.shippingStatus },
+      { new: false }
+    );
+  }
+  this.updatedAt = Date.now();
+  next();
 });
 
 module.exports = mongoose.model("Shipping", ShippingSchema);

@@ -16,11 +16,12 @@ const PaymentSchema = new mongoose.Schema({
         enum: ["Stripe", "PayPal", "Google Pay", "Apple Pay", "Bank Transfer", "Cash on Delivery"],
         required: true
     },
-    transactionId: {
-        type: String, // Reference from Stripe, PayPal, etc.
-        required: true,
-        unique: true
-    },
+ transactionId: {
+  type: String,
+  unique: true,
+  sparse: true // allows auto-generation only when needed
+}
+,
     amountPaid: {
         type: Number,
         required: true,
@@ -63,10 +64,33 @@ const PaymentSchema = new mongoose.Schema({
     }
 });
 
-// **Middleware: Auto-update timestamps on save**
-PaymentSchema.pre('save', function (next) {
-    this.updatedAt = Date.now();
-    next();
+/* ── Auto-generate transactionId if not provided ──────────────── */
+PaymentSchema.pre("validate", async function (next) {
+  if (!this.transactionId) {
+    const suffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+    this.transactionId = `TXN-${Date.now()}-${suffix}`;
+  }
+  next();
 });
+
+/* ── Auto-update timestamps ───────────────────────────────────── */
+PaymentSchema.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+/* ── Sync order paymentStatus ─────────────────────────────────── */
+PaymentSchema.pre("save", async function (next) {
+  if (this.isModified("paymentStatus")) {
+    await mongoose.model("Order").findByIdAndUpdate(
+      this.orderId,
+      { paymentStatus: this.paymentStatus },
+      { new: false }
+    );
+  }
+  this.updatedAt = Date.now();
+  next();
+});
+
 
 module.exports = mongoose.model("Payment", PaymentSchema);

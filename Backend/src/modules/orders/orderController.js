@@ -1,75 +1,95 @@
-const OrderService = require("./orderService");
+// /controllers/orderController.js
+const orderService = require("./orderService");
+const Shipping = require("../shipping/shippingModel");
 
-// **🔹 Create a New Order**
-exports.createOrder = async (req, res) => {
-    try {
-        const userId = req.user.id;  // Get the user from the authenticated session
-        const orderData = req.body;
-
-        const newOrder = await OrderService.createOrder(userId, orderData);
-        res.status(201).json({ message: "Order created successfully", order: newOrder });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+exports.createOrder = async (req, res, next) => {
+  try {
+    const order = await orderService.placeOrder({
+      userId: req.user._id,
+      items: req.body.items,
+      paymentPayload: req.body.payment, // { paymentGateway, transactionId, ... }
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: req.body.paymentMethod,
+    });
+    res.status(201).json(order);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// **🔹 Update Order Status (Shipped, Delivered, etc.)**
-exports.updateOrderStatus = async (req, res) => {
-    try {
-        const orderId = req.params.id;
-        const { status } = req.body;
-
-        const updatedOrder = await OrderService.updateOrderStatus(orderId, status);
-        res.status(200).json({ message: "Order status updated", order: updatedOrder });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+exports.updateOrderStatus = async (req, res, next) => {
+  try {
+    const order = await orderService.updateOrderStatus({
+      orderId: req.params.id,
+      status: req.body.status,
+      updatedBy: req.user.userId,
+    });
+    res.json(order);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// **🔹 Cancel Order**
-exports.cancelOrder = async (req, res) => {
-    try {
-        const orderId = req.params.id;
-        const { reason } = req.body;
-
-        const cancelledOrder = await OrderService.cancelOrder(orderId, reason);
-        res.status(200).json({ message: "Order cancelled successfully", order: cancelledOrder });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+exports.cancelOrder = async (req, res, next) => {
+  try {
+    const order = await orderService.cancelOrder({
+      orderId: req.params.id,
+      reason: req.body.reason,
+      updatedBy: req.user.userId,
+    });
+    res.json(order);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// **🔹 Process Refund**
-exports.processRefund = async (req, res) => {
-    try {
-        const orderId = req.params.id;
-
-        const refundedOrder = await OrderService.processRefund(orderId);
-        res.status(200).json({ message: "Refund processed successfully", order: refundedOrder });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+exports.processRefund = async (req, res, next) => {
+  try {
+    const order = await orderService.processRefund({ orderId: req.params.id });
+    res.json(order);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// **🔹 Get Single Order by ID**
-exports.getOrderById = async (req, res) => {
-    try {
-        const orderId = req.params.id;
-        const order = await OrderService.getOrderById(orderId);
-        if (!order) return res.status(404).json({ message: "Order not found" });
-
-        res.status(200).json(order);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+exports.getOrderById = async (req, res, next) => {
+  try {
+    const order = await orderService.getOrderById(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    res.json(order);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// **🔹 Get All Orders (Admin)**
-exports.getAllOrders = async (req, res) => {
-    try {
-        const orders = await OrderService.getAllOrders();
-        res.status(200).json({ orders });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+exports.getAllOrders = async (req, res, next) => {
+  try {
+    const orders = await orderService.getAllOrders();
+    res.json(orders);
+  } catch (err) {
+    next(err);
+  }
+};
+exports.getOrderTrackingStatus = async (req, res, next) => {
+  try {
+    const { id: orderId } = req.params;
+
+    const shipping = await Shipping.findOne({ orderId });
+
+    if (!shipping) {
+      return res.status(404).json({ message: "No shipping record found for this order." });
     }
+
+    res.status(200).json({
+      trackingNumber: shipping.trackingNumber,
+      carrier: shipping.carrier,
+      shippingStatus: shipping.shippingStatus,
+      estimatedDeliveryDate: shipping.estimatedDeliveryDate,
+      isDelayed: shipping.isDelayed,
+      delayReason: shipping.delayReason || null,
+      updatedAt: shipping.updatedAt
+    });
+  } catch (err) {
+    next(err);
+  }
 };

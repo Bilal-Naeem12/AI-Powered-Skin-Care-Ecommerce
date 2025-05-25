@@ -1,26 +1,28 @@
+// /routes/orderRoutes.js
 const express = require("express");
-const { createOrder, updateOrderStatus, cancelOrder, processRefund, getOrderById, getAllOrders } = require("./orderController");
-const { validateCreateOrder, validateUpdateOrderStatus, validateResult } = require("./orderValidator");
+const {
+  createOrder,
+  updateOrderStatus,
+  cancelOrder,
+  processRefund,
+  getOrderById,
+  getAllOrders,
+  getOrderTrackingStatus
+} = require("./orderController");
 const { authMiddleware } = require("../../middleware/authMiddleware");
+const { roleMiddleware } = require("../../middleware/roleMiddleware");
 
 const router = express.Router();
 
-// **🔹 Route for Creating a New Order**
-router.post("/create", validateCreateOrder, validateResult,authMiddleware, createOrder);  // Create order with validation
+/* user-level */
+router.post("/", authMiddleware, createOrder);
+router.get("/:id", authMiddleware, getOrderById);
+router.put("/:id/cancel", authMiddleware, cancelOrder);
+router.get("/:id/tracking", authMiddleware, getOrderTrackingStatus);
 
-// **🔹 Route for Updating Order Status**
-router.put("/:id/status", validateUpdateOrderStatus, validateResult, updateOrderStatus);  // Update order status (Shipped, Delivered, etc.)
-
-// **🔹 Route for Canceling an Order**
-router.put("/:id/cancel", cancelOrder);  // Cancel order and restore stock
-
-// **🔹 Route for Processing Refund for an Order**
-router.put("/:id/refund", processRefund);  // Process refund and update payment status
-
-// **🔹 Route to Get a Single Order by ID**
-router.get("/:id", getOrderById);  // Get the full details of a specific order
-
-// **🔹 Route to Get All Orders (Admin)**
-router.get("/", getAllOrders);  // Get all orders for admin (could be paginated)
+/* admin-level */
+router.put("/:id/status", authMiddleware, roleMiddleware("admin"), updateOrderStatus);
+router.put("/:id/refund", authMiddleware, roleMiddleware("admin"), processRefund);
+router.get("/", authMiddleware, roleMiddleware("admin"), getAllOrders);
 
 module.exports = router;
