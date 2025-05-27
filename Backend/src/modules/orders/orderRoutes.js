@@ -7,7 +7,8 @@ const {
   processRefund,
   getOrderById,
   getAllOrders,
-  getOrderTrackingStatus
+  getOrderTrackingStatus,
+  getCustomerOrder
 } = require("./orderController");
 const { authMiddleware } = require("../../middleware/authMiddleware");
 const { roleMiddleware } = require("../../middleware/roleMiddleware");
@@ -15,6 +16,7 @@ const { roleMiddleware } = require("../../middleware/roleMiddleware");
 const router = express.Router();
 
 /* user-level */
+router.get("/customer", authMiddleware, getCustomerOrder);
 router.post("/", authMiddleware, createOrder);
 router.get("/:id", authMiddleware, getOrderById);
 router.put("/:id/cancel", authMiddleware, cancelOrder);

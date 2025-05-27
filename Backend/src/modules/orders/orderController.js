@@ -1,7 +1,7 @@
 // /controllers/orderController.js
 const orderService = require("./orderService");
 const Shipping = require("../shipping/shippingModel");
-
+const Order = require("./orderModel");
 exports.createOrder = async (req, res, next) => {
   try {
     const order = await orderService.placeOrder({
@@ -111,5 +111,24 @@ exports.getOrderTrackingStatus = async (req, res, next) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+
+exports.getCustomerOrder = async (req, res) => {
+  try {
+    const userId = req.user._id; // populated by authMiddleware
+    const orders = await Order.find({ userId })
+      .populate("payment shipping invoice")
+      .sort({ placedAt: -1 });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user." });
+    }
+
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error("Failed to fetch user orders:", err);
+    res.status(500).json({ message: "Server error while fetching your orders." });
   }
 };

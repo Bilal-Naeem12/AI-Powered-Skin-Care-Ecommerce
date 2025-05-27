@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema, Types } = mongoose;
-
+const Shipping = require("../products/productModel");
 /* items sub-doc */
 const ItemSchema = new Schema(
   {
@@ -18,7 +18,7 @@ const OrderSchema = new Schema(
     orderNumber: { type: String, unique: true, required: true, index: true },
     userId:      { type: Types.ObjectId, ref: "User", required: true, index: true },
 
-    items:       [ItemSchema],
+    cartItems:       [ItemSchema],
     totalAmount: { type: Number, required: true },
 
     /* pointers -- the ONLY way to reach payment / shipping / invoice */
@@ -65,14 +65,25 @@ OrderSchema.pre("validate", async function (next) {
   } catch (e) { next(e); }
 });
 
+
+OrderSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "items.productId",
+    select: "name image price category brand",   // keep it lightweight
+  });
+  next();
+});
 /* helper to fetch a full order */
 OrderSchema.statics.withAll = function (id) {
   return this.findById(id)
-    .populate("items.productId")
+    .populate({
+      path: "items.productId",
+      model: "Product",
+      select: "name image price category brand", // optional: restrict fields
+    })
     .populate("paymentId")
     .populate("shippingId")
     .populate("invoiceId")
-    /* owner basic info */
     .populate("userId", "first_name last_name email");
 };
 

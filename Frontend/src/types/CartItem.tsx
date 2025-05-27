@@ -2,7 +2,7 @@ import {Product} from "./Product";
 
 // Define the CartItem type
 export interface CartItem {
-    product: Product;
+    product: Product[];
     quantity: number;
   selectedVariant?: string;
   }

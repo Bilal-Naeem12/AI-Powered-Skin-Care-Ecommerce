@@ -29,7 +29,8 @@ const useCartStore = create<CartStore>()(
       set((state) => {
         // Check if the product already exists in the cart using the unique _id
         const existingProduct = state.cart.find(
-          (item) => item.product._id === product._id
+          
+          (item) => item.product._id  === product._id
         )
        // Show toast notification (outside set to avoid duplicates)
        toast.success(

@@ -1,7 +1,29 @@
-import React from 'react'
+import React, { useState } from "react";
+import OrderList from "./OrderList";
+import { Card } from "@mui/material";
+
+const tabs = ["All", "Processing", "Shipped", "Delivered", "Returns"];
 
 export default function OrdersComponent() {
+  const [activeTab, setActiveTab] = useState("All");
+
   return (
-    <div className='w-full bg-black h-28'>OrdersComponent</div>
-  )
+    <Card className="px-6 py-4 w-full bg-white min-h-1/2">
+      <h2 className="text-2xl font-semibold mb-4 ">My Orders</h2>
+
+      <div className="flex gap-4 border-b mb-5">
+        {tabs.map(tab => (
+          <button
+            key={tab}
+            className={`pb-2 ${activeTab === tab ? "border-b-2 border-pink-500 text-pink-500" : "text-gray-500"}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <OrderList statusFilter={activeTab} />
+    </Card>
+  );
 }

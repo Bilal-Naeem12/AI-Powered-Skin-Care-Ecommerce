@@ -5,7 +5,7 @@ exports.authMiddleware = (req, res, next) => {
     try {
         // Get token from request headers
         const token = req.cookies.accessToken;
-     console.log(token)
+    //  console.log(token)
         // if (!token) {
         //     return res.status(401).json({ message: "Access denied. No token provided." });
         // }
