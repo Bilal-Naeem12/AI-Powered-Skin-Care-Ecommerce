@@ -110,7 +110,7 @@ const FaceScanner = forwardRef((props, ref) => {
         setFacingCamera(false);
       }
 
-      const isBright = avgBrightness() > 100;
+      const isBright = avgBrightness() > 70;
       setLightingOk(isBright);
     });
 

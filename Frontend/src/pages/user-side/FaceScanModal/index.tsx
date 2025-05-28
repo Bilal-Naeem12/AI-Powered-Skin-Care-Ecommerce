@@ -110,7 +110,7 @@ const FaceScanModal: React.FC = () => {
     fd.append("file", blob);
 
     try {
-      close();
+   
       showLoading();
       clearResult();               // reset any prior result
       await analyzeSkin(fd); 
