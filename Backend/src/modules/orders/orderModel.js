@@ -54,7 +54,7 @@ OrderSchema.pre("validate", async function (next) {
     const session = this.$session?.();
     let sum = 0;
 
-    for (const it of this.items) {
+    for (const it of this.cartItems) {
       const product = await mongoose.model("Product").findById(it.productId).session(session);
       if (!product || product.isDeleted) throw new Error("Product not found");
       await product.adjustStock(it.quantity, it.selectedVariant, session);
@@ -68,7 +68,7 @@ OrderSchema.pre("validate", async function (next) {
 
 OrderSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "items.productId",
+    path: "cartItems.productId",
     select: "name image price category brand",   // keep it lightweight
   });
   next();
@@ -77,7 +77,7 @@ OrderSchema.pre(/^find/, function (next) {
 OrderSchema.statics.withAll = function (id) {
   return this.findById(id)
     .populate({
-      path: "items.productId",
+      path: "cartItems.productId",
       model: "Product",
       select: "name image price category brand", // optional: restrict fields
     })
