@@ -10,7 +10,8 @@ const {
     getProductReviews,
     reduceStock,
     getFeaturedProducts,uploadImages,getRelatedProductsById,
-    recommendProducts
+    recommendProducts,
+    uploadReviewImages
 } = require("./productController");
 
 const multer   = require("multer");
@@ -46,9 +47,14 @@ router.post("/:id/reduce-stock", reduceStock);  // Reduce stock when product is 
  * POST /api/products/:id/images
  * FormData field:  images  (array of files)
  */
+
+ router.post("/:id/review/images", upload.array("images", 6), uploadReviewImages);
+
 router.post(
     "/:id/images",
     upload.array("images", 10),
     uploadImages
   );
+
+ 
 module.exports = router;

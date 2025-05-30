@@ -256,7 +256,7 @@ exports.addReview = async (req, res) => {
     const session = await mongoose.startSession();
     try {
       const { id: productId } = req.params;
-      const { rating, reviewText = "", reviewImages = [], pros = [], cons = [] } = req.body;
+      const { rating, reviewText = "", reviewImages = [], pros = [], cons = [] ,tags =[]} = req.body;
       const userId = req.user._id;              // set by auth middleware
   
       /* 1️⃣  verify product exists / not deleted */
@@ -285,6 +285,7 @@ exports.addReview = async (req, res) => {
               reviewImages,
               pros,
               cons,
+               tags,   
               isVerifiedPurchase: true,       // if you checked an order
             },
           ],
@@ -310,7 +311,7 @@ exports.addReview = async (req, res) => {
         await p.save({ session });
       });
   
-      res.status(201).json({ message: "Review submitted (pending approval)." });
+     res.status(201).json({ message: "Review submitted successfully." });
     } catch (err) {
       console.error("addReview:", err);
       res.status(500).json({ error: "Server error." });
@@ -507,5 +508,55 @@ const allProducts = potentialProducts.filter((product) =>
   } catch (err) {
     console.error("🔴 Recommendation error:", err);
     res.status(500).json({ success: false, message: "Recommendation failed" });
+  }
+};
+
+
+
+exports.uploadReviewImages = async (req, res) => {
+  try {
+    /* 1️⃣  basic checks */
+    const product = await Product.findById(req.params.id).lean();
+    if (!product || product.isDeleted)
+      return res.status(404).json({ message: "Product not found." });
+
+    if (!req.files?.length)
+      return res.status(400).json({ message: "No files uploaded." });
+
+    /* 2️⃣  create Cloudinary folder name  */
+    const safeName = slugify(product.name, { lower: true, strict: true });
+    // e.g.  myShop/reviews/polka-dot-print-shoulder-bag_664fec2c1b6
+    const folder = `myShop/reviews/${safeName}_${product._id.toString().slice(-5)}`;
+
+    /* 3️⃣  upload every file buffer → Cloudinary */
+    const uploadedUrls = await Promise.all(
+      req.files.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            cloud.uploader
+              .upload_stream(
+                {
+                  folder,
+                  public_id: uuid(),
+                  resource_type: "image",
+                },
+                (err, result) => {
+                  if (err) return reject(err);
+                  resolve(result.secure_url);
+                }
+              )
+              .end(file.buffer);
+          })
+      )
+    );
+
+    /* 4️⃣  return array of URLs (nothing to save yet) */
+    res.status(201).json({
+      message: `${uploadedUrls.length} review image(s) uploaded.`,
+      images: uploadedUrls,
+    });
+  } catch (e) {
+    console.error("uploadReviewImages:", e);
+    res.status(500).json({ error: "Server error uploading review images." });
   }
 };

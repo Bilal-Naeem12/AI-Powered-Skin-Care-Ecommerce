@@ -816,3 +816,9 @@ span.flatpickr-weekday,
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
 }
+
+.scrollbar-hide {
+  @apply overflow-scroll; /* if needed */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

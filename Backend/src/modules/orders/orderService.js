@@ -10,7 +10,7 @@ const { generateOrderId } = require("./orderUtils");
  * ────────────────────────────────────────────────────────────── */
 exports.placeOrder = async ({
   userId,
-  items,
+  cartItems,
   paymentPayload,   // { gateway, ... }
   shippingAddress   // { street, city, state, country, postalCode }
 }) => {
@@ -21,7 +21,7 @@ exports.placeOrder = async ({
   try {
     /* 1-A  Reserve stock & calc total */
     let total = 0;
-    for (const it of items) {
+    for (const it of cartItems) {
       const prod = await Product.findById(it.productId).session(session);
       if (!prod || prod.isDeleted) throw new Error("Product not found");
 
@@ -36,7 +36,7 @@ exports.placeOrder = async ({
       _id: newOrderId,
       orderNumber: generateOrderId(),
       userId,
-      items,
+      cartItems,
       totalAmount: total,
       statusHistory: [{ what: "Created", at: new Date(), by: userId }]
     }).save({ session });
@@ -118,7 +118,7 @@ exports.cancelOrder = async ({ orderId, reason, updatedBy }) => {
     if (order.isCancelled) throw new Error("Order already cancelled");
 
     // restore stock
-    for (const it of order.items) {
+    for (const it of order.cartItems) {
       const prod = await Product.findById(it.productId).session(session);
       await prod.adjustStock(-it.quantity, it.selectedVariant, session);
     }

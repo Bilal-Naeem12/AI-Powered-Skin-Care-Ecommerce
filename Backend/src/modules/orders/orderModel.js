@@ -69,7 +69,7 @@ OrderSchema.pre("validate", async function (next) {
 OrderSchema.pre(/^find/, function (next) {
   this.populate({
     path: "cartItems.productId",
-    select: "name image price category brand",   // keep it lightweight
+    select: "name images price category brand",   // keep it lightweight
   });
   next();
 });
@@ -79,7 +79,7 @@ OrderSchema.statics.withAll = function (id) {
     .populate({
       path: "cartItems.productId",
       model: "Product",
-      select: "name image price category brand", // optional: restrict fields
+      select: "name images price category brand", // optional: restrict fields
     })
     .populate("paymentId")
     .populate("shippingId")

@@ -25,6 +25,7 @@ const ReviewSchema = new mongoose.Schema({
         type: [String], // Stores URLs of uploaded review images
         default: []
     },
+    tags:  { type: [String], default: [] },
     pros: {
         type: [String], // Example: ["Hydrating", "Gentle on skin"]
         default: []
@@ -37,11 +38,7 @@ const ReviewSchema = new mongoose.Schema({
         type: Boolean,
         default: false // Ensures user actually purchased the product
     },
-    status: {
-        type: String,
-        enum: ["Pending", "Approved", "Rejected"],
-        default: "Pending" // Admin moderation system
-    },
+   
 
     // **User Interactions**
     upvotes: {

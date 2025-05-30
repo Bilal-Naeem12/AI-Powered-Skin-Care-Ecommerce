@@ -6,7 +6,7 @@ exports.createOrder = async (req, res, next) => {
   try {
     const order = await orderService.placeOrder({
       userId: req.user._id,
-      items: req.body.cartItems,
+      cartItems: req.body.cartItems,
       paymentPayload: req.body.payment, // { paymentGateway, transactionId, ... }
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
@@ -125,7 +125,7 @@ exports.getCustomerOrder = async (req, res) => {
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user." });
     }
-
+    console.log(orders)
     res.status(200).json(orders);
   } catch (err) {
     console.error("Failed to fetch user orders:", err);

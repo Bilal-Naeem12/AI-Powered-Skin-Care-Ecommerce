@@ -41,7 +41,7 @@ const useFetchAuthData = <T,>(url: string, reloadTrigger?: boolean) => {
           } catch (refreshError) {
             
             console.error("Refresh token failed:", refreshError);
-            setError("Session expired. Please log in again.");
+            // setError("Session expired. Please log in again.");
             // Logout the user by updating the UserStore and removing from localStorage
             logout(); // Call the logout action to reset the store
             toast.error("Session expired. Please log in again.");

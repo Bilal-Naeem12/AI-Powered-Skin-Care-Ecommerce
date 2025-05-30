@@ -7,6 +7,7 @@ import { User } from '@/types/User';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
+import ProductReviewPage from './sub-pages/OrdersComponent/sub-pages/LeaveReview/ProductReviewPage';
 
 const ProfilePage = () => {
  
@@ -56,6 +57,10 @@ if (error || !user) {
     {allRoutes.map((route) => (
       <Route key={route.path} path={route.path.replace("/profile-page", "")} element={<route.component />} />
     ))}
+
+
+     <Route path="/order/product/:id" element={<ProductReviewPage/>} />
+
   {/* Default Route */}
   <Route path="/" element={<Navigate to="/profile-page/my-profile" />} />
 
