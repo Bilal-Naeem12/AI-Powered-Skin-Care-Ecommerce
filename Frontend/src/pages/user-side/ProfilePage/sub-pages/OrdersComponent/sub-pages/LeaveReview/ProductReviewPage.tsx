@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import { Star } from "lucide-react";
+import ImagePicker from "./ImagePicker";
+import usePostAuthData from "@/hooks/usePostAuthData";
 
-interface Props {
-  product: {
-    name?: string;
-    image?: string;
-    variant?: string;
-    quantity?: number;
-  };
-}
+
 
 const predefinedTags = [
   "excellent",
@@ -18,34 +13,58 @@ const predefinedTags = [
   "really amazing piece",
   "gorgeous 💕",
 ];
+interface ProductInfo {
+  id: string;
+  name: string;
+  image: string;
+  variant: string;
+  quantity: number;
+}
 
-export default function ProductReviewPage() {
-  const [rating, setRating] = useState(0);
+interface Props {
+  product: ProductInfo;
+  onSuccess: () => void;
+}
+
+export default function ProductReviewPage({ product, onSuccess }: Props) {
+ const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState<number | null>(null);
   const [comment, setComment] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
+  const [images, setImages] = useState<string[]>([]); // Cloudinary URLs
+  const { postData, loading ,error} =                           // ✅ add
+  usePostAuthData<{ message: string },                  //   (response shape)
+                   { rating: number;                    //   (payload shape)
+                     reviewText: string;
+                     tags: string[];
+                     reviewImages: string[] }>();
   const toggleTag = (tag: string) => {
+
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-  const product  = { name:"asdasdad",
-    image:"asdasdad",
-    variant:"123",
-    quantity:"2"}
-  const handleSubmit = () => {
-    // send review to backend or console log
-    console.log({
+ 
+const submit = async () => {
+console.log(images)
+  await postData(
+    `${import.meta.env.VITE_API_BACKEND_URL}/products/${product.id}/reviews`,                 // same endpoint
+    {
       rating,
-      comment,
-      selectedTags,
-      product,
-    });
-  };
+      reviewText: comment,
+      tags: selectedTags,
+      reviewImages: images,
+    },
+    "Review submitted successfully!"                   // toast text
+  );
+  if(!error){
+  onSuccess();      
+  }
+                                   // keep your callback
+};
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 bg-white rounded-md shadow-md">
+    <div className="max-w-2xl mx-auto px-4 py-6 bg-white rounded-md shadow-md overflow-auto">
       <h2 className="text-xl font-semibold mb-5">Leave a review</h2>
 
       {/* Product Summary */}
@@ -61,15 +80,7 @@ export default function ProductReviewPage() {
         </div>
       </div>
 
-      {/* Content Upload (Mock Only) */}
-      <div className="flex gap-6 mb-5">
-        <button className="border border-gray-300 rounded px-4 py-2 text-sm">
-          📷 Photo
-        </button>
-        <button className="border border-gray-300 rounded px-4 py-2 text-sm">
-          🎥 Video
-        </button>
-      </div>
+     
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 mb-4">
@@ -87,7 +98,12 @@ export default function ProductReviewPage() {
           </button>
         ))}
       </div>
-
+ <ImagePicker
+        productId={product.id}
+        onUploaded={(urls) => {
+           console.log("URLs from ImagePicker:", urls);
+          setImages(urls)}}
+      />
       {/* Review Text */}
       <textarea
         placeholder="Share your thought or select the brief review above."
@@ -126,20 +142,15 @@ export default function ProductReviewPage() {
       </div>
 
       {/* Submit */}
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-orange-500 text-white font-semibold py-2 rounded hover:bg-orange-600 transition"
+    <button
+        onClick={submit}
+        disabled={!rating}
+        className="mt-4 w-full bg-orange-500 text-white py-2 rounded disabled:opacity-40"
       >
         Submit
       </button>
 
-      {/* Profile option */}
-      <div className="mt-3 text-xs text-gray-500">
-        <label className="inline-flex items-center gap-1">
-          <input type="checkbox" className="accent-orange-500" />
-          Hide your profile photo and name as ma***an
-        </label>
-      </div>
+    
     </div>
   );
 }

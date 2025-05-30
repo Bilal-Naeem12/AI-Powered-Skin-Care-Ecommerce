@@ -18,8 +18,8 @@ export type OrderStatus =
 
 export interface OrderStatusHistory {
   what: OrderStatus;
-  at: string;
-  by?: string | User;
+  updatedAt: string;
+  updatedBy?: string | User;
 }
 
 export interface Order {
@@ -30,9 +30,9 @@ export interface Order {
   cartItems: CartItem[];
   totalAmount: number;
 
-  paymentId?: string | Payment;
-  shippingId?: string | Shipping;
-  invoiceId?: string | Invoice;
+  paymentId?:  Payment;
+  shippingId?:  Shipping;
+  invoiceId?:  Invoice;
 
   payment?: Payment;
   shipping?: Shipping;

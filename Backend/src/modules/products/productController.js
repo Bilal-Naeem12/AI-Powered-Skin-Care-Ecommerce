@@ -1,6 +1,8 @@
 const reviewModel = require("../review/reviewModel");
 const Product = require("./productModel");
 const mongoose = require('mongoose');
+const slugify = require("slugify");
+
 const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
 const cloud    = require("../../utils/cloudinary");
@@ -336,7 +338,6 @@ exports.getProductReviews = async (req, res) => {
       const reviews = await reviewModel
       .find({
         productId: id,
-        status: "Approved",
         isDeleted: false,
       })
       .sort({ createdAt: -1 })

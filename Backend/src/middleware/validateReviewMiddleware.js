@@ -50,8 +50,8 @@ module.exports = async function validateReviewMiddleware(req, res, next) {
       return res.status(400).json({ message: msg });
     }
 
-    if (!Array.isArray(reviewImages) || reviewImages.length > 4) {
-      return res.status(400).json({ message: "You can upload up to 4 images." });
+    if (!Array.isArray(reviewImages) || reviewImages.length > 6) {
+      return res.status(400).json({ message: "You can upload up to 6 images." });
     }
 
     // ---------- Existence & uniqueness ----------

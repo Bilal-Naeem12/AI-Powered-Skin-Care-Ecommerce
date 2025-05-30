@@ -212,7 +212,7 @@ const ProductDetailPage: React.FC = () => {
       </div>
 
       {/* bottom tabs */}
-      <div className="mt-12">
+      <div className="mt-12 shadow card bg-white p-5">
         <Tabs value={tab} onChange={(_, v) => setTab(v)}>
           <Tab label="Details" />
           <Tab label={`Reviews (${product.reviewCount ?? 0})`} />

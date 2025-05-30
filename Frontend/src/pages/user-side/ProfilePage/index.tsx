@@ -8,6 +8,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ProductReviewPage from './sub-pages/OrdersComponent/sub-pages/LeaveReview/ProductReviewPage';
+import OrderDetailPage from './sub-pages/OrdersComponent/sub-pages/OrderDetail';
 
 const ProfilePage = () => {
  
@@ -58,8 +59,8 @@ if (error || !user) {
       <Route key={route.path} path={route.path.replace("/profile-page", "")} element={<route.component />} />
     ))}
 
-
-     <Route path="/order/product/:id" element={<ProductReviewPage/>} />
+ <Route path="/orders/:id" element={<OrderDetailPage />} />
+     {/* <Route path="/order/product/:id" element={<ProductReviewPage/>} /> */}
 
   {/* Default Route */}
   <Route path="/" element={<Navigate to="/profile-page/my-profile" />} />

@@ -86,77 +86,7 @@ const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
   /* ------------------------------------------------------------------ */
   return (
     <div className="space-y-6 p-6">
-      {user && (
-        <Paper elevation={1} className="p-6 space-y-4">
-          <h3 className="font-semibold text-lg">Leave a review</h3>
-
-          {/* rating */}
-          <Controller
-            control={control}
-            name="rating"
-            render={({ field }) => (
-              <Rating
-                value={field.value}
-                onChange={(_, v) => field.onChange(v)}
-              />
-            )}
-          />
-
-          {/* text */}
-          <Controller
-            control={control}
-            name="reviewText"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Your review"
-                multiline
-                fullWidth
-                minRows={3}
-                error={!!errors.reviewText}
-                helperText={errors.reviewText?.message}
-              />
-            )}
-          />
-
-          {/* image URLs (simple) */}
-          <div>
-            <p className="text-sm font-medium mb-1">Images (URL, max 4)</p>
-            <div className="flex gap-2 flex-wrap">
-              {images.map((url, idx) => (
-                <Thumb key={url} url={url} onRemove={() => {
-                  const next = [...images];
-                  next.splice(idx, 1);
-                  setValue("images", next);
-                }} />
-              ))}
-              {images.length < 4 && (
-                <IconButton
-                  size="small"
-                  onClick={() => {
-                    const url = prompt("Paste image URL");
-                    if (url) setValue("images", [...images, url.trim()]);
-                  }}
-                >
-                  <AddPhotoIcon />
-                </IconButton>
-              )}
-            </div>
-            {errors.images && (
-              <p className="text-xs text-red-600">{errors.images.message}</p>
-            )}
-          </div>
-
-          <Button
-            variant="contained"
-            onClick={handleSubmit(onSubmit)}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting…" : "Submit"}
-          </Button>
-        </Paper>
-      )}
-
+  
       {/* list reviews */}
       {(!reviews || reviews.length === 0) && (
         <p className="text-gray-500">No reviews yet.</p>

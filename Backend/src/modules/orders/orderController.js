@@ -1,6 +1,7 @@
 // /controllers/orderController.js
 const orderService = require("./orderService");
 const Shipping = require("../shipping/shippingModel");
+const mongoose = require("mongoose")
 const Order = require("./orderModel");
 exports.createOrder = async (req, res, next) => {
   try {
@@ -74,7 +75,12 @@ exports.processRefund = async (req, res, next) => {
 
 exports.getOrderById = async (req, res, next) => {
   try {
+     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: "Invalid Order ID format" });
+  }
+
     const order = await orderService.getOrderById(req.params.id);
+    
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (err) {

@@ -28,16 +28,16 @@ export default function OrderCard({ order }: Props) {
   
   <div className="">
       <OrderImageCarousel cartItems={order.cartItems} />
- <div className="flex  justify-between mt-5">
+ <div className="flex  justify-between mt-5 gap-4">
       
       <p>{order.cartItems.length} items: <span className=" font-semibold">{ import.meta.env.VITE_API_CURRENCY_Symbol}{order.totalAmount.toFixed(2)}</span></p>
-      <p>Order Id:  <span className=" font-semibold">{order.orderNumber}</span></p>
+       <p>Order Id:  <span className=" font-semibold">{order.orderNumber}</span></p>
       
       </div>
       </div>
          <div className="  flex  flex-col flex-wrap gap-3">
       <button className="btn-primary  border rounded-full  bg-orange-400  px-3 py-1" onClick={() => navigate(`/track/${order._id}`)}>Track</button>
-          <button className="btn-secondary border rounded-full  border-black px-3 py-1"     onClick={() => setShowModal(true)}>View Order Detail</button>
+          <button className="btn-secondary border rounded-full  border-black px-3 py-1"       onClick={() => navigate(`${order._id}`)}>View Order Detail</button>
       <button className="btn-secondary border rounded-full  border-black px-3 py-1"     onClick={() => setShowModal(true)}>Leave a review</button>
       <button className="btn-secondary border rounded-full border-black px-3 py-1">Return/Refund</button>
 
