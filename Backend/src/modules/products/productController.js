@@ -561,3 +561,83 @@ exports.uploadReviewImages = async (req, res) => {
     res.status(500).json({ error: "Server error uploading review images." });
   }
 };
+
+
+
+exports.queryProductIntent = async (req, res) => {
+  try {
+    const { intent } = req.params;
+    const { product } = req.body;
+
+    if (!intent || !product) {
+      return res.status(400).json({ message: "Intent and product are required." });
+    }
+
+    // Try to find the product by name (case insensitive)
+    const prod = await Product.findOne({ name: new RegExp(`^${product}$`, "i") });
+
+    if (!prod) {
+      return res.status(404).json({ reply: `Sorry, I couldn't find the product "${product}".` });
+    }
+
+    let reply = "";
+
+switch (intent) {
+  case "usage":
+    reply = prod.usageInstructions || "Usage instructions not available.";
+    break;
+  case "stock":
+    reply = prod.stock > 0
+      ? `Yes, we have ${prod.stock} units available.`
+      : "Sorry, this product is currently out of stock.";
+    break;
+  case "price":
+    reply = `The price of ${prod.name} is $${prod.discount?.discountedPrice || prod.price}.`;
+    break;
+  case "description":
+    reply = prod.description || "No description available.";
+    break;
+  case "ingredients":
+    reply = prod.ingredients?.length
+      ? `Key ingredients include: ${prod.ingredients.join(", ")}.`
+      : "Ingredients are not listed.";
+    break;
+  case "precautions":
+    reply = prod.precautions || "No specific precautions mentioned.";
+    break;
+  case "brand":
+    reply = `This product is by the brand: ${prod.brand}.`;
+    break;
+  case "reviews":
+    reply = `This product has ${prod.reviewCount} review(s) with an average rating of ${prod.averageRating}/5.`;
+    break;
+  case "ratingBreakdown":
+    const stars = prod.ratingBuckets;
+    reply = `Ratings:\n⭐️ 5: ${stars["5"]} | 4: ${stars["4"]} | 3: ${stars["3"]} | 2: ${stars["2"]} | 1: ${stars["1"]}`;
+    break;
+  case "suitableSkinTypes":
+    reply = prod.aiSkinSuitability?.length
+      ? `Suitable for: ${prod.aiSkinSuitability.join(", ")} skin.`
+      : "No skin type suitability listed.";
+    break;
+  case "skinProblem":
+    reply = prod.skinProblem?.length
+      ? `This product helps with: ${prod.skinProblem.join(", ")}.`
+      : "No specific skin issues listed.";
+    break;
+  case "variantOptions":
+    reply = prod.variants?.length
+      ? "Available variants:\n" + prod.variants.map(v => `${v.size} - $${v.price}`).join("\n")
+      : "No variant information available.";
+    break;
+  default:
+    reply = "Sorry, I couldn't understand what you're asking.";
+}
+
+
+    return res.status(200).json({ reply });
+  } catch (error) {
+    console.error("Chatbot query error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};

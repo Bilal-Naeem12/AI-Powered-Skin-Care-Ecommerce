@@ -23,7 +23,7 @@ const OrderDetailPage = () => {
     <div className=" mx-auto p-4 space-y-8 card bg-white">
       {/* Section 1: Ordered Items */}
       <section>
-        <h2 className="text-xl font-semibold mb-4">Ordered Items</h2>
+        <h2 className="text-xl font-semibold mb-4">Ordered Items #{ order.orderNumber}</h2>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>

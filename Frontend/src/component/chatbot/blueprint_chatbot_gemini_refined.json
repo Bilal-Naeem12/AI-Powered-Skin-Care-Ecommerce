@@ -1,0 +1,162 @@
+{
+  "name": "Chatbot Enhanced \u2013 Gemini NLP Post-Processing",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 2455402,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": -493,
+          "y": -4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "gemini-ai:createACompletionGeminiPro",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": 8700562
+      },
+      "mapper": {
+        "model": "gemini-2.0-flash-thinking-exp",
+        "contents": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "type": "text",
+                "text": "You are an AI that extracts intent and product name from skincare-related user queries.\n\nPossible intents: usage, stock, price, description, ingredients, precautions, brand, reviews, ratingBreakdown, suitableSkinTypes, skinProblem, variantOptions\n\nExample output:\n{ \"intent\": \"price\", \"product\": \"LaHaye Face Forward Acne Treatment Serum\" }\n\nNow extract intent and product from this:\n{{1.user_message}}\nRespond in pure JSON only with keys \"intent\" and \"product\"."
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "responseModalities": [
+            "text"
+          ]
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": -106,
+          "y": -17
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "json:ParseJSON",
+      "version": 1,
+      "parameters": {
+        "type": ""
+      },
+      "mapper": {
+        "json": "{{2.choices[0].message.content}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 194,
+          "y": -17
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "url": "https://yourdomain.com/api/products/chatbot/query/{{3.intent}}",
+        "method": "post",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "payload": "raw",
+        "data": "{\n  \"product\": \"{{3.product}}\"\n}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 494,
+          "y": -17
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "gemini-ai:createACompletionGeminiPro",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": 8700562
+      },
+      "mapper": {
+        "model": "gemini-2.0-flash-thinking-exp",
+        "contents": [
+          {
+            "role": "user",
+            "parts": [
+              {
+                "type": "text",
+                "text": "Convert this technical response into a friendly and natural chatbot reply:\n\n\"{{4.reply}}\"\n\nRespond with just the refined message."
+              }
+            ]
+          }
+        ],
+        "generationConfig": {
+          "responseModalities": [
+            "text"
+          ]
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 694,
+          "y": -17
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "gateway:WebhookResponse",
+      "version": 1,
+      "mapper": {
+        "reply": "{{5.choices[0].message.content}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 894,
+          "y": -17
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "slots": null,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu2.make.com",
+    "notes": []
+  }
+}
