@@ -136,7 +136,7 @@ export default function ManageProducts() {
         ) : (
           <>
             <Table>
-              <TableHeader>
+              <TableHeader className="text-start">
                 <TableRow>
                   <TableCell isHeader>Product</TableCell>
                   <TableCell isHeader>Category</TableCell>

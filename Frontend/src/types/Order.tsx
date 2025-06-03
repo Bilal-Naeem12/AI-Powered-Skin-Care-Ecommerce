@@ -10,11 +10,9 @@ import { CartItem } from "./CartItem";
 
 
 export type OrderStatus =
-  | "Created"
-  | "Unpaid"
-  | "Paid"
-  | "Cancelled"
-  | "Closed";
+ | "Created"   // Order initiated, payment pending
+  | "Paid"      // Payment completed, processing/shipping starts
+  | "Cancelled" // Order cancelled before/after payment
 
 export interface OrderStatusHistory {
   what: OrderStatus;
@@ -25,7 +23,7 @@ export interface OrderStatusHistory {
 export interface Order {
   _id: string;
   orderNumber: string;
-  userId: string | User;
+  userId:  User;
 
   cartItems: CartItem[];
   totalAmount: number;

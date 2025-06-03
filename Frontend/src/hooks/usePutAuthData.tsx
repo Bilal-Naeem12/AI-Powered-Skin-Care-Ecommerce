@@ -4,7 +4,7 @@ import useUserStore from "@/store/useUserStore"; // Import the UserStore
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const useUpdateAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
+const usePutAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
   const [responseData, setResponseData] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,4 +64,4 @@ const useUpdateAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) =>
   return { responseData, loading, error };
 };
 
-export default useUpdateAuthData;
+export default usePutAuthData;

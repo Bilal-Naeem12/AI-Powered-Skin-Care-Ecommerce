@@ -65,6 +65,25 @@ OrderSchema.pre("validate", async function (next) {
   } catch (e) { next(e); }
 });
 
+OrderSchema.set("toObject", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    if (ret.statusHistory && Array.isArray(ret.statusHistory)) {
+      ret.statusHistory.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    }
+    return ret;
+  }
+});
+
+OrderSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    if (ret.statusHistory && Array.isArray(ret.statusHistory)) {
+      ret.statusHistory.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    }
+    return ret;
+  }
+});
 
 OrderSchema.pre(/^find/, function (next) {
   this.populate({

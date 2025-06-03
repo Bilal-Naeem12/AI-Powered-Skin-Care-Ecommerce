@@ -4,7 +4,7 @@ import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 
 import AdminDashboard from "@/pages/admin-side/AdminDashboard";
 import AdminNotFound from "@/pages/admin-side/AdminNotFound";
-import ManageOrders from "@/pages/admin-side/ManageOrders";
+import ManageOrders from "@/pages/admin-side/Orders & Payments/ManageOrders";
 import ManageProducts from "@/pages/admin-side/Products/ManageProducts";
 import ManageUsers from "@/pages/admin-side/Users/ManageUsers";
 import SiteSettings from "@/pages/admin-side/SiteSettings";
@@ -23,6 +23,7 @@ import "flatpickr/dist/flatpickr.css";
 import AdminProfile from "@/pages/admin-side/Users/AdminProfile";
 import DeletedUsers from "@/pages/admin-side/Users/DeletedUsers";
 import ManageCategories from "@/pages/admin-side/Products/ManageCategories";
+
 const AdminRouter: React.FC = () => {
 
   return (
@@ -40,7 +41,7 @@ const AdminRouter: React.FC = () => {
           <Route path="users" element={<ManageUsers />} />
           <Route path="/users/deleted" element={<DeletedUsers />} />
 
-
+ 
 
 
           <Route path="products" element={<ManageProducts />} />
