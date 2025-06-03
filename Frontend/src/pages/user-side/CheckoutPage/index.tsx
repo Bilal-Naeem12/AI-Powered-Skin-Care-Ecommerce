@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import BillingForm from "./BillingForm";
 import OrderSummary from "./OrderSummary";
 import MainLayout from "../../../component/Layout/MainLayout";
 import { Box } from "@mui/material";
 import useCartStore from "../../../store/useCartStore"; // Import the Zustand store
+import useUserStore from "@/store/useUserStore";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage: React.FC = () => {
 
+   const { isLoggedIn } = useUserStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast.error("Login to proceed");
+      console.log("hello")
+      navigate("/login");
+    }
+  }, [isLoggedIn]);
 
   return (
     <MainLayout>
