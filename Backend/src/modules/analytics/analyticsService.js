@@ -3,7 +3,9 @@ const Analytics = require("./analyticsModel");
 
 /* ---------- CRUD helpers ---------- */
 exports.createAnalytics = (data) => new Analytics(data).save();
-exports.getAnalyticsByPeriod = (period) => Analytics.find({ period }).sort({ startDate: -1 });
+exports.getAnalyticsByCustomQuery = (query) =>
+  Analytics.find(query).sort({ startDate: -1 });
+
 exports.calculateAnalyticsTrend = (metricType, period = "Day") =>
   Analytics.updateTrend(metricType, period);
 

@@ -5,7 +5,7 @@ import PageMeta from "@/component/common/PageMeta";
 import EcommerceMetrics   from "@/component/admin/ecommerce/EcommerceMetrics";
 import MonthlySalesChart  from "@/component/admin/ecommerce/MonthlySalesChart";
 import StatisticsChart    from "@/component/admin/ecommerce/StatisticsChart";
-import MonthlyTarget      from "@/component/admin/ecommerce/MonthlyTarget";
+import {MonthlyTarget}      from "@/component/admin/ecommerce/MonthlyTarget";
 import RecentOrders       from "@/component/admin/ecommerce/RecentOrders";
 
 import {
@@ -13,6 +13,7 @@ import {
   DashboardKPI as KPI,
   LinePoint,
   LeaderboardRow as Leader,
+  MetricKPI,
 } from "@/types/DashboardResponse";
 
 const API = import.meta.env.VITE_API_BASE;
@@ -25,8 +26,8 @@ export default function Home() {
   const [kpi,      setKpi]      = useState<KPI | null>(null);
   const [line,     setLine]     = useState<LinePoint[]>([]);
   const [leaders,  setLeaders]  = useState<Leader[]>([]);
-  // const [recent,   setRecent]   = useState<RecentOrder[]>([]);
-
+  const [todayRevenue,   setTodayRevenue]   = useState<MetricKPI>();
+  const TARGET = 2500
   /* ----------------------------------------------------------------
      Side-effect: fetch dashboard + recent orders
      ---------------------------------------------------------------- */
@@ -40,8 +41,24 @@ export default function Home() {
         setLeaders(dash.leaderboard);
 
         /* recent orders (6) */
-        // const recJson = await fetch(`${import.meta.env.VITE_API_BACKEND_URL}/orders?limit=6`).then(r => r.json());
-        // setRecent(recJson.docs ?? recJson);           // adapt if you paginate
+  const recJson = await fetch(
+  `${import.meta.env.VITE_API_BACKEND_URL}/analytics/period/Day?metricTypes=TotalRevenue&today=true`
+)
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to fetch analytics");
+    return res.json();
+  })
+  .catch(err => {
+    console.error("Analytics fetch error:", err);
+    return null;
+  });
+
+if (recJson) {
+  const rawData = Array.isArray(recJson.docs) ? recJson.docs : Array.isArray(recJson) ? recJson : [recJson];
+  const value = rawData?.[0]?.value || 0;
+  const changePct = rawData?.[0]?.changePct || 0;
+  setTodayRevenue({value:value,changePct}); // ✅ this is what you want
+}      // adapt if you paginate
       } catch (err) {
         console.error("Dashboard fetch failed:", err);
       } finally {
@@ -56,7 +73,7 @@ export default function Home() {
   if (loading) return <div className="p-10 text-center">Loading…</div>;
 
   /* target for radial chart (20 K here — change to env or prop) */
-  const progress = kpi ? (kpi.totalRevenue.value / 2000) * 100 : 0;
+  const progress = kpi ? (kpi.totalRevenue.value / TARGET) * 100 : 0;
 
   return (
     <>
@@ -69,7 +86,7 @@ export default function Home() {
         </div>
 
         <div className="col-span-12 xl:col-span-5">
-          <MonthlyTarget progress={progress} />
+          <MonthlyTarget progress={progress} target={TARGET} revenue={kpi?.totalRevenue.value} todayRevenue={todayRevenue} changePct={kpi?.totalRevenue.changePct}/>
         </div>
 
         <div className="col-span-12">

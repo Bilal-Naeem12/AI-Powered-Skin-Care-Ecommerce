@@ -14,9 +14,67 @@ exports.createAnalytics = async (req, res) => {
 exports.getAnalyticsByPeriod = async (req, res) => {
   try {
     const { period } = req.params;
-    const data = await AnalyticsService.getAnalyticsByPeriod(period);
-    if (!data.length) return res.status(404).json({ message: "No data" });
-    res.json(data);
+    const { metricTypes, startDate, endDate, today } = req.query;
+
+    const query = { period };
+    const dateNow = new Date();
+    let rangeStart, rangeEnd, prevRangeStart, prevRangeEnd;
+
+    // Handle today shortcut for Day or Month
+    if (today === "true") {
+      if (period === "Day") {
+        rangeStart = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate());
+        rangeEnd = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate() + 1);
+        prevRangeStart = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate() - 1);
+        prevRangeEnd = rangeStart;
+      } else if (period === "Month") {
+        rangeStart = new Date(dateNow.getFullYear(), dateNow.getMonth(), 1);
+        rangeEnd = new Date(dateNow.getFullYear(), dateNow.getMonth() + 1, 1);
+        prevRangeStart = new Date(dateNow.getFullYear(), dateNow.getMonth() - 1, 1);
+        prevRangeEnd = rangeStart;
+      }
+
+      query.startDate = { $gte: prevRangeStart, $lt: rangeEnd };
+    } else if (startDate || endDate) {
+      query.startDate = {};
+      if (startDate) query.startDate.$gte = new Date(startDate);
+      if (endDate) query.startDate.$lte = new Date(endDate);
+    }
+
+    // Optional metric type filter
+    if (metricTypes) {
+      const types = metricTypes.split(",").map((t) => t.trim());
+      query.metricType = { $in: types };
+    }
+
+    const data = await AnalyticsService.getAnalyticsByCustomQuery(query);
+    if (!data.length) return res.status(404).json({ message: "No data found" });
+
+    const result = [];
+    const grouped = {};
+
+    // Group by metricType
+    for (const doc of data) {
+      const type = doc.metricType;
+      if (!grouped[type]) grouped[type] = [];
+      grouped[type].push(doc);
+    }
+
+    // Sort and calculate changePct
+    for (const type in grouped) {
+      const items = grouped[type].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+      const latest = items[items.length - 1];
+      const previous = items.length > 1 ? items[items.length - 2] : null;
+
+      const changePct = previous ? ((latest.value - previous.value) / previous.value) * 100 : 0;
+
+      result.push({
+        ...latest._doc,
+        changePct: +changePct.toFixed(2),
+      });
+    }
+
+    res.json({ docs: result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
