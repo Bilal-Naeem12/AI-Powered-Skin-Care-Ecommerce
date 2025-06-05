@@ -1,13 +1,19 @@
 import { Product } from "./Product";
 
+
+export interface MetricKPI {
+  value: number;
+  changePct: number; // Percentage change vs previous period
+}
 /* ------------------------------------------------------------------
    2.  KPI block
    ------------------------------------------------------------------ */
+
 export interface DashboardKPI {
-  totalRevenue: number;
-  totalOrders:  number;
-  totalUsers:   number;
-  totalProducts:number;
+  totalRevenue: MetricKPI;
+  totalOrders:  MetricKPI;
+  totalUsers:   MetricKPI;
+  totalProducts: MetricKPI;
 }
 
 /* ------------------------------------------------------------------

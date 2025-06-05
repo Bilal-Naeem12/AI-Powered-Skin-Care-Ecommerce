@@ -58,13 +58,13 @@ app.set('view engine', 'ejs');
 app.use("/api", mainRouter);
 // **404 Error Handling**
 // At the bottom of all routes
-// app.use((err, req, res, next) => {
-//   const status = err.status || 500;
-//   res.status(status).json({
-//     success: false,
-//     message: err.message || "Internal Server Error",
-//   });
-// });
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  res.status(status).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
 
 // **Global Error Handler**
 app.use((err, req, res, next) => {

@@ -7,6 +7,7 @@ import {
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
 import { LeaderboardRow } from "@/types/DashboardResponse";
+import { Eye, View } from "lucide-react";
 
 // Define the TypeScript interface for the table rows
 interface Product {
@@ -157,7 +158,7 @@ rows.map((row)=>{
                   {product.price}
                 </TableCell>
                  <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.view}
+              <div className=" items-center justify-center flex  gap-2 ">{product.view}   <Eye/></div>  
                 </TableCell>
                 {/* <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   <Badge

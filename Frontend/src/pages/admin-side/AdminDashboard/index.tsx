@@ -56,7 +56,7 @@ export default function Home() {
   if (loading) return <div className="p-10 text-center">Loading…</div>;
 
   /* target for radial chart (20 K here — change to env or prop) */
-  const progress = kpi ? (kpi.totalRevenue / 1000) * 100 : 0;
+  const progress = kpi ? (kpi.totalRevenue.value / 2000) * 100 : 0;
 
   return (
     <>

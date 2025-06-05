@@ -13,9 +13,9 @@ export default function EcommerceMetrics({ kpi }: Props) {
   if (!kpi) return null;
 
   const cards = [
-    { label: "Revenue", value: `$${kpi.totalRevenue.toFixed(2)}`, trend: +11, icon: GroupIcon },
-    { label: "Orders",  value: kpi.totalOrders,        trend: -9,  icon: BoxIconLine },
-    { label: "Users",   value: kpi.totalUsers,         trend: +4,  icon: GroupIcon }
+    { label: "Revenue", value: `$${kpi.totalRevenue.value.toFixed(2)}`, trend: kpi.totalRevenue.changePct, icon: GroupIcon },
+    { label: "Orders",  value: kpi.totalOrders.value,        trend: kpi.totalOrders.changePct,  icon: BoxIconLine },
+    { label: "Users",   value: kpi.totalUsers.value,         trend: kpi.totalUsers.changePct,  icon: GroupIcon }
   ];
 
   return (

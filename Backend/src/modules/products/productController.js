@@ -103,36 +103,27 @@ exports.getAllProducts = async (req, res) => {
 
 // **🔹 Get Single Product by ID**
 exports.getProductById = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product || product.isDeleted) return res.status(404).json({ message: "Product not found" });
-  console.log("bumpinggg");
-await Promise.all([
-  // Day bucket
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product || product.isDeleted)
+      return res.status(404).json({ message: "Product not found" });
 
+    // Trigger view bumps (day & month)
+    const now = new Date();
+    const link = { associatedEntity: product._id, entityModel: "Product" };
 
-  Analytics.bump(
-    "ProductViews",
-    1,
-    "Day",
-    new Date(),
-    { associatedEntity: product._id, entityModel: "Product" }
-  ),
+    await Promise.all([
+      Analytics.bump("ProductViews", 1, "Day", now, link),
+      Analytics.bump("ProductViews", 1, "Month", now, link)
+    ]);
 
-  // Month bucket (for line chart)
-  Analytics.bump(
-    "ProductViews",
-    1,
-    "Month",
-    new Date(),
-    { associatedEntity: product._id, entityModel: "Product" }
-  )
-]);
-    res.status(200).json( product );
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("Error in getProductById:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
+
 // src/modules/products/productController.js
 
 exports.getRelatedProductsById = async (req, res) => {

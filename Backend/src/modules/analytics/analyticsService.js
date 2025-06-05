@@ -42,3 +42,8 @@ exports.getLeaderboard = async (metricType, limit = 10) => {
   ]);
   return docs;
 };
+
+
+exports.getKPICardByStart = async (metricType, period, startDate) => {
+  return Analytics.findOne({ metricType, period, startDate }).lean();
+};
