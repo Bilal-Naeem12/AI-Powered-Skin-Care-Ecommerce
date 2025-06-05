@@ -57,9 +57,14 @@ app.set('view engine', 'ejs');
 // **Module Routes** - Connect each module to its route path
 app.use("/api", mainRouter);
 // **404 Error Handling**
-app.use((req, res, next) => {
-    next(createError(404, "The requested resource was not found."));
-});
+// At the bottom of all routes
+// app.use((err, req, res, next) => {
+//   const status = err.status || 500;
+//   res.status(status).json({
+//     success: false,
+//     message: err.message || "Internal Server Error",
+//   });
+// });
 
 // **Global Error Handler**
 app.use((err, req, res, next) => {

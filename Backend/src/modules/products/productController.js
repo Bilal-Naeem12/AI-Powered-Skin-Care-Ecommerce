@@ -3,6 +3,7 @@ const Product = require("./productModel");
 const mongoose = require('mongoose');
 const slugify = require("slugify");
 const Analytics = require("../analytics/analyticsModel");
+
 const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
 const cloud    = require("../../utils/cloudinary");
@@ -105,9 +106,11 @@ exports.getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product || product.isDeleted) return res.status(404).json({ message: "Product not found" });
-
+  console.log("bumpinggg");
 await Promise.all([
   // Day bucket
+
+
   Analytics.bump(
     "ProductViews",
     1,

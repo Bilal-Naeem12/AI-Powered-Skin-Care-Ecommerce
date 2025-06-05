@@ -4,8 +4,13 @@ import { Dropdown } from "@/component/admin/Dropdown";
 import { DropdownItem } from "@/component/admin/DropdownItem";
 import { MoreDotIcon } from "@/icons";
 import { useState } from "react";
+import { LinePoint } from "@/types/DashboardResponse";
 
-export default function MonthlySalesChart() {
+interface Props { points: LinePoint[] }
+
+export default function MonthlySalesChart({ points }: Props) {
+
+   const series = [{ name: "Revenue", data: points.map(p => parseFloat(p.value.toFixed(0))) }];
   const options: ApexOptions = {
     colors: ["#ff69b4"],
     chart: {
@@ -33,20 +38,7 @@ export default function MonthlySalesChart() {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+    categories: points.map(p => new Date(p.date).toLocaleString("default", { month: "short" })),
       axisBorder: {
         show: false,
       },
@@ -85,12 +77,12 @@ export default function MonthlySalesChart() {
       },
     },
   };
-  const series = [
-    {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
-    },
-  ];
+  // const series = [
+  //   {
+  //     name: "Sales",
+  //     data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+  //   },
+  // ];
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {

@@ -6,75 +6,47 @@ import {
   TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
+import { LeaderboardRow } from "@/types/DashboardResponse";
 
 // Define the TypeScript interface for the table rows
 interface Product {
-  id: number; // Unique identifier for each product
+  id: string; // Unique identifier for each product
   name: string; // Product name
-  variants: string; // Number of variants (e.g., "1 Variant", "2 Variants")
-  category: string; // Category of the product
-  price: string; // Price of the product (as a string with currency symbol)
+  view: number; // Number of variants (e.g., "1 Variant", "2 Variants")
+  brand: string; // Category of the product
+  price: number; // Price of the product (as a string with currency symbol)
   // status: string; // Status of the product
   image: string; // URL or path to the product image
-  status: "Delivered" | "Pending" | "Canceled"; // Status of the product
+  description: string;
 }
 
-// Define the table data using the interface
-const tableData: Product[] = [
-  {
-    id: 1,
-    name: "MacBook Pro 13”",
-    variants: "2 Variants",
-    category: "Laptop",
-    price: "$2399.00",
-    status: "Delivered",
-    image: "/images/product/product-01.jpg", // Replace with actual image URL
-  },
-  {
-    id: 2,
-    name: "Apple Watch Ultra",
-    variants: "1 Variant",
-    category: "Watch",
-    price: "$879.00",
-    status: "Pending",
-    image: "/images/product/product-02.jpg", // Replace with actual image URL
-  },
-  {
-    id: 3,
-    name: "iPhone 15 Pro Max",
-    variants: "2 Variants",
-    category: "SmartPhone",
-    price: "$1869.00",
-    status: "Delivered",
-    image: "/images/product/product-03.jpg", // Replace with actual image URL
-  },
-  {
-    id: 4,
-    name: "iPad Pro 3rd Gen",
-    variants: "2 Variants",
-    category: "Electronics",
-    price: "$1699.00",
-    status: "Canceled",
-    image: "/images/product/product-04.jpg", // Replace with actual image URL
-  },
-  {
-    id: 5,
-    name: "AirPods Pro 2nd Gen",
-    variants: "1 Variant",
-    category: "Accessories",
-    price: "$240.00",
-    status: "Delivered",
-    image: "/images/product/product-05.jpg", // Replace with actual image URL
-  },
-];
 
-export default function RecentOrders() {
+interface Props { rows: LeaderboardRow[] }   // 0–100
+
+export default function RecentOrders({rows}:Props) {
+
+  // Define the table data using the interface
+const tableData: Product[] = 
+rows.map((row)=>{
+
+ return {
+    id: row.product._id,
+    name: row.product.name,
+    brand: row.product.brand,
+    price: row.product.price,
+    description:row.product.description,
+    view: row.views ,
+    image: row.product.images?.[0], // Replace with actual image URL
+  }
+
+})
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Orders
+          Most Viewed Products
           </h3>
         </div>
 
@@ -137,7 +109,7 @@ export default function RecentOrders() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Category
+                Brand
               </TableCell>
               <TableCell
                 isHeader
@@ -149,7 +121,7 @@ export default function RecentOrders() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Status
+           Views
               </TableCell>
             </TableRow>
           </TableHeader>
@@ -173,18 +145,21 @@ export default function RecentOrders() {
                         {product.name}
                       </p>
                       <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                        {product.variants}
+                        {product.description.slice(0,50)}...
                       </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {product.brand}
+                </TableCell>
+                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   {product.price}
                 </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {product.category}
+                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {product.view}
                 </TableCell>
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                {/* <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
@@ -197,7 +172,7 @@ export default function RecentOrders() {
                   >
                     {product.status}
                   </Badge>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

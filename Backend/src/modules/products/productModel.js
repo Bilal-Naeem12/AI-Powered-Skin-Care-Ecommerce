@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema, model, Types } = require("mongoose");
+const createError = require('http-errors');
+const Analytics = require("../analytics/analyticsModel");
 
 const ProductSchema = new mongoose.Schema({
     name: {
@@ -150,13 +152,18 @@ ProductSchema.virtual("reviews", {
 ) {
   if (variant) {
     const v = this.variants.find(v => v.size === variant);
-    if (!v || v.stock < qty) throw new Error("Variant out of stock");
+    if (!v || v.stock < qty) throw createError(400, "Variant out of stock");;
     v.stock -= qty;
   } else {
-    if (this.stock < qty) throw new Error("Product out of stock");
+    if (this.stock < qty) throw createError(400, "Product out of stock");
     this.stock -= qty;
   }
   this.soldCount += qty;
+
+     await Promise.all([
+      Analytics.bump("MostPurchasedProduct", qty, "Day",   new Date(), { associatedEntity: this._id, entityModel: "Product" }),
+      Analytics.bump("MostPurchasedProduct", qty, "Month", new Date(), { associatedEntity: this._id, entityModel: "Product" })
+    ]);
   await this.save({ session });
 };
 

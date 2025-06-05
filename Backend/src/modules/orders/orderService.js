@@ -4,6 +4,7 @@ const Product = require("../products/productModel");
 const Payment = require("../payments/paymentModel");
 const Shipping = require("../shipping/shippingModel");
 const { generateOrderId } = require("./orderUtils");
+const createError = require('http-errors');
 
 /* ────────────────────────────────────────────────────────────── *
  * 1.  PLACE ORDER  (create Order → Payment → Shipping)           *
@@ -23,7 +24,7 @@ exports.placeOrder = async ({
     let total = 0;
     for (const it of cartItems) {
       const prod = await Product.findById(it.productId).session(session);
-      if (!prod || prod.isDeleted) throw new Error("Product not found");
+      if (!prod || prod.isDeleted) throw createError(404, "Product not found");
 
       await prod.adjustStock(it.quantity, it.selectedVariant, session);
       it.priceAtTimeOfOrder = it.priceAtTimeOfOrder || prod.price;

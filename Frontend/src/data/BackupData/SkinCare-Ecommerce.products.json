@@ -1,0 +1,2592 @@
+[{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378275"
+  },
+  "name": "LaHaye Face Forward Acne Treatment Serum",
+  "description": "An advanced acne treatment serum with micronized benzoyl peroxide and glycolic acid to exfoliate and heal.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "LaHaye",
+  "price": 45,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 45
+  },
+  "stock": 25,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 45,
+      "stock": 28
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133591/myShop/products/a38d377a-44a1-4308-abe1-5dc04542b655.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133591/myShop/products/6837bcdc-f34f-4d0c-b741-fd66373e6d05.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133591/myShop/products/de18cea7-2631-4efd-a561-9f8f139a946c.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133591/myShop/products/94be4df9-70ff-4c14-99c3-3095f58beb66.webp"
+  ],
+  "ingredients": [
+    "Micronized Benzoyl Peroxide",
+    "Glycolic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 3,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:06:32.749Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378278"
+  },
+  "name": "Thayers Double Action Acne Serum",
+  "description": "A dual-action serum that fights acne and replenishes moisture with salicylic acid and hyaluronic acid.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Thayers",
+  "price": 15,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 15
+  },
+  "stock": 156,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "75ml",
+      "price": 15,
+      "stock": 64,
+      "_id": {
+        "$oid": "681968f1a7770c7b5b1486be"
+      }
+    },
+    {
+      "size": "30ml",
+      "price": 15,
+      "stock": 38,
+      "_id": {
+        "$oid": "681968f1a7770c7b5b1486bf"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133456/myShop/products/5872ea4e-f4c2-4bb3-8fb6-2c0167efe7e6.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133456/myShop/products/fca6b7ab-77bc-44e0-80ec-98b5d5e986eb.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133456/myShop/products/756a4668-ba8f-491d-9b05-1eaafff51515.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133456/myShop/products/95afd6c4-b26a-4159-b015-20de047c6cd3.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133456/myShop/products/ac0380e6-f4e3-4c5c-9b0d-a174b0154391.jpg"
+  ],
+  "ingredients": [
+    "Salicylic Acid",
+    "Hyaluronic Acid",
+    "Ceramides"
+  ],
+  "aiSkinSuitability": [
+    "Normal"
+  ],
+  "averageRating": 4,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 1,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 150,
+  "isFeatured": true,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-06T01:42:09.816Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 25
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378279"
+  },
+  "name": "Anti Acne Serum",
+  "description": "A lightweight acne-fighting serum enriched with oleanolic acid and NDGA to balance and clarify skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Vince",
+  "price": 7,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 7
+  },
+  "stock": 252,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 7,
+      "stock": 164
+    },
+    {
+      "size": "100ml",
+      "price": 7,
+      "stock": 134
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133645/myShop/products/8264f595-7ef9-4050-a6eb-77be6c90f790.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133646/myShop/products/d8434b34-e476-4de3-a281-6a3c54a39744.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133646/myShop/products/b1ec4cb0-82ab-4074-a69a-3313ba22ec70.webp"
+  ],
+  "ingredients": [
+    "Oleanolic acid",
+    "Capryly Glycol",
+    "NDGA"
+  ],
+  "aiSkinSuitability": [
+    "Normal"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 46,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:07:27.640Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378281"
+  },
+  "name": "Tocobo Collagen Brightening Eye Gel Cream",
+  "description": "Tocobo Collagen Brightening Eye Gel Cream is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Tocobo",
+  "price": 15.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 15.99
+  },
+  "stock": 97,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 15.99,
+      "stock": 100
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134447/myShop/products/59904b4f-5701-455a-898b-d6098fd2c2f0.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134448/myShop/products/fd42d015-361c-41a0-9afd-7b358012b9cb.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134447/myShop/products/c2e62642-d745-4448-b75f-32c60b58781e.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134448/myShop/products/f8a21518-be97-4ee4-9471-ec5668d4c291.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134447/myShop/products/da80a800-b850-41d9-ae54-af50cd17494c.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134448/myShop/products/6f4c2093-71c5-453b-ad8f-f7185bc2f474.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134448/myShop/products/31e8a7c5-4d8e-447f-9231-60e911b1ef2b.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134452/myShop/products/7616c4a8-6689-46eb-a9ce-c439416754c8.webp"
+  ],
+  "ingredients": [
+    "Hydrolyzed Collagen",
+    "Niacinamide"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 3,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:24:00.112Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378282"
+  },
+  "name": "Estée Lauder Advanced Night Repair Eye Gel-Creme",
+  "description": "Estée Lauder Advanced Night Repair Eye Gel-Creme is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Estée Lauder",
+  "price": 72,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 72
+  },
+  "stock": 118,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 72,
+      "stock": 37
+    },
+    {
+      "size": "50ml",
+      "price": 72,
+      "stock": 81
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134505/myShop/products/372e1d88-2601-4ded-aad3-acfca60f9691.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134504/myShop/products/9e7853ab-9b86-473e-aee9-0b22f7115947.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134505/myShop/products/1eb93e8a-b909-4453-a9e2-82bec50bea29.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134506/myShop/products/a01b6915-a1b6-4a1e-a695-796ed4b8d6d8.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134505/myShop/products/57c6bf71-b208-4d21-9181-9acb8358bd27.avif"
+  ],
+  "ingredients": [
+    "ChronoluxCB™",
+    "Hyaluronic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:21:47.463Z"
+  },
+  "skinProblem": "Dark Circles",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378284"
+  },
+  "name": "Ole Henriksen Banana Bright+ Eye Crème",
+  "description": "Ole Henriksen Banana Bright+ Eye Crème is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Ole Henriksen",
+  "price": 44,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 44
+  },
+  "stock": 42,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 44,
+      "stock": 42
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135002/myShop/products/5f30ed0b-d2cc-40d4-a325-52bb3a5d3d95.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135002/myShop/products/388a2931-af8f-424d-bf11-d3d419909f2d.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135004/myShop/products/ea36ddde-d6b6-4e73-a64a-565100a13096.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135003/myShop/products/71a1b4cf-0709-4856-9fe8-3e0f6a822e27.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135003/myShop/products/0741c8f0-5234-4def-9e89-d3a07f75659a.webp"
+  ],
+  "ingredients": [
+    "Vitamin C",
+    "Collagen"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:30:05.156Z"
+  },
+  "skinProblem": "Dark Circles",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378287"
+  },
+  "name": "CeraVe Foaming Facial Cleanser",
+  "description": "CeraVe Foaming Facial Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "CeraVe",
+  "price": 14.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 14.99
+  },
+  "stock": 92,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 14.99,
+      "stock": 28
+    },
+    {
+      "size": "200ml",
+      "price": 14.99,
+      "stock": 77
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/75ae806c-482c-437e-9fe2-89f052190585.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/4f707e4c-c146-4931-8adb-a8d21428bca9.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/1604770f-ac7d-43c8-87b6-3171e8eb3a28.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/753628be-91c0-42d5-a6f9-5d966c2fa239.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/ceb12428-a497-4286-b03c-9576a4faf092.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133937/myShop/products/3bf24dcd-64d9-4434-a8fd-be5eb56c7a37.webp"
+  ],
+  "ingredients": [
+    "Ceramides",
+    "Niacinamide",
+    "Hyaluronic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 13,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:12:34.674Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828a"
+  },
+  "name": "Neutrogena Oil-Free Acne Wash Pink Grapefruit Facial Cleanser",
+  "description": "Neutrogena Oil-Free Acne Wash Pink Grapefruit Facial Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Neutrogena",
+  "price": 8.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 8.99
+  },
+  "stock": 158,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 8.99,
+      "stock": 85,
+      "_id": {
+        "$oid": "684152d3554cfc89c9353677"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133842/myShop/products/148f4515-2adf-4186-b4b7-995f2f674897.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133842/myShop/products/5a51b798-28be-44cf-9192-476dcf987f2f.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133842/myShop/products/beb04183-accd-4bd8-b6db-66bcfdba9170.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133842/myShop/products/98936de3-6841-49bb-94f5-b94cdb11e785.jpg"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Grapefruit Extract",
+    "Vitamin C"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 4,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 1,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 127,
+  "isFeatured": true,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-06-05T08:18:27.809Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828e"
+  },
+  "name": "Cetaphil Gentle Skin Cleanser",
+  "description": "Cetaphil Gentle Skin Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Cetaphil",
+  "price": 10.49,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 10.49
+  },
+  "stock": 24,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "200ml",
+      "price": 10.49,
+      "stock": 37
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134134/myShop/products/2ebe6701-b343-49cc-b4be-1bf395a16d43.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134135/myShop/products/4fe86117-0786-48c9-83a1-0e4efdd48a8c.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134134/myShop/products/a642ed6b-eeca-427a-b008-95f40b96b4f1.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134134/myShop/products/f99eb3dc-1b3d-4444-858e-9d5826207e19.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134135/myShop/products/3cbbdf5b-39ec-41dd-a2de-902b0d251504.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134135/myShop/products/62462a7f-4b39-4552-83af-93db127c6f03.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134134/myShop/products/689b9d79-8e22-4139-93bb-97420d79a4c0.webp"
+  ],
+  "ingredients": [
+    "Glycerin",
+    "Panthenol",
+    "Niacinamide"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 13,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:15:36.193Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828f"
+  },
+  "name": "First Aid Beauty Pure Skin Face Cleanser",
+  "description": "First Aid Beauty Pure Skin Face Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "First Aid Beauty",
+  "price": 24,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 24
+  },
+  "stock": 120,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 24,
+      "stock": 120
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134113/myShop/products/2ae63a99-c9d8-4d6e-a4d5-6d5b6c004412.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134113/myShop/products/bca89454-207e-4855-9505-c4082ec7c831.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134113/myShop/products/ca687627-23b8-4162-b65a-dbf252af9ef5.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134113/myShop/products/be2b1bd5-cb29-478e-8fdf-f56ad618a406.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134112/myShop/products/30c69734-e629-4e01-be15-69d64f546d39.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134113/myShop/products/4105e69a-64aa-4352-bce1-65b370f68157.avif"
+  ],
+  "ingredients": [
+    "Glycerin",
+    "Aloe Vera"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:15:14.328Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378295"
+  },
+  "name": "Fresh Soy Face Cleanser",
+  "description": "Fresh Soy Face Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Fresh",
+  "price": 38,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 38
+  },
+  "stock": 187,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 38,
+      "stock": 57
+    },
+    {
+      "size": "200ml",
+      "price": 38,
+      "stock": 130
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134937/myShop/products/ca9a2bae-8634-4c97-b76b-fed10502e79b.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134937/myShop/products/433280ef-0b37-40bd-9a09-9e85351e8262.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134937/myShop/products/65963ea7-d3d2-4410-bf3f-3a674439c1e9.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134938/myShop/products/b809c297-7936-4ad1-91f7-05123b7050ab.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134938/myShop/products/4859ae45-7410-4277-ab2a-132e0a4b26de.jpg"
+  ],
+  "ingredients": [
+    "Soy Proteins",
+    "Cucumber Extract",
+    "Rosewater"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:28:59.227Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378272"
+  },
+  "name": "La Roche-Posay Effaclar Ultra Concentrated Anti-Acne Serum",
+  "description": "An ultra-concentrated anti-acne formula that deeply penetrates pores to eliminate breakouts and refine skin texture.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "La Roche-Posay",
+  "price": 39.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 39.99
+  },
+  "stock": 186,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 39.99,
+      "stock": 54
+    },
+    {
+      "size": "15ml",
+      "price": 39.99,
+      "stock": 132
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133795/myShop/products/dcfbab4f-6835-4d54-9553-5511f7281a16.webp"
+  ],
+  "ingredients": [
+    "Salicylic Acid",
+    "Niacinamide"
+  ],
+  "aiSkinSuitability": [
+    "Dry"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:09:56.868Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378273"
+  },
+  "name": "Tea Tree Acne Treatment Serum",
+  "description": "A natural tea tree oil-based serum that targets acne-causing bacteria and reduces redness for clearer skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "BREYLEE",
+  "price": 9.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 9.99
+  },
+  "stock": 215,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 9.99,
+      "stock": 97,
+      "_id": {
+        "$oid": "6813ea5dfa64980c17b1cf30"
+      }
+    },
+    {
+      "size": "100ml",
+      "price": 9.99,
+      "stock": 187,
+      "_id": {
+        "$oid": "6813ea5dfa64980c17b1cf31"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133613/myShop/products/79b307ae-ef30-4dad-a104-c0e90dddf34a.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/61cb796c-295b-4498-a161-e7727b07e57f.png"
+  ],
+  "ingredients": [
+    "Tea Tree Oil",
+    "Camellia Sinensis Leaf Extract"
+  ],
+  "aiSkinSuitability": [
+    "Dry"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 69,
+  "isFeatured": true,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:40:45.711Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378277"
+  },
+  "name": "CeraVe Acne Control G",
+  "description": "A clear-control gel that combines salicylic acid, ceramides, and lactic-glycolic acid to treat and prevent acne.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "CeraVe",
+  "price": 19.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 19.99
+  },
+  "stock": 244,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "75ml",
+      "price": 19.99,
+      "stock": 178,
+      "_id": {
+        "$oid": "683ecb34929c50d01c95f2a7"
+      }
+    },
+    {
+      "size": "15ml",
+      "price": 19.99,
+      "stock": 19,
+      "_id": {
+        "$oid": "683ecb34929c50d01c95f2a8"
+      }
+    },
+    {
+      "size": "50ml",
+      "price": 19.99,
+      "stock": 51,
+      "_id": {
+        "$oid": "683ecb34929c50d01c95f2a9"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133562/myShop/products/7ed523e9-0045-488e-9496-39c8351c407c.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133562/myShop/products/44de261e-d238-475c-8473-0b707afc271d.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133563/myShop/products/70bcf9d7-622f-4228-abe3-23ef59efdbd4.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133563/myShop/products/9ab0b25b-756f-4f40-abe0-61274d84fcc2.webp"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Ceramides",
+    "Lactic-Glycolic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 4,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-03T10:15:16.698Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827c"
+  },
+  "name": "Cetaphil Healthy Renew Eye Gel Serum",
+  "description": "Cetaphil Healthy Renew Eye Gel Serum is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Cetaphil",
+  "price": 22.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 22.99
+  },
+  "stock": 167,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 22.99,
+      "stock": 71
+    },
+    {
+      "size": "30ml",
+      "price": 22.99,
+      "stock": 26
+    },
+    {
+      "size": "15ml",
+      "price": 22.99,
+      "stock": 70
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134556/myShop/products/c4a83137-0c5b-47af-923c-6bf4cf55a790.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134556/myShop/products/23359d0c-d571-4085-a710-26b46a5b494f.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134556/myShop/products/4934e494-59bf-4ee4-ac40-3cb621ce3e9e.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134556/myShop/products/25208bcf-1249-46eb-b586-9cedbfeaf2c0.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134556/myShop/products/9d547262-5597-4842-b7c6-84ad2ed99cdf.jpg"
+  ],
+  "ingredients": [
+    "Vitamin B3",
+    "B5",
+    "E",
+    "Peptides"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:22:37.678Z"
+  },
+  "skinProblem": "Dark Circles",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378286"
+  },
+  "name": "Beauty of Joseon Revive Eye Serum",
+  "description": "Beauty of Joseon Revive Eye Serum is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Beauty of Joseon",
+  "price": 17.5,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 17.5
+  },
+  "stock": 146,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 17.5,
+      "stock": 64
+    },
+    {
+      "size": "15ml",
+      "price": 17.5,
+      "stock": 89
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135301/myShop/products/b370523e-7182-4dce-8d72-3e98d8f8f82b.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135301/myShop/products/e3f4b80c-f298-4d57-952d-93913757eac3.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135301/myShop/products/7ce1f4fa-106c-4fe0-bc72-fe7c1f8fc2c1.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135302/myShop/products/ced15eb3-9970-4e48-9c94-40470742a7aa.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135301/myShop/products/c9fdebca-06b1-4fc9-ad80-14cf828b2f56.jpg"
+  ],
+  "ingredients": [
+    "Ginseng",
+    "Retinal"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 7,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:35:03.049Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828d"
+  },
+  "name": "La Roche-Posay Toleriane Hydrating Gentle Cleanser",
+  "description": "La Roche-Posay Toleriane Hydrating Gentle Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "La Roche-Posay",
+  "price": 15.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 15.99
+  },
+  "stock": 140,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 15.99,
+      "stock": 116
+    },
+    {
+      "size": "100ml",
+      "price": 15.99,
+      "stock": 24
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/f7374a40-fb8a-4a98-ba64-16a71acb1e30.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/cde8fd7f-cad3-4ab0-b91b-5da78c1937de.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/4a0143af-58d0-4615-9f11-f75fbdc48c2a.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/25401fb1-552b-4e89-a0f1-c2fb888c283c.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/69084ae5-b562-4338-9109-91ebd97b4ef5.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/300dc60f-7dc2-455f-b27b-baf377bf1286.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134161/myShop/products/ed312ba2-254e-4c94-850b-0a08b950f26d.jpg"
+  ],
+  "ingredients": [
+    "Ceramides",
+    "Niacinamide",
+    "Glycerin"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:16:03.019Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378294"
+  },
+  "name": "Tatcha The Rice Wash",
+  "description": "Tatcha The Rice Wash is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Tatcha",
+  "price": 36,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 36
+  },
+  "stock": 180,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 36,
+      "stock": 146
+    },
+    {
+      "size": "150ml",
+      "price": 36,
+      "stock": 34
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135230/myShop/products/1776fd14-2810-4dc4-89c0-fb1239a1af83.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135230/myShop/products/668eb7d2-a9c4-4092-bfc7-1e01c3c3853e.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135230/myShop/products/0adadae0-e9f2-4273-9a04-e18f4a58baea.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135230/myShop/products/4ee0fd57-f6fd-4d83-9edb-44429164c634.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135230/myShop/products/585909dd-351c-474f-9a68-ca70c31bc7af.avif"
+  ],
+  "ingredients": [
+    "Japanese Rice Powder",
+    "Hyaluronic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:34:13.156Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378296"
+  },
+  "name": "EltaMD Foaming Facial Cleanser",
+  "description": "EltaMD Foaming Facial Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "EltaMD",
+  "price": 32,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 32
+  },
+  "stock": 216,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 32,
+      "stock": 74,
+      "_id": {
+        "$oid": "681414dae4bb796a00d9ee9e"
+      }
+    },
+    {
+      "size": "100ml",
+      "price": 32,
+      "stock": 142,
+      "_id": {
+        "$oid": "681414dae4bb796a00d9ee9f"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746146522/myShop/products/d7962a6f-739d-426e-840f-f4de6ff8ff3d.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746146522/myShop/products/6438734b-6ca0-4da0-be80-bdca31529a4a.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746146523/myShop/products/63ad796c-03ca-430e-9823-e58244fe85a5.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746146523/myShop/products/8e93a683-a92e-467e-9372-cfc98753f035.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746146523/myShop/products/43496b10-4cce-4c83-a3cf-71003de91645.webp"
+  ],
+  "ingredients": [
+    "Bromelain",
+    "Apple Amino Acids"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-02T00:42:05.024Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827e"
+  },
+  "name": "The Ordinary Caffeine Solution 5% + EGCG",
+  "description": "The Ordinary Caffeine Solution 5% + EGCG is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "The Ordinary",
+  "price": 8.9,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 8.9
+  },
+  "stock": 95,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "15ml",
+      "price": 8.9,
+      "stock": 31
+    },
+    {
+      "size": "50ml",
+      "price": 8.9,
+      "stock": 10
+    },
+    {
+      "size": "30ml",
+      "price": 8.9,
+      "stock": 57
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134382/myShop/products/d40884ba-7f0a-4ade-ba8d-2427b23b89aa.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134381/myShop/products/25639da3-d5a6-4b2b-9df0-8c082820e498.webp"
+  ],
+  "ingredients": [
+    "Caffeine",
+    "EGCG"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 3,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:19:43.530Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378283"
+  },
+  "name": "ISDIN K-Ox Eyes Cream",
+  "description": "ISDIN K-Ox Eyes Cream is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "ISDIN",
+  "price": 92,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 92
+  },
+  "stock": 96,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 92,
+      "stock": 44
+    },
+    {
+      "size": "15ml",
+      "price": 92,
+      "stock": 62
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134475/myShop/products/45877ffa-7428-43c0-83fc-4e1bc60e09fb.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134475/myShop/products/733597bf-37f6-41a3-9a02-547c6bfefa2a.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134475/myShop/products/038d1fcd-01b4-4dfc-b656-d33d25d248a2.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134475/myShop/products/c0092ccb-6332-4d3a-bd78-240fa8e4b849.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134475/myShop/products/6af50510-4618-43c5-901f-12c6a41dfbbf.webp"
+  ],
+  "ingredients": [
+    "Vitamin K Oxide",
+    "Haloxyl",
+    "Hyaluronic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 10,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:21:16.605Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378285"
+  },
+  "name": "Tatcha The Brightening Eye Cream",
+  "description": "Tatcha The Brightening Eye Cream is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Tatcha",
+  "price": 60,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 60
+  },
+  "stock": 135,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 60,
+      "stock": 92
+    },
+    {
+      "size": "15ml",
+      "price": 60,
+      "stock": 50
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135058/myShop/products/56b9d294-9676-4df2-b1a7-2bdb393f9f9a.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135058/myShop/products/47c97c99-b67d-4734-9048-ca9cd87f49c3.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135058/myShop/products/a163755b-7c29-48ce-9590-f2ff7cde6d98.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746135058/myShop/products/bd261b85-5892-487e-ae4e-da3702ae9959.avif"
+  ],
+  "ingredients": [
+    "Niacinamide",
+    "Japanese Botanicals"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 7,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:31:06.930Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378288"
+  },
+  "name": "La Roche-Posay Effaclar Medicated Gel Cleanser",
+  "description": "La Roche-Posay Effaclar Medicated Gel Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "La Roche-Posay",
+  "price": 17.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 17.99
+  },
+  "stock": 237,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 17.99,
+      "stock": 134
+    },
+    {
+      "size": "200ml",
+      "price": 17.99,
+      "stock": 103
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/72b677b1-aab2-4bce-8b8e-1c04e1b642e2.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/6eb252e6-6cea-45fc-b49a-8b6ea8a383f9.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/9f0a332f-4fc8-4fed-99c7-82051448e913.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/0aba0575-c0b0-4273-a17d-f732dd35328e.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/e9dcef14-c84b-4816-a109-41b1fc2bb8f9.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/8a23f7c2-1061-43b9-b55b-cd7e6c45c7dc.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133891/myShop/products/fa40e88e-c4ce-43d9-b50d-5de8a11a8b51.jpg"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Lipo-Hydroxy Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:11:33.055Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378289"
+  },
+  "name": "CeraVe Acne Control Cleanser",
+  "description": "CeraVe Acne Control Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "CeraVe",
+  "price": 14.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 14.99
+  },
+  "stock": 1,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "200ml",
+      "price": 14.99,
+      "stock": 67,
+      "_id": {
+        "$oid": "6813eac6fa64980c17b1cff0"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133862/myShop/products/0ccd686a-f0f9-439e-82bc-57c4560019e7.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133863/myShop/products/3d0f93e4-d4d6-45f9-b61b-78bcd5e02717.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133863/myShop/products/775857c1-e307-4d30-898d-dcbe438047aa.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133863/myShop/products/910fec5a-431a-4f8c-b9e7-85e01de748dc.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133863/myShop/products/c16218a7-8d73-4db5-ad2b-e9733af11095.webp"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Niacinamide",
+    "Ceramides",
+    "Hectorite Clay"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 4,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 1,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 66,
+  "isFeatured": true,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:42:30.128Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828c"
+  },
+  "name": "CeraVe Hydrating Facial Cleanser",
+  "description": "CeraVe Hydrating Facial Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "CeraVe",
+  "price": 14.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 14.99
+  },
+  "stock": 103,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 14.99,
+      "stock": 103
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134070/myShop/products/fa49f88c-5c96-4db8-92e9-f2ff62dea859.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134070/myShop/products/f32c75d8-9888-439b-8f56-3e8666dee33a.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134070/myShop/products/81149bf1-205f-49a4-845b-29dc2e61ec02.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134070/myShop/products/31959fb0-9159-432a-8133-03b3c72e4f71.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134070/myShop/products/ff520130-31fa-4646-8578-d38389cef983.webp"
+  ],
+  "ingredients": [
+    "Ceramides",
+    "Hyaluronic Acid",
+    "Glycerin"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:14:31.793Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378290"
+  },
+  "name": "CeraVe Renewing SA Cleanser",
+  "description": "CeraVe Renewing SA Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "CeraVe",
+  "price": 13.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 13.99
+  },
+  "stock": 113,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 13.99,
+      "stock": 93
+    },
+    {
+      "size": "150ml",
+      "price": 13.99,
+      "stock": 26
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134048/myShop/products/dbe04dda-e5d7-44cc-9f6a-7f988725e593.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134049/myShop/products/e8454c58-82ff-4ccf-a023-df032b090abb.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134049/myShop/products/ae66ff56-330f-44dc-aae7-378144ad1cb3.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134048/myShop/products/ab368d57-0ea8-460a-b42c-5e7d4cdbda11.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134048/myShop/products/599a0fe6-d3d3-402a-81fa-df9d072d914f.webp"
+  ],
+  "ingredients": [
+    "Salicylic Acid",
+    "Ceramides",
+    "Hyaluronic Acid",
+    "Niacinamide"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 6,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:14:10.513Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378291"
+  },
+  "name": "Vanicream Gentle Facial Cleanser",
+  "description": "Vanicream Gentle Facial Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Vanicream",
+  "price": 9.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 9.99
+  },
+  "stock": 48,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "200ml",
+      "price": 9.99,
+      "stock": 28
+    },
+    {
+      "size": "100ml",
+      "price": 9.99,
+      "stock": 27
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134029/myShop/products/51ea701e-d6c2-41a5-8d34-5949316c52a6.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134029/myShop/products/ea9bac2b-2e56-4ae9-a69f-3ef561558b48.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134029/myShop/products/5440c33a-5c2f-473b-971b-628d44884a89.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134030/myShop/products/69b9c2f5-3381-4294-b4c7-5d3b9ba24e9c.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134030/myShop/products/6c8dd873-fb6d-43aa-9498-981bc07f6f04.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134030/myShop/products/0d1ed615-3355-4414-8161-1c3b0f4e99de.jpg"
+  ],
+  "ingredients": [
+    "Glycerin",
+    "coco-glucoside",
+    "sodium cocoyl glycinate",
+    "acrylates copolymer",
+    "caprylyl glycol",
+    "mica",
+    "sodium chloride",
+    "1",
+    "2-hexanediol",
+    "titanium dioxide",
+    "sodium hydroxide",
+    "disodium EDTA"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 7,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:13:51.383Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378270"
+  },
+  "name": "Cetaphil Gentle Clear Triple-Action Acne Serum",
+  "description": "A gentle yet powerful triple-action serum that exfoliates, clears, and prevents acne while soothing sensitive skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Cetaphil",
+  "price": 19.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 19.99
+  },
+  "stock": 2,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "75ml",
+      "price": 19.99,
+      "stock": 10
+    },
+    {
+      "size": "15ml",
+      "price": 19.99,
+      "stock": 26
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133746/myShop/products/bd1fd8e8-515a-41e2-b988-4060a362f49a.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133746/myShop/products/29a6abea-b8a5-4847-865e-88a6698f89b8.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133745/myShop/products/dc489441-0a4a-469b-b5f8-e08aa7ecc94d.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133745/myShop/products/73236604-b297-4fec-bd5f-9966436ae33b.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133746/myShop/products/9f549457-902f-4994-81f3-075b061ff2f3.jpg"
+  ],
+  "ingredients": [
+    "0.5% Salicylic Acid",
+    "Succinic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Dry"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 34,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:09:07.689Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378271"
+  },
+  "name": "SheaMoisture Nourished & Radiant Acne Treatment Serum",
+  "description": "A nourishing and radiant treatment serum that reduces blemishes, calms inflammation, and boosts skin clarity.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "SheaMoisture",
+  "price": 11.99,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 11.99
+  },
+  "stock": 87,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 11.99,
+      "stock": 122
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133708/myShop/products/3201f07d-b838-447d-bd42-b23f3844001a.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133708/myShop/products/7da9614a-ff2b-46a1-9909-2804e2636f56.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133708/myShop/products/cc4d1bb0-eba6-4821-8917-0e4a4277be5f.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133709/myShop/products/ae6256ad-8422-4518-8258-86a5728943e8.avif"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Niacinamide",
+    "Elderberry Complex"
+  ],
+  "aiSkinSuitability": [
+    "Dry"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 35,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:08:41.996Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378274"
+  },
+  "name": "Exposed Acne Treatment Serum",
+  "description": "A robust acne treatment serum combining benzoyl peroxide and tea tree oil to combat stubborn breakouts.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Exposed Skin Care",
+  "price": 22.95,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 22.95
+  },
+  "stock": 92,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "100ml",
+      "price": 22.95,
+      "stock": 95
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133538/myShop/products/07ae53eb-81c0-4303-8c7a-701c6076bce2.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133538/myShop/products/3bc93227-3629-4292-a555-c7fe5e316acc.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133538/myShop/products/93484b25-dd72-45ec-bc89-9430b2a72d51.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133538/myShop/products/561f1aac-6a1d-4359-ba97-5ada3ec5b7fd.webp"
+  ],
+  "ingredients": [
+    "3.5% Benzoyl Peroxide",
+    "Tea Tree Oil"
+  ],
+  "aiSkinSuitability": [
+    "Oily"
+  ],
+  "averageRating": 5,
+  "reviewCount": 1,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 1
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 3,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:05:39.810Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378276"
+  },
+  "name": "Murad Deep Relief Acne Treatment",
+  "description": "A deep-relief formula that soothes active acne, reduces swelling, and promotes skin repair.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Murad",
+  "price": 42,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 42
+  },
+  "stock": 110,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 42,
+      "stock": 48
+    },
+    {
+      "size": "100ml",
+      "price": 42,
+      "stock": 23
+    },
+    {
+      "size": "30ml",
+      "price": 42,
+      "stock": 80
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133774/myShop/products/13ea6a24-74ea-405c-bec8-3c3b8b876ac1.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133775/myShop/products/16f4e4c8-f94a-405c-acc9-6850f58c79e1.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133775/myShop/products/b360b702-2cd4-4e15-8050-68097fea71be.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133775/myShop/products/01117304-96a3-4487-8320-cdb5ee365906.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133774/myShop/products/f94d699f-5f36-4721-bd16-976c1ca882b3.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133774/myShop/products/3fe36fbe-842a-49f4-a8aa-a2ef6d51905a.webp"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Ground Cherry Extract"
+  ],
+  "aiSkinSuitability": [
+    "Oily"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 41,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:09:36.741Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827a"
+  },
+  "name": "Anti Acne Clarifying",
+  "description": "A clarifying serum with multi-weight hyaluronic acids and exfoliating acids to deeply hydrate and clear pores.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Olim Naturals",
+  "price": 5,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 5
+  },
+  "stock": 1,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "15ml",
+      "price": 5,
+      "stock": 36,
+      "_id": {
+        "$oid": "6813d9e40642a2748ea8bb59"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133480/myShop/products/f407b21d-8bf5-4d86-86c7-274538803f70.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133480/myShop/products/07ba2ebb-3ea0-453f-abc0-42375d6cc0e0.avif"
+  ],
+  "ingredients": [
+    "NMW & LMW Hyaluronic Acid",
+    "Salicylic Acid",
+    "Glycolic Acid",
+    "Lactic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Normal"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 35,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-05-01T00:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-01T21:04:41.608Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 10
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827b"
+  },
+  "name": "Medicube Deep Reviving Peptide Eye Cream",
+  "description": "Medicube Deep Reviving Peptide Eye Cream is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Medicube",
+  "price": 38,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 38
+  },
+  "stock": 63,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 38,
+      "stock": 63,
+      "_id": {
+        "$oid": "6813eaa5fa64980c17b1cfc2"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134579/myShop/products/a3153d2f-a7ee-4d1a-a830-ba8e4ee5197c.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134581/myShop/products/9b443142-170e-4e12-bbdf-25c956fe4ea1.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134583/myShop/products/dcae4fd4-3c00-4f40-b7f4-f77553ec6386.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134581/myShop/products/48c95dfa-2764-4316-a8b3-69adf0a93a76.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134581/myShop/products/46106549-89b1-4f5f-b53c-432e01eaaf14.png"
+  ],
+  "ingredients": [
+    "Peptides",
+    "Hyaluronic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:41:57.793Z"
+  },
+  "skinProblem": "Dark Circles",
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827d"
+  },
+  "name": "Biossance Squalane + Marine Algae Eye Cream",
+  "description": "Biossance Squalane + Marine Algae Eye Cream is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86e"
+  },
+  "brand": "Biossance",
+  "price": 54,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 54
+  },
+  "stock": 175,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 54,
+      "stock": 59
+    },
+    {
+      "size": "50ml",
+      "price": 54,
+      "stock": 82
+    },
+    {
+      "size": "15ml",
+      "price": 54,
+      "stock": 34
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134528/myShop/products/f2438e11-09f7-4117-a21a-b93c22e2b1c5.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134528/myShop/products/b9c10359-7cd2-4fd7-a0a5-1d2ebed4b2f2.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134528/myShop/products/612f56e9-ce0b-4abf-a53e-d3d1adda81b0.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134528/myShop/products/56b11ce7-4462-4960-9e98-6b7fc914c3ba.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134528/myShop/products/d0e74b97-2707-4097-b8b0-61a0ff8bae99.avif"
+  ],
+  "ingredients": [
+    "Marine Algae",
+    "Squalane"
+  ],
+  "aiSkinSuitability": [
+    "Dry Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-01T21:22:18.663Z"
+  },
+  "skinProblem": "Dark Circles",
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137827f"
+  },
+  "name": "SkinCeuticals AOX+ Eye Gel",
+  "description": "SkinCeuticals AOX+ Eye Gel is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86f"
+  },
+  "brand": "SkinCeuticals",
+  "price": 102,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 102
+  },
+  "stock": 34,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "30ml",
+      "price": 102,
+      "stock": 37,
+      "_id": {
+        "$oid": "6819526558d037fdd14dc372"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/a47f2d5b-1a38-4e7c-9c24-27a39b76dcd2.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/474d6138-0b94-4c72-a720-6a37b1addf95.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/96a07f3a-e0b9-4131-9337-90de0638f086.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/58accdcc-7928-4905-ad2d-b4c3e6f91387.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/b4dc28d8-3e52-4452-b1d2-5451dc3e0177.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/90e34b01-df9a-4444-931f-f87f7e2d189a.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/cde96285-09ff-400b-96af-2fbda152fb2a.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134430/myShop/products/3bba0f1e-80f9-4cfb-ae47-d53a35f5ae61.jpg"
+  ],
+  "ingredients": [
+    "Phloretin",
+    "Vitamin C",
+    "Ferulic Acid"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Apply gently to the under-eye area (or face) morning and evening.",
+  "precautions": "For external use only. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 3,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-05-06T00:05:57.115Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378280"
+  },
+  "name": "Perricone MD Vitamin C Ester Brightening Eye Serum",
+  "description": "Perricone MD Vitamin C Ester Brightening Eye Serum is a targeted eye treatment designed to visibly reduce dark circles, puffiness, and signs of fatigue while hydrating the delicate under-eye area.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de870"
+  },
+  "brand": "Perricone MD",
+  "price": 55,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 55
+  },
+  "stock": 173,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "50ml",
+      "price": 55,
+      "stock": 15,
+      "_id": {
+        "$oid": "684153ad554cfc89c93536d0"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134285/myShop/products/d02c4d52-7c88-458c-87dc-5a71bbcf1812.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134285/myShop/products/f7b0477e-4a03-4512-ac7b-bdc654df5025.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134285/myShop/products/b710e88f-f814-484b-a976-3793e42224e2.avif"
+  ],
+  "ingredients": [
+    "Vitamin C Ester",
+    "Tocotrienols"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "After cleansing, apply 2–3 drops to face (or targeted area) morning and night before moisturizer.",
+  "precautions": "Patch test before first use. Avoid contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 22,
+  "isFeatured": true,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:47:51.335351",
+  "updatedAt": {
+    "$date": "2025-06-05T08:22:05.326Z"
+  },
+  "skinProblem": [
+    "Dark Circles"
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a137828b"
+  },
+  "name": "Peace Out Acne Gel Cleanser",
+  "description": "Peace Out Acne Gel Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Peace Out",
+  "price": 24,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 24
+  },
+  "stock": 217,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 24,
+      "stock": 72
+    },
+    {
+      "size": "200ml",
+      "price": 24,
+      "stock": 145
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134091/myShop/products/1919e82f-cc8d-4250-8df6-fb6141c9f32f.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134092/myShop/products/2ce369bb-5ce4-479f-9056-7e6dae9723ec.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134092/myShop/products/623a1507-ac5f-4290-b426-1421595cebe8.webp"
+  ],
+  "ingredients": [
+    "2% Salicylic Acid",
+    "Maltobionic Acid",
+    "Ceramide Complex"
+  ],
+  "aiSkinSuitability": [
+    "Oily Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:14:53.284Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378292"
+  },
+  "name": "Youth to the People Superfood Cleanser",
+  "description": "Youth to the People Superfood Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Youth to the People",
+  "price": 36,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 36
+  },
+  "stock": 67,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "200ml",
+      "price": 36,
+      "stock": 73,
+      "_id": {
+        "$oid": "6814e77759c0bf115153fefe"
+      }
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134004/myShop/products/fb23ae6b-df06-4f81-9632-7c87fb54c8e8.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134005/myShop/products/0e60b5cb-be46-4d02-97a5-a84a3a63701d.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134005/myShop/products/a846c297-2d00-4871-a330-f19eb96fe2ab.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134005/myShop/products/978a1c74-a4e1-42ca-baab-5ca7b9f45369.webp",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134005/myShop/products/adb5b303-75b8-4d73-8398-49c313225f54.jpg",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134005/myShop/products/de496cc4-6fe1-4610-8428-59eba9d30e8f.jpg"
+  ],
+  "ingredients": [
+    "Kale",
+    "Spinach",
+    "Green Tea",
+    "Alfalfa",
+    "Vitamin C",
+    "Vitamin E"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 6,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-02T15:40:39.149Z"
+  },
+  "skinProblem": [
+    "Acne"
+  ],
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6813d8fe1b7e1b71a1378293"
+  },
+  "name": "Glossier Milky Jelly Cleanser",
+  "description": "Glossier Milky Jelly Cleanser is a dermatologist-developed cleanser designed to remove excess oil and impurities while treating active acne without stripping the skin.",
+  "category": {
+    "$oid": "68193e08d3e20e45554de86d"
+  },
+  "brand": "Glossier",
+  "price": 18,
+  "discount": {
+    "percentage": 0,
+    "discountedPrice": 18
+  },
+  "stock": 69,
+  "isAvailable": true,
+  "variants": [
+    {
+      "size": "150ml",
+      "price": 18,
+      "stock": 21
+    },
+    {
+      "size": "100ml",
+      "price": 18,
+      "stock": 48
+    }
+  ],
+  "images": [
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134862/myShop/products/eea82d15-1ddd-4dd5-877a-2608b5e2a262.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134864/myShop/products/d834f6a7-abb5-481a-bff5-0fc808e2ea0e.png",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134864/myShop/products/fa28adb1-dc60-47ac-a66d-8fc0cddc8ed4.avif",
+    "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746134864/myShop/products/70dbf659-a35e-48db-8295-fa4d3928c8a1.png"
+  ],
+  "ingredients": [
+    "Poloxamer",
+    "Rose Water",
+    "Pro-Vitamin B5"
+  ],
+  "aiSkinSuitability": [
+    "Normal Skin"
+  ],
+  "averageRating": 0,
+  "reviewCount": 0,
+  "ratingBuckets": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+  },
+  "usageInstructions": "Use twice daily. Massage onto wet skin for 60–60 seconds and rinse thoroughly.",
+  "precautions": "Avoid direct contact with eyes. If irritation occurs, discontinue use.",
+  "soldCount": 0,
+  "isFeatured": false,
+  "isDeleted": false,
+  "createdAt": "2025-05-01T19:51:58.385025",
+  "updatedAt": {
+    "$date": "2025-05-01T21:27:45.743Z"
+  },
+  "skinProblem": "Acne",
+  "__v": 1
+}]

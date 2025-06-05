@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Dropdown } from "@/component/admin/Dropdown";
 import { DropdownItem } from "@/component/admin/DropdownItem";
 import { MoreDotIcon } from "@/icons";
+interface Props { progress: number }   // 0–100
 
-export default function MonthlyTarget() {
-  const series = [75.55];
+export default function MonthlyTarget({ progress }: Props) {
+    const series = [parseFloat(progress.toFixed(2))];
   const options: ApexOptions = {
     colors: ["#FF69B4"],
     chart: {

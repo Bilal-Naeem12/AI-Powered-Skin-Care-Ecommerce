@@ -1,8 +1,21 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import ChartTab from "../../common/ChartTab";
+import { LinePoint } from "@/types/DashboardResponse";
+interface Props { points: LinePoint[] }
+export default function StatisticsChart({ points }: Props) {
 
-export default function StatisticsChart() {
+   const sorted = [...points].sort((a, b) => +new Date(a.date) - +new Date(b.date));
+ const categories = sorted.map(p =>
+    new Date(p.date).toLocaleString("default", { month: "short" })
+  );
+
+   const revenueData = sorted.map(p => parseFloat(p.value.toFixed(0)));
+
+  const series = [
+    { name: "Revenue", data: revenueData }
+    // { name: "Sales",   data: revenueData.map(v => v * 0.3) } // example second series
+  ];
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
@@ -61,20 +74,7 @@ export default function StatisticsChart() {
     },
     xaxis: {
       type: "category", // Category-based x-axis
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+     categories,
       axisBorder: {
         show: false, // Hide x-axis border
       },
@@ -101,16 +101,7 @@ export default function StatisticsChart() {
     },
   };
 
-  const series = [
-    {
-      name: "Sales",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-    },
-    {
-      name: "Revenue",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-    },
-  ];
+ 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
