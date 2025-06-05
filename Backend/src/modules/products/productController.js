@@ -2,7 +2,7 @@ const reviewModel = require("../review/reviewModel");
 const Product = require("./productModel");
 const mongoose = require('mongoose');
 const slugify = require("slugify");
-
+const Analytics = require("../analytics/analyticsModel");
 const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
 const cloud    = require("../../utils/cloudinary");
@@ -106,7 +106,25 @@ exports.getProductById = async (req, res) => {
         const product = await Product.findById(req.params.id);
         if (!product || product.isDeleted) return res.status(404).json({ message: "Product not found" });
 
+await Promise.all([
+  // Day bucket
+  Analytics.bump(
+    "ProductViews",
+    1,
+    "Day",
+    new Date(),
+    { associatedEntity: product._id, entityModel: "Product" }
+  ),
 
+  // Month bucket (for line chart)
+  Analytics.bump(
+    "ProductViews",
+    1,
+    "Month",
+    new Date(),
+    { associatedEntity: product._id, entityModel: "Product" }
+  )
+]);
     res.status(200).json( product );
     } catch (error) {
         res.status(500).json({ error: error.message });

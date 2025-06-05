@@ -52,9 +52,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Button
           variant="black"
           className="px-4 py-2 text-sm"
+           disabled={product.stock === 0}
           onClick={handleAddToCart} // Trigger the add to cart action
         >
-          Add to your cart
+         {product.stock === 0 ? "Out of Stock" : "Add to your cart"} {/* Label change */}
         </Button>
 
         {/* Favorite Icon */}

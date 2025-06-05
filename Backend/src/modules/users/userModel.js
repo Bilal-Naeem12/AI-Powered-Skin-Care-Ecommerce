@@ -2,7 +2,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const Analytics = require("../analytics/analyticsModel");
+const AnalyticsService = require("../analytics/analyticsService");
 const UserSchema = new mongoose.Schema({
   first_name: {
         type: String,
@@ -191,6 +192,21 @@ UserSchema.virtual("orders", {
   ref: "Order",
   localField: "_id",
   foreignField: "userId",
+});
+/* ───────────────── Analytics hook (NewUsers) ─ */
+UserSchema.post("save", async function (doc, next) {
+  try {
+    if (doc.isNew) {
+      // Day + Month buckets for KPI & line-chart
+      await Promise.all([
+        Analytics.bump("NewUsers", 1, "Day",   doc.createdAt),
+        Analytics.bump("NewUsers", 1, "Month", doc.createdAt),
+        Analytics.updateTrend("NewUsers", "Day"),
+        Analytics.updateTrend("NewUsers", "Month")
+      ]);
+    }
+    next();
+  } catch (err) { next(err); }
 });
 
 module.exports = mongoose.model('User', UserSchema);

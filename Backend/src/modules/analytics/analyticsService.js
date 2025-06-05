@@ -1,37 +1,44 @@
+// src/modules/analytics/analyticsService.js
 const Analytics = require("./analyticsModel");
-const { formatAnalyticsPeriod, calculateTrend, getMetricSummary } = require("./analyticsUtils");
 
-// **🔹 Create Analytics Data**
-exports.createAnalytics = async (metricData) => {
-    const newAnalytics = new Analytics(metricData);
-    await newAnalytics.save();
-    return newAnalytics;
+/* ---------- CRUD helpers ---------- */
+exports.createAnalytics = (data) => new Analytics(data).save();
+exports.getAnalyticsByPeriod = (period) => Analytics.find({ period }).sort({ startDate: -1 });
+exports.calculateAnalyticsTrend = (metricType, period = "Day") =>
+  Analytics.updateTrend(metricType, period);
+
+/* ---------- Dashboard helpers ---------- */
+exports.getKPICard = async (metricType, period = "Day") =>
+  Analytics.findOne({ metricType, period }).sort({ startDate: -1 }).lean();
+
+exports.getLineChart = async (metricType, period = "Month", months = 12) => {
+  const start = new Date();
+  start.setMonth(start.getMonth() - (months - 1));
+  start.setDate(1); // align to first of month
+
+  return Analytics.find({
+    metricType,
+    period,
+    startDate: { $gte: start }
+  }).sort({ startDate: 1 }).lean();
 };
 
-// **🔹 Fetch Analytics Data by Period**
-exports.getAnalyticsByPeriod = async (period) => {
-    return await Analytics.find({ period }).sort({ recordedAt: -1 });
-};
-
-// **🔹 Calculate Trend for Analytics**
-exports.calculateAnalyticsTrend = async (metricType, period) => {
-    const previousData = await Analytics.findOne({ metricType, period })
-        .sort({ recordedAt: -1 })
-        .skip(1); // Skip the most recent data
-
-    const currentData = await Analytics.findOne({ metricType, period })
-        .sort({ recordedAt: -1 })
-        .limit(1); // Get the most recent data
-
-    if (!previousData || !currentData) return null; // No data to calculate trend
-
-    const trend = calculateTrend(previousData.value, currentData.value);
-    currentData.trend = trend;
-    await currentData.save();
-    return currentData;
-};
-
-// **🔹 Get Analytics Summary**
-exports.getAnalyticsSummary = (metricType, value) => {
-    return getMetricSummary(metricType, value);
+exports.getLeaderboard = async (metricType, limit = 10) => {
+  const docs = await Analytics.aggregate([
+    { $match: { metricType, period: "Month" } },      // only monthly buckets
+    { $group: { _id: "$associatedEntity", views: { $sum: "$value" } } },
+    { $sort: { views: -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "products",
+        localField: "_id",
+        foreignField: "_id",
+        as: "product"
+      }
+    },
+    { $unwind: "$product" },
+    { $project: { _id: 0, product: 1, views: 1 } }
+  ]);
+  return docs;
 };

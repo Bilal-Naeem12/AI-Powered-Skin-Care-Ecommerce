@@ -1,40 +1,53 @@
+// src/modules/analytics/analyticsController.js
 const AnalyticsService = require("./analyticsService");
 
-// **🔹 Create Analytics**
+/* ----- admin CRUD (optional) ----- */
 exports.createAnalytics = async (req, res) => {
-    try {
-        const metricData = req.body;
-        const newAnalytics = await AnalyticsService.createAnalytics(metricData);
-        res.status(201).json({ message: "Analytics data created successfully", analytics: newAnalytics });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  try {
+    const data = await AnalyticsService.createAnalytics(req.body);
+    res.status(201).json({ message: "Analytics created", data });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
-// **🔹 Get Analytics by Period**
 exports.getAnalyticsByPeriod = async (req, res) => {
-    try {
-        const { period } = req.params;
-        const analytics = await AnalyticsService.getAnalyticsByPeriod(period);
-        if (!analytics) {
-            return res.status(404).json({ message: "Analytics data not found" });
-        }
-        res.status(200).json(analytics);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const { period } = req.params;
+    const data = await AnalyticsService.getAnalyticsByPeriod(period);
+    if (!data.length) return res.status(404).json({ message: "No data" });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-// **🔹 Calculate Analytics Trend**
 exports.calculateAnalyticsTrend = async (req, res) => {
-    try {
-        const { metricType, period } = req.params;
-        const analyticsData = await AnalyticsService.calculateAnalyticsTrend(metricType, period);
-        if (!analyticsData) {
-            return res.status(404).json({ message: "Trend data not found" });
-        }
-        res.status(200).json({ message: "Trend calculated successfully", analytics: analyticsData });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const { metricType, period } = req.params;
+    await AnalyticsService.calculateAnalyticsTrend(metricType, period);
+    res.json({ message: "Trend updated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/* ----- dashboard endpoints ----- */
+exports.kpiCard = async (req, res) => {
+  const { metric, period = "Day" } = req.query;
+  const data = await AnalyticsService.getKPICard(metric, period);
+  if (!data) return res.status(404).json({ message: "No data" });
+  res.json(data);
+};
+
+exports.lineChart = async (req, res) => {
+  const { metric, months = 12 } = req.query;
+  const data = await AnalyticsService.getLineChart(metric, "Month", +months);
+  res.json(data);
+};
+
+exports.leaderboard = async (req, res) => {
+  const { metric, limit = 10 } = req.query;
+  const data = await AnalyticsService.getLeaderboard(metric, +limit);
+  res.json(data);
 };

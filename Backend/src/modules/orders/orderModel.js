@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { Schema, Types } = mongoose;
 const Shipping = require("../products/productModel");
+const Analytics = require("../analytics/analyticsModel");
+
 /* items sub-doc */
 const ItemSchema = new Schema(
   {
@@ -107,6 +109,47 @@ OrderSchema.statics.withAll = function (id) {
 };
 
 
+OrderSchema.post("save", async function (doc, next) {
+  try {
+    const latest = doc.statusHistory?.[doc.statusHistory.length - 1]?.what;
+    if (latest === "Paid") {
+      await Promise.all([
+        /* Daily buckets */
+        Analytics.bump("TotalOrders", 1,           "Day",   doc.placedAt),
+        Analytics.bump("TotalRevenue", doc.totalAmount, "Day", doc.placedAt),
+        Analytics.bump("AverageOrderValue", doc.totalAmount, "Day", doc.placedAt),
 
-
+        /* Monthly buckets (for charts) */
+        Analytics.bump("TotalOrders", 1,           "Month", doc.placedAt),
+        Analytics.bump("TotalRevenue", doc.totalAmount, "Month", doc.placedAt),
+        Analytics.bump("AverageOrderValue", doc.totalAmount, "Month", doc.placedAt)
+      ]);
+       const ops = [];
+      for (const it of doc.cartItems) {
+        ops.push(
+          // Day
+          Analytics.bump(
+            "MostPurchasedProduct",
+            it.quantity,
+            "Day",
+            doc.placedAt,
+            { associatedEntity: it.productId, entityModel: "Product" }
+          ),
+          // Month
+          Analytics.bump(
+            "MostPurchasedProduct",
+            it.quantity,
+            "Month",
+            doc.placedAt,
+            { associatedEntity: it.productId, entityModel: "Product" }
+          )
+        );
+      }
+      await Promise.all(ops);
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 module.exports = mongoose.model("Order", OrderSchema);
