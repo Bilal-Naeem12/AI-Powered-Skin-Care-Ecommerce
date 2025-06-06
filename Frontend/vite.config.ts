@@ -21,4 +21,12 @@ export default defineConfig({
       },
     }),
   ],
+   server: {
+    allowedHosts: [
+      // You can add your tunnel hostname here (from the error message)
+      "plain-terms-yawn.loca.lt",
+      // optionally add others as needed
+    ],
+    // ...other server config
+  },
 });

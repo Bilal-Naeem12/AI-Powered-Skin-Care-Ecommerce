@@ -20,6 +20,8 @@ const reviewFlagRoutes = require("../modules/reviewFlag/reviewFlagRoutes");
 const shippingRoutes = require("../modules/shipping/shippingRoutes");
 const systemConfigRoutes = require("../modules/systemConfig/systemConfigRoutes");
 const userRoutes = require("../modules/users/userRoutes");
+const scanSessionRoutes = require("../modules/scanSession/scanSessionRouter");
+
 const categoryRoutes = require("../modules/category/categoryRoutes")
 const router = express.Router();
 
@@ -45,5 +47,5 @@ router.use("/review-flags", reviewFlagRoutes);
 router.use("/shipping", shippingRoutes);
 router.use("/system-config", systemConfigRoutes);
 router.use("/users", userRoutes);
-
+router.use("/scan-session", scanSessionRoutes);
 module.exports = router;

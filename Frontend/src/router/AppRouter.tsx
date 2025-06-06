@@ -24,6 +24,7 @@ import SkinTypeTestPage from "@/pages/Test/skinTypeTest";
 import SkinAnalysisTestPage from "@/pages/Test/skinAnalysisTestPage";
 import FaceScanResultPage from "@/pages/user-side/AnalyzePage/subpages/FaceScanResult";
 import InpaintingPage from "@/pages/user-side/AnalyzePage/subpages/InpaintingPage/InpaintingPage";
+import MobileScan from "@/pages/user-side/FaceScanModal/MobileScan";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,6 +56,7 @@ const AppRouter: React.FC = () => {
         <Route path="/ai-tools-page" element={<AnalyzePage />} />
         <Route path="/ai-tools-page/skin-analysis" element={<FaceScanResultPage />} />
         <Route path="/ai-tools-page/inpainting" element={<InpaintingPage />} />
+    <Route path="/mobile-scan/:sessionId" element={<MobileScan />} />
 
         <Route path="/contact-us-page" element={<ContactUsPage />} />
         <Route path="/shop" element={<ShopPage />} />

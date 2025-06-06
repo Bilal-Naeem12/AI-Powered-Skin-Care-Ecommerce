@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import CloseIcon from "@mui/icons-material/Close";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -10,14 +10,20 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { SkinAnalysisResult } from "@/types/SkinAnalysisResult";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import QRCode, { QRCodeCanvas } from "qrcode.react"; // <–– our QR‐code library
+import { Http2ServerRequest } from "http2";
+import { QrCodeIcon } from "lucide-react";
 
-type Step = "choice" | "preview" | "uploading";
+type Step = "choice" | "preview" | "uploading"| "qr";
 
 const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("choice");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [qrUrl, setQrUrl] = useState<string>("");
 
   const {
     openModal: openLiveModal,
@@ -76,6 +82,57 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     setStep("choice");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+/******************************************************/
+  /*** NEW: Step 4: “Scan with Phone” → generate session ***/
+  const handleScanWithPhone = async () => {
+    try {
+      // 1) Call your backend to create a new “scan session”
+      const resp  = await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session`);
+      const id = resp.data.sessionId as string;
+      setSessionId(id);
+
+      // 2) Build a full‐URL that a phone can open:
+      //    e.g. https://your‐domain.com/mobile-scan/abc123
+      //    window.location.origin → e.g. https://your‐domain.com
+   const localIP = window.location.origin ; // <-- YOUR computer’s IP!
+const url = `${localIP}mobile-scan/${id}`;
+setQrUrl(url);
+
+      // 3) Move into the “qr” step so we render a QR code
+      setStep("qr");
+    } catch (err) {
+      console.error("❌ could not create scan session", err);
+    }
+  };
+
+
+   useEffect(() => {
+    let poller: NodeJS.Timeout;
+    if (step === "qr" && sessionId) {
+      poller = setInterval(async () => {
+        try {
+          const statusResp = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`);
+          const { status, imageUrl } = statusResp.data;
+          if (status === "uploaded" && imageUrl) {
+            // 4) Once the mobile user has uploaded, fetch the image as a blob
+            clearInterval(poller);
+
+            const imgResp = await axios.get(imageUrl, { responseType: "blob" });
+            const blob = new Blob([imgResp.data], { type: imgResp.data.type });
+            const fakeFile = new File([blob], "mobile-upload.jpg", { type: imgResp.data.type });
+
+            // 5) Mirror the “preview → analyze” logic from above
+            setFile(fakeFile);
+            setPreviewUrl(URL.createObjectURL(blob));
+            setStep("preview");
+          }
+        } catch (e) {
+          // If 404 or not found, ignore until it’s created.
+        }
+      }, 10000);
+      return () => clearInterval(poller);
+    }
+  }, [step, sessionId]);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
@@ -124,6 +181,12 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
             >
               <VideocamIcon /> Live Analysis
             </button>
+             <button
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+              onClick={handleScanWithPhone}
+            >
+              <QrCodeIcon /> Scan with Phone
+            </button>
           </>
         )}
 
@@ -159,6 +222,30 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
             Uploading &amp; analyzing…
           </p>
         )}
+      {step === "qr" && qrUrl && (
+  <div className="flex flex-col items-center gap-4">
+    <h2 className="text-lg font-semibold text-center">
+      Scan with your phone
+    </h2>
+    <div className="p-4 bg-gray-100 rounded-lg flex flex-col items-center">
+      <QRCodeCanvas value={qrUrl} size={200} />   {/* QR code shows here */}
+      <p className="mt-4 text-sm text-gray-500 text-center">
+        Open your camera app on your phone, scan this code,<br />
+        and follow the instructions to upload your photo.
+      </p>
+    </div>
+    <button
+      className="mt-2 text-sm text-blue-600 hover:underline"
+      onClick={() => {
+        setSessionId(null);
+        setQrUrl("");
+        setStep("choice");
+      }}
+    >
+      ← Back to choices
+    </button>
+  </div>
+)}
       </motion.div>
     </div>
   );

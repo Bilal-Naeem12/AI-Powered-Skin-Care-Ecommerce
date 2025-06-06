@@ -16,11 +16,23 @@ const Review   = require("./modules/review/reviewModel");
 // Import Routes for each module
 const mainRouter = require('./routes/mainRouter');
 const app = express();
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://plain-terms-yawn.loca.lt', // <-- Your tunnel URL
+];
 
 // **Security Middleware**
 app.use(helmet()); // Adds security headers
-app.use(cors({ origin: process.env.CLIENT_URL || '*' ,credentials: true })); // Restrict API access if needed
-app.use(compression()); // Enables gzip compression for performance
+app.use(require("cors")({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS not allowed from this origin: ' + origin));
+  },
+  credentials: true
+}));app.use(compression()); // Enables gzip compression for performance
 
 // **Rate Limiting to Prevent Abuse**
 const limiter = rateLimit({
@@ -57,6 +69,10 @@ app.set('view engine', 'ejs');
 // **Module Routes** - Connect each module to its route path
 app.use("/api", mainRouter);
 // **404 Error Handling**
+
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // At the bottom of all routes
 app.use((err, req, res, next) => {
   const status = err.status || 500;
@@ -77,7 +93,7 @@ app.use((err, req, res, next) => {
 
 // **Define & Start the Server**
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0" ,() => {
     console.log(`🚀 Server is running on ${process.env.FRONTEND_URL}`);
 });
 
