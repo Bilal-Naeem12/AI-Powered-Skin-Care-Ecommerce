@@ -95,7 +95,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
       //    e.g. https://your‐domain.com/mobile-scan/abc123
       //    window.location.origin → e.g. https://your‐domain.com
    const localIP = window.location.origin ; // <-- YOUR computer’s IP!
-const url = `${localIP}mobile-scan/${id}`;
+const url = `${localIP}/mobile-scan/${id}`;
 setQrUrl(url);
 
       // 3) Move into the “qr” step so we render a QR code
@@ -111,21 +111,21 @@ setQrUrl(url);
     if (step === "qr" && sessionId) {
       poller = setInterval(async () => {
         try {
-          const statusResp = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`);
-          const { status, imageUrl } = statusResp.data;
-          if (status === "uploaded" && imageUrl) {
-            // 4) Once the mobile user has uploaded, fetch the image as a blob
-            clearInterval(poller);
+          // In polling effect:
+const statusResp = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`);
+const data = statusResp.data as { status: string; imageUrl?: string };
+if (data.status === "uploaded" && data.imageUrl) {
+  clearInterval(poller);
 
-            const imgResp = await axios.get(imageUrl, { responseType: "blob" });
-            const blob = new Blob([imgResp.data], { type: imgResp.data.type });
-            const fakeFile = new File([blob], "mobile-upload.jpg", { type: imgResp.data.type });
+  const imgResp = await axios.get(data.imageUrl, { responseType: "blob" });
+  // imgResp.data is of type Blob
+  const blob = imgResp.data as Blob;
+  const fakeFile = new File([blob], "mobile-upload.jpg", { type: blob.type });
 
-            // 5) Mirror the “preview → analyze” logic from above
-            setFile(fakeFile);
-            setPreviewUrl(URL.createObjectURL(blob));
-            setStep("preview");
-          }
+  setFile(fakeFile);
+  setPreviewUrl(URL.createObjectURL(blob));
+  setStep("preview");
+}
         } catch (e) {
           // If 404 or not found, ignore until it’s created.
         }

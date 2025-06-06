@@ -49,7 +49,7 @@ React.useEffect(() => {
     ctx.drawImage(videoRef.current, 0, 0, 300, 400);
     setCaptured(canvasRef.current.toDataURL("image/jpeg"));
     setStep("preview");
-  };
+  };const [error, setError] = useState<string | null>(null);
 
   // Upload photo to FastAPI
   const handleConfirm = async () => {
@@ -66,9 +66,10 @@ React.useEffect(() => {
     const formData = new FormData();
     formData.append("file", file, "mobile-upload.jpg");
     try {
-      await axios.post(`/api/scan-session/${sessionId}/upload`, formData);
+      await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/upload`, formData);
       setStep("done");
     } catch (err) {
+      setError(err.message);
       alert("Upload failed, please try again.");
       setStep("capture");
     }
@@ -86,6 +87,7 @@ React.useEffect(() => {
     );
   }
 
+{error && <div className="text-red-600">{error}</div>}
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] max-w-xs flex flex-col items-center">
