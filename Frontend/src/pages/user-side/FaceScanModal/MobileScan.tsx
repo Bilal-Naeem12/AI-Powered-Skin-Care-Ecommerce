@@ -1,9 +1,10 @@
 import React, { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 // You can use your CameraView component here or a simple HTML5 video/canvas setup.
 
-const MobileScan: React.FC = () => {
+const MobileScan = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,11 +69,9 @@ React.useEffect(() => {
     try {
       await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/upload`, formData);
       setStep("done");
-    } catch (err) {
-      setError(err.message);
-      alert("Upload failed, please try again.");
-      setStep("capture");
-    }
+    } catch (err: any) {
+        toast.error(`Upload error: ${err}`);
+
     setLoading(false);
   };
 
@@ -127,6 +126,7 @@ React.useEffect(() => {
       </div>
     </div>
   );
+  }
 };
 
 export default MobileScan;

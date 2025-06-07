@@ -18,7 +18,7 @@ const mainRouter = require('./routes/mainRouter');
 const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'https://plain-terms-yawn.loca.lt', // <-- Your tunnel URL
+  'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
 
 // **Security Middleware**
