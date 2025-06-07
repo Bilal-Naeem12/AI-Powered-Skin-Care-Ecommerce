@@ -1,8 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-// You can use your CameraView component here or a simple HTML5 video/canvas setup.
 
 const MobileScan = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -11,38 +10,38 @@ const MobileScan = () => {
   const [captured, setCaptured] = useState<string | null>(null);
   const [step, setStep] = useState<"capture" | "preview" | "done">("capture");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Start camera when mounted
-React.useEffect(() => {
-  if (step !== "capture") return;
+  // Start camera
+  useEffect(() => {
+    if (step !== "capture") return;
 
-  const startCamera = async () => {
-    try {
-      // This line requests the camera and prompts the user
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      });
-      if (videoRef.current) videoRef.current.srcObject = stream;
-    } catch (err) {
-      // Show a clearer error message if blocked
-      alert("Camera access denied or unavailable.\nPlease allow camera access in your browser settings and refresh the page.");
-    }
-  };
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (err) {
+        setError("Camera access denied or unavailable.");
+        alert("Camera access denied. Please allow camera access and refresh.");
+      }
+    };
 
-  startCamera();
+    startCamera();
 
-  return () => {
-    if (videoRef.current?.srcObject) {
-      (videoRef.current.srcObject as MediaStream)
-        .getTracks()
-        .forEach((track) => track.stop());
-    }
-  };
-}, [step]);
+    return () => {
+      if (videoRef.current?.srcObject) {
+        (videoRef.current.srcObject as MediaStream)
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
+    };
+  }, [step]);
 
-
-  // Capture photo
   const handleCapture = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d");
@@ -50,31 +49,35 @@ React.useEffect(() => {
     ctx.drawImage(videoRef.current, 0, 0, 300, 400);
     setCaptured(canvasRef.current.toDataURL("image/jpeg"));
     setStep("preview");
-  };const [error, setError] = useState<string | null>(null);
+  };
 
-  // Upload photo to FastAPI
   const handleConfirm = async () => {
     if (!captured || !sessionId) return;
     setLoading(true);
-    // Convert base64 to blob
-    const arr = captured.split(",");
-    const mime = arr[0].match(/:(.*?);/)?.[1] ?? "image/jpeg";
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) u8arr[n] = bstr.charCodeAt(n);
-    const file = new Blob([u8arr], { type: mime });
-    const formData = new FormData();
-    formData.append("file", file, "mobile-upload.jpg");
+
     try {
+      const arr = captured.split(",");
+      const mime = arr[0].match(/:(.*?);/)?.[1] ?? "image/jpeg";
+      const bstr = atob(arr[1]);
+      const u8arr = new Uint8Array(bstr.length);
+      for (let i = 0; i < bstr.length; i++) {
+        u8arr[i] = bstr.charCodeAt(i);
+      }
+      const file = new Blob([u8arr], { type: mime });
+
+      const formData = new FormData();
+      formData.append("file", file, "mobile-upload.jpg");
+
       await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/upload`, formData);
       setStep("done");
     } catch (err: any) {
-        toast.error(`Upload error: ${err}`);
-
-    setLoading(false);
+      toast.error("Upload error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Render "done" message
   if (step === "done") {
     return (
       <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
@@ -86,15 +89,29 @@ React.useEffect(() => {
     );
   }
 
-{error && <div className="text-red-600">{error}</div>}
+  // Main capture UI
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] max-w-xs flex flex-col items-center">
         <h2 className="text-lg font-semibold mb-2">Scan Your Face</h2>
+        {error && <div className="text-red-600 text-sm">{error}</div>}
+
         {step === "capture" && (
           <>
-            <video ref={videoRef} width={300} height={400} autoPlay playsInline className="rounded-md border" />
-            <canvas ref={canvasRef} width={300} height={400} style={{ display: "none" }} />
+            <video
+              ref={videoRef}
+              width={300}
+              height={400}
+              autoPlay
+              playsInline
+              className="rounded-md border"
+            />
+            <canvas
+              ref={canvasRef}
+              width={300}
+              height={400}
+              style={{ display: "none" }}
+            />
             <button
               className="mt-4 bg-primary text-white px-4 py-2 rounded-lg"
               onClick={handleCapture}
@@ -103,10 +120,15 @@ React.useEffect(() => {
             </button>
           </>
         )}
+
         {step === "preview" && captured && (
           <>
-            <img src={captured} alt="Preview" className="w-full h-72 object-contain rounded-md border" />
-            <div className="flex gap-2 mt-4">
+            <img
+              src={captured}
+              alt="Preview"
+              className="w-full h-72 object-contain rounded-md border"
+            />
+            <div className="flex gap-2 mt-4 w-full">
               <button
                 className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg"
                 onClick={() => setStep("capture")}
@@ -126,7 +148,6 @@ React.useEffect(() => {
       </div>
     </div>
   );
-  }
 };
 
 export default MobileScan;

@@ -21,6 +21,7 @@ const allowedOrigins = [
   'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
 
+
 // **Security Middleware**
 app.use(helmet()); // Adds security headers
 app.use(require("cors")({

@@ -96,6 +96,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
       //    window.location.origin → e.g. https://your‐domain.com
    const localIP = window.location.origin ; // <-- YOUR computer’s IP!
 const url = `${localIP}/mobile-scan/${id}`;
+console.log(url)
 setQrUrl(url);
 
       // 3) Move into the “qr” step so we render a QR code
