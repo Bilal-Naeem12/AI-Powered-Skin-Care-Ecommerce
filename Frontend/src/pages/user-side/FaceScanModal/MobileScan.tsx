@@ -105,8 +105,8 @@ formData.append("userId", user?._id ?? '');
   // Main capture UI
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center  justify-center z-50">
-      <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] max-w-2xl flex flex-col items-center">
-        <h2 className="text-lg font-semibold mb-2">Scan Your Face</h2>
+      <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] flex flex-col items-center">
+        <h2 className="text-2xl font-semibold mb-2">Scan Your Face</h2>
         {error && <div className="text-red-600 text-sm">{error}</div>}
 
         {step === "capture" && (
@@ -116,16 +116,16 @@ formData.append("userId", user?._id ?? '');
            
               autoPlay
               playsInline
-              className="rounded-md border"
+                className="rounded-md border w-full "
               style={{ transform: "scaleX(-1)" }}
             />
             <canvas
               ref={canvasRef}
-           
+            className="rounded-md border "
               style={{ display: "none",transform: "scaleX(-1)"  }}
             />
             <button
-              className="mt-4 bg-primary text-white px-4 py-2 rounded-lg"
+              className="mt-4 bg-primary text-white text-3xl  px-4 py-2 rounded-lg"
               onClick={handleCapture}
             >
               Capture
@@ -138,17 +138,17 @@ formData.append("userId", user?._id ?? '');
             <img
               src={captured}
               alt="Preview"
-              className=" w-full h-[70vh] object-contain rounded-md border"
+              className=" w-full object-contain rounded-md border"
             />
             <div className="flex gap-2 mt-4 w-full">
               <button
-                className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg"
+                className="flex-1 bg-gray-300 text-gray-800 py-2 text-3xl rounded-lg"
                 onClick={() => setStep("capture")}
               >
                 Retake
               </button>
               <button
-                className="flex-1 bg-primary text-white py-2 rounded-lg"
+                className="flex-1 bg-primary text-white py-2  text-3xl rounded-lg"
                 onClick={handleConfirm}
                 disabled={loading}
               >
