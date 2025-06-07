@@ -85,7 +85,6 @@ exports.loginUser = async (req, res) => {
         // Set access token cookie with a short expiration time (e.g., 15 mins)
   res.cookie('accessToken', accessToken, {
     httpOnly:true,
-     sameSite: 'None',
     secure: process.env.NODE_ENV === 'production' ? true : false,
     maxAge: 100*60*1000, // 15 minutes
   });
@@ -93,7 +92,6 @@ exports.loginUser = async (req, res) => {
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
   res.cookie('refreshToken', refreshToken, {
     httpOnly:true,
-     sameSite: 'None',
     secure: process.env.NODE_ENV === 'production' ? true : false,
     maxAge: 100*60*1000, // 7 days
   });
@@ -130,7 +128,6 @@ exports.refreshToken = async (req, res) => {
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None',
             maxAge: 100*60*1000, // 15 minutes
         });
 
