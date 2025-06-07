@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Verified</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4f8;
+      text-align: center;
+      padding: 60px;
+    }
+    .card {
+      display: inline-block;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 500px;
+    }
+    h1 {
+      color: #28a745;
+    }
+    p {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+    .light {
+      color: #777;
+      font-size: 14px;
+      margin-top: 30px;
+    }
+  </style>
+ 
+</head>
+<body>
+  <div class="card">
+    <h1>🎉 Welcome, <%= name %>!</h1>
+    <p>Your email has been successfully verified.</p>
+    <p class="light">Redirecting to login page in a new tab...<br>This tab will close automatically.</p>
+  </div>
+</body>
+
+ <script>
+    setTimeout(() => {
+      window.open("<%= loginUrl %>", "_blank");
+      window.close();
+    }, 4000);
+  </script>
+</html>

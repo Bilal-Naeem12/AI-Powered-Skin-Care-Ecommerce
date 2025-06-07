@@ -15,7 +15,10 @@ const Review   = require("./modules/review/reviewModel");
 
 // Import Routes for each module
 const mainRouter = require('./routes/mainRouter');
+
 const app = express();
+const indexRouter = require("./routes/indexRouter");
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'https://skincare-test.loca.lt', // <-- Your tunnel URL
@@ -69,9 +72,11 @@ app.set('view engine', 'ejs');
 
 // **Module Routes** - Connect each module to its route path
 app.use("/api", mainRouter);
+app.use("/", indexRouter);
 // **404 Error Handling**
-
-
+indexRouter.get("/", async (req, res) =>
+  res.status(200).render("index", { title: "AI POWERED SKIN CARE ECOMMERCE STORE" })
+);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // At the bottom of all routes

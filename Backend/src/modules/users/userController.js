@@ -40,7 +40,7 @@ exports.registerUser = async (req, res) => {
         await newUser.save();
 
         // Send verification email
-        const verificationLink = `${process.env.FRONTEND_URL}/api/users/verify-email?token=${verificationToken}`;
+        const verificationLink = `${process.env.BACKEND_URL}/api/users/verify-email?token=${verificationToken}`;
         await sendEmail(email, "Verify Your Email", `Click here to verify: ${verificationLink}`);
 
         res.status(201).json({ message: "User registered successfully.\nPlease verify your email." });
@@ -52,20 +52,26 @@ exports.registerUser = async (req, res) => {
 
 // **🔹 Verify Email**
 exports.verifyEmail = async (req, res) => {
-    try {
-        const { token } = req.query;
-        const user = await User.findOne({ verificationToken: token });
-        if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+  try {
+    const { token } = req.query;
+    const user = await User.findOne({ verificationToken: token });
+    if (!user) return res.status(400).send("Invalid or expired token");
 
-        user.isVerified = true;
-        user.verificationToken = null;
-        await user.save();
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
 
-        res.status(200).json({ message: "Email verified successfully!" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    // Render view with user's name and login URL
+    return res.status(200).render("emailVerified", {
+      name: user.first_name,
+      loginUrl: `${process.env.FRONTEND_URL}/login`,
+    });
+
+  } catch (error) {
+    res.status(500).send("Something went wrong.");
+  }
 };
+
 
 // **🔹 User Login**
 exports.loginUser = async (req, res) => {

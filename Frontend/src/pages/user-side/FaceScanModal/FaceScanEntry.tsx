@@ -94,10 +94,10 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
       // 2) Build a full‐URL that a phone can open:
       //    e.g. https://your‐domain.com/mobile-scan/abc123
       //    window.location.origin → e.g. https://your‐domain.com
-//    const localIP = window.location.origin ; // <-- YOUR computer’s IP!
-// const url = `${localIP}/mobile-scan/${id}`;
-  const localIP = "http://192.168.1.12:5173" ; // <-- YOUR computer’s IP!
+   const localIP = window.location.origin ; // <-- YOUR computer’s IP!
 const url = `${localIP}/mobile-scan/${id}`;
+//   const localIP = "http://192.168.1.12:5173" ; // <-- YOUR computer’s IP!
+// const url = `${localIP}/mobile-scan/${id}`;
 console.log(url)
 setQrUrl(url);
 
