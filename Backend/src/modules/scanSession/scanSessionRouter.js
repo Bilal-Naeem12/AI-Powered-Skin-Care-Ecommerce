@@ -47,7 +47,7 @@ const upload = multer({ storage });
 router.post("/:sessionId/upload", upload.single("file"), async (req, res) => {
   const { sessionId } = req.params;
   const session = sessions.get(sessionId);
-  const userId = req.body.userId || "anonymous"; // 🟡 Pass userId from frontend or fallback
+  const userId = req.body.userId ?req.body.userId: "anonymous"; // 🟡 Pass userId from frontend or fallback
 
   if (!session) return res.status(404).json({ error: "Session not found" });
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });

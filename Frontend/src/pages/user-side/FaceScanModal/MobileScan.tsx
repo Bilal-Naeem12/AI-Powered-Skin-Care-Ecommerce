@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useUserStore from "@/store/useUserStore";
 
 const MobileScan = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -11,8 +12,8 @@ const MobileScan = () => {
   const [step, setStep] = useState<"capture" | "preview" | "done">("capture");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Start camera
+  const {user} = useUserStore()
+  // Start camera   
   useEffect(() => {
     if (step !== "capture") return;
 
@@ -42,14 +43,26 @@ const MobileScan = () => {
     };
   }, [step]);
 
-  const handleCapture = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    if (!ctx) return;
-    ctx.drawImage(videoRef.current, 0, 0, 300, 400);
-    setCaptured(canvasRef.current.toDataURL("image/jpeg"));
-    setStep("preview");
-  };
+ const handleCapture = () => {
+  if (!videoRef.current || !canvasRef.current) return;
+
+  const video = videoRef.current;
+  const canvas = canvasRef.current;
+
+  // Set canvas size to match the video stream
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+   
+  if (!ctx) return;
+ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  setCaptured(canvas.toDataURL("image/jpeg"));
+  setStep("preview");
+};
+
 
   const handleConfirm = async () => {
     if (!captured || !sessionId) return;
@@ -67,7 +80,7 @@ const MobileScan = () => {
 
       const formData = new FormData();
       formData.append("file", file, "mobile-upload.jpg");
-
+formData.append("userId", user?._id ?? '');
       await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/upload`, formData);
       setStep("done");
     } catch (err: any) {
@@ -91,8 +104,8 @@ const MobileScan = () => {
 
   // Main capture UI
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] max-w-xs flex flex-col items-center">
+    <div className="fixed inset-0 bg-black/80 flex items-center  justify-center z-50">
+      <div className="bg-white rounded-lg p-4 shadow-xl w-[90%] max-w-2xl flex flex-col items-center">
         <h2 className="text-lg font-semibold mb-2">Scan Your Face</h2>
         {error && <div className="text-red-600 text-sm">{error}</div>}
 
@@ -100,17 +113,16 @@ const MobileScan = () => {
           <>
             <video
               ref={videoRef}
-              width={300}
-              height={400}
+           
               autoPlay
               playsInline
               className="rounded-md border"
+              style={{ transform: "scaleX(-1)" }}
             />
             <canvas
               ref={canvasRef}
-              width={300}
-              height={400}
-              style={{ display: "none" }}
+           
+              style={{ display: "none",transform: "scaleX(-1)"  }}
             />
             <button
               className="mt-4 bg-primary text-white px-4 py-2 rounded-lg"
@@ -126,7 +138,7 @@ const MobileScan = () => {
             <img
               src={captured}
               alt="Preview"
-              className="w-full h-72 object-contain rounded-md border"
+              className=" w-full h-[70vh] object-contain rounded-md border"
             />
             <div className="flex gap-2 mt-4 w-full">
               <button
