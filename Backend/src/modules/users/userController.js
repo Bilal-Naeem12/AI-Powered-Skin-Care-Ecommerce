@@ -3,8 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendEmail } = require('../../services/emailService');
+const isProd = process.env.NODE_ENV === "production";
 
-
+const commonOptions = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+  };
 // controllers/userController.js  (inside exports.getAllUsers)
 const buildUserQuery = ({ name, deleted }) => {
   const q = { isDeleted: deleted === "true" };     // ⭐ NEW
@@ -84,15 +89,13 @@ exports.loginUser = async (req, res) => {
 
         // Set access token cookie with a short expiration time (e.g., 15 mins)
   res.cookie('accessToken', accessToken, {
-    httpOnly:true,
-    secure: process.env.NODE_ENV === 'production' ? true : false,
+    ...commonOptions,
     maxAge: 100*60*1000, // 15 minutes
   });
 
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
   res.cookie('refreshToken', refreshToken, {
-    httpOnly:true,
-    secure: process.env.NODE_ENV === 'production' ? true : false,
+ ...commonOptions,
     maxAge: 100*60*1000, // 7 days
   });
 
@@ -126,8 +129,7 @@ exports.refreshToken = async (req, res) => {
 
         // Set access token cookie (short expiry)
         res.cookie('accessToken', newAccessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+           ...commonOptions,
             maxAge: 100*60*1000, // 15 minutes
         });
 
