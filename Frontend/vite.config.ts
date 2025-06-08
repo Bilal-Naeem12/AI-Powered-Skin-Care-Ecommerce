@@ -10,6 +10,11 @@ export default defineConfig({
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
+  build: {
+  rollupOptions: {
+    external: ["@mediapipe/face_mesh"]
+  }
+},
   plugins: [
     react(),
     svgr({
