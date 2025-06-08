@@ -12,7 +12,7 @@ export interface Category {
     description?: string;
   
     /** Full https://… URL (or relative path) of hero/thumbnail image */
-    imageUrl?: string | null;
+    imageUrl?: string ;
   
     /** Soft‑delete flag (true = hidden from catalogue) */
     isDeleted: boolean;

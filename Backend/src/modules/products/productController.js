@@ -3,6 +3,7 @@ const Product = require("./productModel");
 const mongoose = require('mongoose');
 const slugify = require("slugify");
 const Analytics = require("../analytics/analyticsModel");
+const Category = require("../category/categoryModel");
 
 const productModel = require("./productModel");
 const uuid     = require("crypto").randomUUID;
@@ -52,7 +53,12 @@ exports.getAllProducts = async (req, res) => {
 
     let filter = { isDeleted: false };
 
-    if (category) filter.category = category;
+    if (category) {
+  const foundCategory = await Category.findOne({ name: { $regex: category, $options: "i" } });
+  if (foundCategory) {
+    filter.category = foundCategory._id;
+  } 
+}
     if (brand) filter.brand = brand;
 
     if (minPrice || maxPrice) {

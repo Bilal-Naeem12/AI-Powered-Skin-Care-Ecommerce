@@ -10,12 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ProductCategory } from "@/types/Product";
+
+import { Category } from "@/types/Category";
+import useFetchData from "@/hooks/useFetchData";
 
 /* available values */
-const categories: ProductCategory[] = [
-  "Moisturizer", "Cleanser", "Serum", "Sunscreen", "Exfoliator", "Toner", "Mask", "Other"
-];
 const skinTypes = ["Oily", "Dry", "Combination", "Sensitive", "Normal"];
 const brands = ["CeraVe", "La Roche-Posay", "Neutrogena", "The Ordinary", "Other"];
 
@@ -46,6 +45,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   setAvailability,
   resetPage,
 }) => {
+
+    const { data: categories, loading, error } = useFetchData<Category[]>(`${import.meta.env.VITE_API_BACKEND_URL}/categories/`);
+  
   const [expanded, setExpanded] = useState<string | false>(false);
 
   const handleAccordionChange =
@@ -132,20 +134,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           <Typography>Category</Typography>
         </AccordionSummary>
         <AccordionDetails className="space-y-1">
-          {categories.map((cat) => (
+          {categories?.map((cat) => (
             <FormControlLabel
-              key={cat}
+              key={cat._id}
               control={
                 <Checkbox
-                  checked={selectedCategory === cat}
+                  checked={selectedCategory === cat.name}
                   onChange={() => {
-                    setSelectedCategory(selectedCategory === cat ? null : cat);
+                    setSelectedCategory(selectedCategory === cat.name ? null : cat.name);
                     resetPage();
                   }}
                   size="small"
                 />
               }
-              label={cat}
+              label={cat.name}
             />
           ))}
         </AccordionDetails>

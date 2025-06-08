@@ -1,33 +1,31 @@
-// src/components/Home/Categories.tsx
 import React from "react";
+import useFetchData from "@/hooks/useFetchData"; // Update this path if your hook is in a different folder
+import { Category } from "@/types/Category";
 
-const categories = [
-  { id: 1, name: "Moisturizer", image: "/assets/product_images/moisturizer.jpg" },
-  { id: 2, name: "Cleanser", image: "/assets/product_images/cleanser.png" },
-  { id: 3, name: "Serum", image: "/assets/product_images/niacinamide-serum.jpg" },
-  { id: 4, name: "Sunscreen", image: "/assets/product_images/sun-screen.jpg" },
-  { id: 5, name: "Exfoliator", image: "/assets/product_images/exfoliator.webp" },
-  { id: 6, name: "Toner", image: "/assets/product_images/toner.webp" },
-  { id: 7, name: "Mask", image: "/assets/product_images/mask.jpg" },
-  { id: 8, name: "Other", image: "/assets/product_images/other.webp" },
-];
+
 
 const Categories: React.FC = () => {
+  const { data: categories, loading, error } = useFetchData<Category[]>(`${import.meta.env.VITE_API_BACKEND_URL}/categories/`);
+
+  if (loading) return <div className="text-center py-8">Loading categories...</div>;
+  if (error)   return <div className="text-center py-8 text-red-500">{error}</div>;
+  if (!categories || !categories.length) return <div className="text-center py-8 text-gray-400">No categories found.</div>;
+
   return (
-    <div className="flex flex-wrap justify-center gap-8 px-4 ">
-      {categories.map((category) => (
+    <div className="flex flex-wrap justify-center gap-8 px-4">
+      {categories?.map((category) => (
         <div
-          key={category.id}
+          key={category._id}
           className="flex flex-col items-center text-center group cursor-pointer"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden shadow-md">
             <img
-              src={category.image}
+              src={category.imageUrl}
               alt={category.name}
               className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110"
             />
           </div>
-          <p className="mt-2 text-xs font-medium text-gray-800 leading-tight group-hover:text-primary transition-all">
+          <p className="mt-2 text-xs capitalize font-medium text-gray-800 leading-tight group-hover:text-primary transition-all">
             {category.name}
           </p>
         </div>

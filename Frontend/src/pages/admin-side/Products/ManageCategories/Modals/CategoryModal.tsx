@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -8,11 +8,15 @@ import {
   Grid,
   Button,
   Divider,
+  Typography,
+  Avatar,
+  CircularProgress,
 } from "@mui/material";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Category } from "@/types/Category";
+import usePostAuthData from "@/hooks/usePostAuthData";
 
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -39,6 +43,8 @@ export default function CategoryModal({
     register,
     handleSubmit,
     reset,
+    setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CategoryPayload>({
     resolver: zodResolver(schema),
@@ -48,6 +54,12 @@ export default function CategoryModal({
       imageUrl: "",
     },
   });
+
+  const imageUrl = useWatch({ control, name: "imageUrl" });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [localUploading, setLocalUploading] = useState(false);
+
+  const { postData, data } = usePostAuthData<{ image: string }, FormData>();
 
   useEffect(() => {
     if (initialData) {
@@ -64,6 +76,34 @@ export default function CategoryModal({
       });
     }
   }, [initialData, reset]);
+
+  useEffect(() => {
+    if (data?.image) {
+      setValue("imageUrl", data.image, { shouldValidate: true });
+      setLocalUploading(false);
+    }
+  }, [data, setValue]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !initialData) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setLocalUploading(true);
+
+    try {
+      await postData(
+        `${import.meta.env.VITE_API_BACKEND_URL}/categories/${initialData._id}/image`,
+        formData,
+        "Image uploaded successfully!"
+      );
+    } catch (e) {
+      console.error("Upload failed:", e);
+      setLocalUploading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -93,10 +133,40 @@ export default function CategoryModal({
               />
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Category Image (optional)
+              </Typography>
+              <Avatar
+                src={imageUrl || ""}
+                variant="rounded"
+                sx={{ width: 90, height: 90, mb: 1 }}
+              />
+              {localUploading ? (
+                <CircularProgress size={24} />
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Upload Image
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                </>
+              )}
               <TextField
                 {...register("imageUrl")}
-                label="Image URL (optional)"
+                label="Image URL"
                 fullWidth
+                margin="dense"
+                disabled
                 error={!!errors.imageUrl}
                 helperText={errors.imageUrl?.message}
               />
