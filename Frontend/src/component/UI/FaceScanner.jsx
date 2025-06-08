@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { FaceMesh } from "@mediapipe/face_mesh";
+import * as mpFaceMesh from "@mediapipe/face_mesh";
+
 import { Camera } from "@mediapipe/camera_utils";
 import useFaceScanStore from "../../store/useFaceScanStore";
 
@@ -51,9 +52,10 @@ const FaceScanner = forwardRef((props, ref) => {
   }));
 
   useEffect(() => {
-    const faceMesh = new FaceMesh({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-    });
+   const faceMesh = new mpFaceMesh.FaceMesh({
+  locateFile: (file) =>
+    `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
+});
 
     faceMesh.setOptions({
       maxNumFaces: 1,
