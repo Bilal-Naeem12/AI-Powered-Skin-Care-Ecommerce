@@ -1,53 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import CloseIcon from "@mui/icons-material/Close";
-import Instructions from "../../../component/UI/Instructions";
-import CameraView from "../../../component/UI/CameraView";
-import ResultButtons from "../../../component/UI/ResultButtons";
-import useFaceScanStore from "@/store/useFaceScanStore";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {  SkinAnalysisResult } from "@/types/SkinAnalysisResult";
+import Instructions from "@/component/UI/Instructions";
+import CameraView from "@/component/UI/CameraView";
+import ResultButtons from "@/component/UI/ResultButtons";
+import useFaceScanStore from "@/store/useFaceScanStore";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 
-const FaceScanModal: React.FC = () => {
-  /* ------------ local state ------------------------------------------------ */
+const SkinAnalyzerComponent: React.FC = () => {
   const [viewState, setViewState] = useState<
     "capture" | "countdown" | "loading" | "result"
   >("capture");
   const [countdown, setCountdown] = useState<number>(3);
 
-  /* ------------ refs ------------------------------------------------------- */
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const faceRef = useRef<any>(null); // exposed by <FaceScanner />
+  const faceRef = useRef<any>(null);
 
-  /* ------------ zustand shortcuts ----------------------------------------- */
   const {
     capturedImage,
     setCapturedImage,
     resetCapturedImage,
     setFaceRef,
-    closeModal,
     showLoading,
     hideLoading,
   } = useFaceScanStore();
 
   const {
-    result,
-    loading,
-    error,
     analyzeSkin,
     clearResult,
   } = useSkinAnalysisStore();
 
   const navigate = useNavigate();
 
-  /* expose faceRef to other components via store */
   useEffect(() => {
     setFaceRef(faceRef.current);
   }, [setFaceRef]);
 
-  /* ------------ countdown logic ------------------------------------------- */
   const startCountdown = () => {
     setViewState("countdown");
     setCountdown(3);
@@ -61,17 +48,15 @@ const FaceScanModal: React.FC = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         captureImage();
       }
-    }, 1_000);
+    }, 1000);
   };
 
-  /** abort if constraints break mid-countdown */
   const abortCountdown = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     setCountdown(3);
     setViewState("capture");
   };
 
-  /** take snapshot & switch to loading → result */
   const captureImage = () => {
     setViewState("loading");
 
@@ -87,19 +72,15 @@ const FaceScanModal: React.FC = () => {
     }, 500);
   };
 
-  /* clear interval on unmount */
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
-  /* ------------ analyse ---------------------------------------------------- */
   const handleAnalyze = async () => {
-    
     if (!capturedImage) return;
 
-    // base64 → blob
     const [meta, data] = capturedImage.split(",");
     const mime = meta.match(/data:(.+);base64/)?.[1] ?? "image/jpeg";
     const byteStr = atob(data);
@@ -110,12 +91,9 @@ const FaceScanModal: React.FC = () => {
     fd.append("file", blob);
 
     try {
-   
       showLoading();
-      clearResult();               // reset any prior result
-      await analyzeSkin(fd); 
-  
-      closeModal()
+      clearResult();
+      await analyzeSkin(fd);
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);
@@ -125,21 +103,8 @@ const FaceScanModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <motion.div
-        className="relative bg-white rounded-lg w-[90%] max-w-md p-6 shadow-xl"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <button
-          onClick={closeModal}
-          className="absolute top-4 right-4 text-gray-500 hover:text-black"
-        >
-          <CloseIcon fontSize="medium" />
-        </button>
-
+    <div className="min-h-screen bg-gray-100  px-4 flex flex-col items-center justify-start">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
         <Instructions />
 
         <CameraView
@@ -160,9 +125,9 @@ const FaceScanModal: React.FC = () => {
             analyzeCapture={handleAnalyze}
           />
         )}
-      </motion.div>
+      </div>
     </div>
   );
 };
 
-export default FaceScanModal;
+export default SkinAnalyzerComponent;

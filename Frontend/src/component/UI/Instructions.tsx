@@ -2,7 +2,7 @@ import React from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import useFaceScanStore from "../../../store/useFaceScanStore"; // make sure path is correct
+import useFaceScanStore from "../../store/useFaceScanStore"; // make sure path is correct
 
 const Instructions = () => {
   const {

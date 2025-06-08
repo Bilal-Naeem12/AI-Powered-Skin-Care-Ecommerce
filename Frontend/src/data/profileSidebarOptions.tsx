@@ -1,6 +1,6 @@
 
 import AccountSettingsComponent from "@/pages/user-side/ProfilePage/sub-pages/AccountSettingsComponent";
-import BreakoutAnalyzerComponent from "@/pages/user-side/ProfilePage/sub-pages/BreakoutAnalyzerComponent";
+import SkinAnalyzerComponent from "@/pages/user-side/ProfilePage/sub-pages/SkinAnalyzerComponent";
 import FAQComponent from "@/pages/user-side/ProfilePage/sub-pages/FAQComponent";
 import LogoutComponent from "@/pages/user-side/ProfilePage/sub-pages/LogoutComponent";
 import OrdersComponent from "@/pages/user-side/ProfilePage/sub-pages/OrdersComponent";
@@ -26,7 +26,9 @@ import {
     TicketIcon,
     MapPin,
     Mail,
+    BarChart3,
   } from "lucide-react";
+import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAnalysisTimeline";
   
  
   
@@ -79,6 +81,12 @@ import {
         //   component: ProfileComponent,
         // },
         {
+          name: "Skin Analysis Timeline",
+          path: "/profile-page/analysis-timeline", // Path for Skin Routine
+          icon: BarChart3, // Use a relevant icon for skin routine
+          component: SkinAnalysisTimeline, // Define SkinRoutineComponent
+        },
+            {
           name: "My Skin Routine",
           path: "/profile-page/skin-routine", // Path for Skin Routine
           icon: Calendar, // Use a relevant icon for skin routine
@@ -97,10 +105,10 @@ import {
           component: RewardsComponent, // Define RewardsComponent
         },
         {
-          name: "Breakout Analyzer",
-          path: "/profile-page/breakout-analyzer",
+          name: "Skin Analyzer",
+          path: "/profile-page/skin-analyzer",
           icon: Layers,
-          component: BreakoutAnalyzerComponent, // Define BreakoutAnalyzerComponent
+          component: SkinAnalyzerComponent, // Define BreakoutAnalyzerComponent
         },
         {
           name: "Account Settings",

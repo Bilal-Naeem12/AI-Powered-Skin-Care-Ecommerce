@@ -2,7 +2,6 @@
   // Single detected object
 export interface DetectionObject {
   bbox: [number, number, number, number];
-  class: string;
   confidence: number;
 }
 

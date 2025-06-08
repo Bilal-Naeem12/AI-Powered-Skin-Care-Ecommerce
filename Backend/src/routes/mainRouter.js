@@ -21,7 +21,8 @@ const shippingRoutes = require("../modules/shipping/shippingRoutes");
 const systemConfigRoutes = require("../modules/systemConfig/systemConfigRoutes");
 const userRoutes = require("../modules/users/userRoutes");
 const scanSessionRoutes = require("../modules/scanSession/scanSessionRouter");
-
+const skinHistoryRoutes = require("../modules/skinAnalysisHistory/skinAnalysisHistoryRoutes");
+const recommendationProductRoutes = require("../modules/recommendationProduct/recommendationProductRoutes");
 const categoryRoutes = require("../modules/category/categoryRoutes")
 const router = express.Router();
 
@@ -48,4 +49,9 @@ router.use("/shipping", shippingRoutes);
 router.use("/system-config", systemConfigRoutes);
 router.use("/users", userRoutes);
 router.use("/scan-session", scanSessionRoutes);
+
+router.use("/skin-history",skinHistoryRoutes );
+router.use("/recommendations",recommendationProductRoutes );
+
+
 module.exports = router;

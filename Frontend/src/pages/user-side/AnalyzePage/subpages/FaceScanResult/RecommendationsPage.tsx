@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import usePostAuthData from "@/hooks/usePostAuthData";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
-import { RecommendationResponse } from "@/types/Recommendation";
+import { RecommendationResponse, RoutineStep } from "@/types/Recommendation";
 import RoutineSection from "@/component/UI/RecommendedProduct";
 
 import {
@@ -17,15 +17,28 @@ import InfoIcon from "@mui/icons-material/Info";
 import FaceIcon from "@mui/icons-material/Face";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { CrossIcon } from "lucide-react";
+import useUserStore from "@/store/useUserStore";
 
 const RecommendationsPage: React.FC = () => {
   const result = useSkinAnalysisStore((state) => state.result);
+  const {user} = useUserStore();
+  const userId = user?._id;
+
+
   const { data, loading, error, postData } = usePostAuthData<
     RecommendationResponse,
     any
   >();
 
+
+  const { data:historyData, loading:historyLoading, error:historyError, postData:historyPost } = usePostAuthData<
+    any,
+    any
+  >();
   useEffect(() => {
+
+
+
     if (result) {
       const minimized = {
         classifications: result.classifications,
@@ -35,8 +48,44 @@ const RecommendationsPage: React.FC = () => {
         },
       };
       postData(`${import.meta.env.VITE_API_BACKEND_URL}/products/recommend`, minimized);
+
+
+
     }
   }, [result]);
+
+
+    useEffect(() => {
+    if (!data?.success || !userId || !result) return;
+
+    // flatten out all recommended product IDs
+    const recIds = Object.values(data.routine)
+      .flatMap((step: RoutineStep) =>
+        step?.products.map((p) => p._id) ?? []
+      );
+ const minimized = {
+        classifications: result.classifications,
+        detections: {
+          acne: result.detections.acne.objects?.at(0),
+          puffy_eyes: result.detections.puffy_eyes.objects?.at(0),
+        },
+      };
+    // payload matches your SkinAnalysisHistorySchema
+    const historyPayload = {
+      scanned_image:   result.scanned_image,
+      detections:      minimized.detections,
+      classifications: minimized.classifications,
+      // hydrationLevel:  null,
+      // uvExposureIndex: null,
+      recommendations: recIds,
+      analyzedAt:      new Date(),
+    };
+
+     historyPost(`${import.meta.env.VITE_API_BACKEND_URL}/skin-history/user/${userId}`, historyPayload);
+
+ 
+  }, [data, userId, result]);
+
 
   if (!result) return <p className="text-center py-10 text-gray-600">🔍 Run skin analysis first.</p>;
   if (loading) return <div className="w-max m-auto"><CircularProgress/></div>;

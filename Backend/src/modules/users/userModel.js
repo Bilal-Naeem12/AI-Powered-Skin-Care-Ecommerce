@@ -84,15 +84,15 @@ const UserSchema = new mongoose.Schema({
     },
 
     // **Skin Analysis History**
-    skinAnalysisHistory: [
-        {
-            imageUrl: String, // Link to uploaded skin image
-            analysisResults: String, // AI-based results
-            severityFlag: Boolean, // Indicates if condition is severe
-            recommendations: [String], // Product recommendations
-            analyzedAt: { type: Date, default: Date.now }
-        }
-    ],
+    // skinAnalysisHistory: [
+    //     {
+    //         imageUrl: String, // Link to uploaded skin image
+    //         analysisResults: String, // AI-based results
+    //         severityFlag: Boolean, // Indicates if condition is severe
+    //         recommendations: [String], // Product recommendations
+    //         analyzedAt: { type: Date, default: Date.now }
+    //     }
+    // ],
 
     // **Progress Tracking**
     progressTracking: [
