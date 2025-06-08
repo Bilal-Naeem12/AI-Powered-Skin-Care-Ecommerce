@@ -37,7 +37,7 @@ const CameraView: React.FC<Props> = ({
   return (
     <div className="relative flex flex-col items-center justify-center">
       <div
-        className={`relative border border-gray-300 rounded-lg w-[300px] h-[400px] bg-gray-100 flex items-center justify-center overflow-hidden transition-opacity duration-500 ${
+        className={`relative border border-gray-300 rounded-lg w-full bg-gray-100 flex items-center justify-center overflow-hidden transition-opacity duration-500 ${
           viewState === "countdown" ? "opacity-50" : "opacity-100"
         }`}
       >
@@ -46,7 +46,7 @@ const CameraView: React.FC<Props> = ({
           <img
             src={capturedImage}
             alt="Captured"
-            className="object-contain w-full h-full rounded-lg"
+      className="w-[800px] h-[400px] object-cover rounded-2xl"
           />
         ) : (
           <FaceScanner ref={faceRef} />

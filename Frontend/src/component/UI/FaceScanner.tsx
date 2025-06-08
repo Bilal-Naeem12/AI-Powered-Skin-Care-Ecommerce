@@ -6,207 +6,245 @@ import React, {
   useImperativeHandle,
 } from "react";
 import useFaceScanStore from "@/store/useFaceScanStore";
+import {
+  FilesetResolver,
+  FaceLandmarker,
+  FaceLandmarkerResult,
+} from "@mediapipe/tasks-vision";
 
 export interface FaceScannerHandle {
-  /** Returns a JPEG data URL of the current frame, or null if constraints not met */
   captureSnapshot: () => string | null;
-  /** Stops the camera */
   stopCamera: () => void;
 }
+
+// Set your real capture/display size
+const VIDEO_WIDTH = 800;
+const VIDEO_HEIGHT = 400;
+const OVAL_WIDTH = 250;
+const OVAL_HEIGHT = 300;
+const PREVIEW_WIDTH = 570;
+const PREVIEW_HEIGHT = 400;
+
+
+const cropStartX = Math.floor((VIDEO_WIDTH - PREVIEW_WIDTH) / 2);
+
 
 const FaceScanner = forwardRef<FaceScannerHandle>((_, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
-  const cameraRef = useRef<any>(null);
-  const faceMeshRef = useRef<any>(null);
+const cropCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Zustand store selectors
-  const { faceInsideOval, facingCamera, lightingOk } =
-    useFaceScanStore.getState();
   const setFaceInsideOval = useFaceScanStore((s) => s.setFaceInsideOval);
-  const setFacingCamera = useFaceScanStore((s) => s.setFacingCamera);
-  const setLightingOk = useFaceScanStore((s) => s.setLightingOk);
+  const setFacingCamera    = useFaceScanStore((s) => s.setFacingCamera);
+  const setLightingOk      = useFaceScanStore((s) => s.setLightingOk);
 
-  // Imperative handle for parent components
-  useImperativeHandle(ref, () => ({
-    captureSnapshot: () => {
-      if (!faceInsideOval || !facingCamera || !lightingOk) {
-        console.warn("🚫 Capture blocked: Constraints not met");
-        return null;
-      }
-      return canvasRef.current?.toDataURL("image/jpeg") ?? null;
-    },
-    stopCamera: () => {
-      cameraRef.current?.stop();
-      cameraRef.current = null;
-      console.log("📷 Camera stopped");
-    },
-  }));
+  const mediaStreamRef     = useRef<MediaStream | null>(null);
+  const faceLandmarkerRef  = useRef<FaceLandmarker | null>(null);
+  const rafIdRef           = useRef<number>(0);
 
-  // Utility: checks if (x,y) is inside an oval
+ useImperativeHandle(ref, () => ({
+  captureSnapshot: () => {
+    const { faceInsideOval, facingCamera, lightingOk } = useFaceScanStore.getState();
+    if (!faceInsideOval || !facingCamera || !lightingOk) return null;
+
+    // Draw the cropped area onto the hidden crop canvas
+    const cropCanvas = cropCanvasRef.current;
+    const mainCanvas = canvasRef.current;
+    if (!cropCanvas || !mainCanvas) return null;
+
+    const cropCtx = cropCanvas.getContext("2d");
+    if (!cropCtx) return null;
+
+    cropCanvas.width = PREVIEW_WIDTH;
+    cropCanvas.height = PREVIEW_HEIGHT;
+
+    // Copy the cropped region from the main canvas
+    cropCtx.clearRect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+    cropCtx.drawImage(
+      mainCanvas,
+      cropStartX, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT, // source rect (main canvas)
+      0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT           // dest rect (crop canvas)
+    );
+
+    return cropCanvas.toDataURL("image/jpeg");
+  },
+  stopCamera: () => {
+    cancelAnimationFrame(rafIdRef.current);
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    faceLandmarkerRef.current?.close();
+  },
+}));
+
   const isInsideOval = (
-    x: number,
-    y: number,
-    centerX: number,
-    centerY: number,
-    width: number,
-    height: number
-  ): boolean => {
-    const dx = x - centerX;
-    const dy = y - centerY;
-    return dx * dx / (width / 2) ** 2 + dy * dy / (height / 2) ** 2 <= 1;
+    x: number, y: number,
+    cx: number, cy: number,
+    w: number, h: number
+  ) => {
+    const dx = x - cx, dy = y - cy;
+    return dx*dx/(w/2)**2 + dy*dy/(h/2)**2 <= 1;
   };
 
-  // Utility: average brightness of current frame
-  const avgBrightness = (): number => {
-    const canvas = canvasRef.current;
-    if (!canvas) return 0;
-    const ctx = canvas.getContext("2d");
+  const avgBrightness = () => {
+    const c = canvasRef.current;
+    if (!c) return 0;
+    const ctx = c.getContext("2d");
     if (!ctx) return 0;
-    const frame = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let total = 0;
-    for (let i = 0; i < frame.length; i += 4) {
-      total += (frame[i] + frame[i + 1] + frame[i + 2]) / 3;
+    const data = ctx.getImageData(0, 0, c.width, c.height).data;
+    let sum = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      sum += (data[i] + data[i+1] + data[i+2]) / 3;
     }
-    return total / (frame.length / 4);
+    return sum / (data.length/4);
   };
 
   useEffect(() => {
-    let camera: any;
-    let faceMesh: any;
+    let faceLandmarker: FaceLandmarker | null = null;
+    let rafId: number = 0;
 
-    const setup = async () => {
-      // Dynamically import the true ESM build
-      const mp = await import(
-        "@mediapipe/face_mesh/face_mesh.js"
-      );
-      const camUtils = await import(
-        "@mediapipe/camera_utils/camera_utils.js"
-      );
-      const { FaceMesh } = mp;
-      const { Camera } = camUtils;
-
-      // Initialize FaceMesh
-      faceMesh = new FaceMesh({
-        locateFile: (file: string) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-      });
-      faceMesh.setOptions({
-        maxNumFaces: 1,
-        refineLandmarks: true,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-      });
-
-      faceMesh.onResults((results: any) => {
-        const canvas = canvasRef.current;
-        const overlay = overlayRef.current;
-        if (!canvas || !overlay || !results.image) return;
-
-        const ctx = canvas.getContext("2d")!;
-        const ovCtx = overlay.getContext("2d")!;
-
-        // clear
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ovCtx.clearRect(0, 0, overlay.width, overlay.height);
-
-        // draw mirrored frame
-        ctx.save();
-        ctx.scale(-1, 1);
-        ctx.drawImage(
-          results.image,
-          -canvas.width,
-          0,
-          canvas.width,
-          canvas.height
-        );
-        ctx.restore();
-
-        // draw oval
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const w = 200;
-        const h = 250;
-        ovCtx.beginPath();
-        ovCtx.ellipse(cx, cy, w / 2, h / 2, 0, 0, 2 * Math.PI);
-        ovCtx.strokeStyle = "rgba(0, 0, 0, 0.7)";
-        ovCtx.lineWidth = 3;
-        ovCtx.stroke();
-
-        // check landmarks
-        const landmarks = results.multiFaceLandmarks?.[0];
-        if (landmarks) {
-          // key points: nose tip (1), forehead (10), chin (152), cheeks (234, 454)
-          const keys = [1, 10, 152, 234, 454].map((i) => landmarks[i]);
-          const positions = keys.map((lm: any) => ({
-            x: (1 - lm.x) * canvas.width,
-            y: lm.y * canvas.height,
-          }));
-          const inside = positions.every((p) =>
-            isInsideOval(p.x, p.y, cx, cy, w, h)
-          );
-          setFaceInsideOval(inside);
-
-          // facing camera?
-          const leftDist = Math.abs(landmarks[33].x - landmarks[1].x);
-          const rightDist = Math.abs(landmarks[263].x - landmarks[1].x);
-          setFacingCamera(Math.abs(leftDist - rightDist) < 0.03);
-        } else {
-          setFaceInsideOval(false);
-          setFacingCamera(false);
+    const setupCamera = async () => {
+      try {
+        mediaStreamRef.current =
+          await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: VIDEO_WIDTH,
+              height: VIDEO_HEIGHT,
+              facingMode: "user",
+            },
+          });
+        if (videoRef.current && mediaStreamRef.current) {
+          videoRef.current.srcObject = mediaStreamRef.current;
+          await videoRef.current.play();
         }
-
-        // lighting
-        setLightingOk(avgBrightness() > 70);
-      });
-
-      // start camera
-      if (videoRef.current) {
-        camera = new Camera(videoRef.current, {
-          onFrame: async () => {
-            await faceMesh.send({ image: videoRef.current! });
-          },
-          width: 300,
-          height: 400,
-        });
-        camera.start();
-        cameraRef.current = camera;
+      } catch (e) {
+        console.error("Camera error:", e);
       }
-
-      faceMeshRef.current = faceMesh;
     };
 
-    setup();
+    const setupModel = async () => {
+      const visionFileset = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+      );
+      faceLandmarker = await FaceLandmarker.createFromOptions(
+        visionFileset,
+        {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/" +
+              "face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+          },
+          runningMode: "VIDEO",
+          numFaces: 1,
+          outputFaceBlendshapes: false,
+          outputFacialTransformationMatrixes: false,
+        }
+      );
+      faceLandmarkerRef.current = faceLandmarker;
+    };
+
+    const processFrame = (now: number) => {
+      const video   = videoRef.current!;
+      const canvas  = canvasRef.current!;
+      const overlay = overlayRef.current!;
+      const ctx     = canvas.getContext("2d")!;
+      const ovCtx   = overlay.getContext("2d")!;
+
+      ctx.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      ctx.save();
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, -VIDEO_WIDTH, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      ctx.restore();
+
+      const results = faceLandmarker!.detectForVideo(video, now);
+
+      ovCtx.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+      ovCtx.beginPath();
+      ovCtx.ellipse(
+        VIDEO_WIDTH/2,
+        VIDEO_HEIGHT/2,
+        OVAL_WIDTH/2,
+        OVAL_HEIGHT/2,
+        0, 0, 2*Math.PI
+      );
+      ovCtx.strokeStyle = "rgba(0,0,0,0.7)";
+      ovCtx.lineWidth   = 3;
+      ovCtx.stroke();
+
+      const multi = results.faceLandmarks;
+      if (multi && multi.length) {
+        const lm = multi[0];
+        const pts = [1,10,152,234,454].map(i => ({
+          x: (1-lm[i].x)*VIDEO_WIDTH,
+          y: lm[i].y*VIDEO_HEIGHT
+        }));
+        setFaceInsideOval(pts.every(p =>
+          isInsideOval(p.x,p.y,VIDEO_WIDTH/2,VIDEO_HEIGHT/2,OVAL_WIDTH,OVAL_HEIGHT)
+        ));
+        const lDist = Math.abs(lm[33].x - lm[1].x);
+        const rDist = Math.abs(lm[263].x - lm[1].x);
+        setFacingCamera(Math.abs(lDist - rDist) < 0.05);
+      } else {
+        setFaceInsideOval(false);
+        setFacingCamera(false);
+      }
+
+      setLightingOk(avgBrightness() > 70);
+
+      rafId = requestAnimationFrame(processFrame);
+      rafIdRef.current = rafId;
+    };
+
+    const init = async () => {
+      await setupCamera();
+      await setupModel();
+      rafId = requestAnimationFrame(processFrame);
+      rafIdRef.current = rafId;
+    };
+    init();
 
     return () => {
-      cameraRef.current?.stop();
-      faceMeshRef.current?.close();
+      cancelAnimationFrame(rafIdRef.current);
+      mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+      faceLandmarkerRef.current?.close();
     };
   }, [setFaceInsideOval, setFacingCamera, setLightingOk]);
 
+  // The outer card can be any size, but make sure the video/canvas/overlay
+  // container is always at the true width/height!
   return (
-    <div className="w-full h-full relative">
-      <video
-        ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-cover"
-        autoPlay
-        muted
-        playsInline
-        style={{ transform: "scaleX(-1)" }}
-      />
-      <canvas
-        ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full"
-        width={300}
-        height={400}
-      />
-      <canvas
-        ref={overlayRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-        width={300}
-        height={400}
-      />
+    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg">
+      <div
+        className="relative rounded-xl overflow-hidden border border-gray-200"
+        style={{ width: `${VIDEO_WIDTH}px`, height: `${VIDEO_HEIGHT}px` }}
+      >
+        <video
+          ref={videoRef}
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          style={{ transform: "scaleX(-1)" }}
+          width={VIDEO_WIDTH}
+          height={VIDEO_HEIGHT}
+          muted
+          playsInline
+          autoPlay
+        />
+        <canvas
+          ref={canvasRef}
+          className="absolute top-0 left-0 w-full h-full"
+          width={VIDEO_WIDTH}
+          height={VIDEO_HEIGHT}
+        />
+        <canvas
+          ref={overlayRef}
+          className="absolute top-0 left-0 w-full h-full pointer-events-none"
+          width={VIDEO_WIDTH}
+          height={VIDEO_HEIGHT}
+        />
+        
+<canvas
+  ref={cropCanvasRef}
+  style={{ display: "none" }}
+/>
+      </div>
     </div>
   );
 });

@@ -10,12 +10,10 @@ export default defineConfig({
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
-  optimizeDeps: {
-    include: [
-      "@mediapipe/face_mesh",
-      "@mediapipe/camera_utils"
-    ]
-  },
+ optimizeDeps: {
+  include: ['@mediapipe/face_mesh', '@mediapipe/camera_utils'],
+},
+
   plugins: [
     react(),
     svgr({
