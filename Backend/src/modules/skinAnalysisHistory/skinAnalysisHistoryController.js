@@ -11,7 +11,9 @@ exports.createHistory = async (req, res) => {
     // 1) Create the SkinHistory entry (without recs yet)
     const history = await SkinHistory.create({
       userId,
-      scanned_image:   req.body.scanned_image,
+      scanned_image_before:   req.body.scanned_image_before,
+      scanned_image_after:   req.body.scanned_image_after,
+      step: req.body.step,
       detections:      req.body.detections,
       classifications: req.body.classifications,
       hydrationLevel:  req.body.hydrationLevel,
@@ -21,18 +23,20 @@ exports.createHistory = async (req, res) => {
     });
 
     // 2) Read productId list from payload
-    const recProductIds = Array.isArray(req.body.recommendations)
-      ? req.body.recommendations
-      : [];
+   const recProducts = Array.isArray(req.body.recommendations)
+  ? req.body.recommendations
+  : [];
 
-    if (recProductIds.length) {
-      // 3) Bulk‐create RecommendationProduct documents
-      const recDocs = recProductIds.map((pid) => ({
-        skinHistoryId: history._id,
-        productId:     pid,
-        // optional: you could include a `step` here if passed in payload
-      }));
-
+if (recProducts.length) {
+  const recDocs = recProducts.map((entry) => ({
+    skinHistoryId: history._id,
+    productId:     entry.productId,
+    step: {
+      stepKey:  entry.step?.stepKey ?? null,
+      title:    entry.step?.title ?? null,
+      category: entry.step?.category ?? null,
+    }
+  }));
       const createdRecs = await RecommendationProduct.insertMany(recDocs);
 
       // 4) Store their IDs back on the history record
@@ -63,8 +67,22 @@ exports.getHistoryByUser = async (req, res) => {
 
     const entries = await SkinHistory.find({ userId })
       .sort({ analyzedAt: -1 })
-      .populate("recommendations")   // optionally populate recommended products
-      .lean();
+    .populate({
+    path: "recommendations",
+    populate: {
+      path: "productId",
+      select: "name price images",
+      options: { },
+      // 👇 only keep first image
+      transform: (doc) => {
+        if (doc && doc.images?.length > 0) {
+          doc.images = [doc.images[0]];
+        }
+        return doc;
+      },
+    }
+  })
+  .lean()
 
     res.json(entries);
   } catch (err) {

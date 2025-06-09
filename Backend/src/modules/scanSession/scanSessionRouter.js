@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
+const { authMiddleware } = require("../../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -47,14 +48,14 @@ const upload = multer({ storage });
 router.post("/:sessionId/upload", upload.single("file"), async (req, res) => {
   const { sessionId } = req.params;
   const session = sessions.get(sessionId);
-  const userId = req.body.userId ?req.body.userId: "anonymous"; // 🟡 Pass userId from frontend or fallback
+  const _id = req.body._id ?req.body._id: "anonymous"; // 🟡 Pass _id from frontend or fallback
 
   if (!session) return res.status(404).json({ error: "Session not found" });
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
   try {
     // Upload to Cloudinary with structured folder path
-    const folderPath = `ai-analyze/${userId}`;
+    const folderPath = `ai-analyze/${_id}`;
     const publicId = `${sessionId}`;
 
     const uploadResult = await new Promise((resolve, reject) => {
@@ -82,5 +83,53 @@ router.post("/:sessionId/upload", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Upload failed" });
   }
 });
+
+
+
+
+
+
+router.post("/upload-to-folder", upload.single("file"),authMiddleware, async (req, res) => {
+  const { _id, first_name } = req.user;
+
+  if (!_id || !first_name)
+    return res.status(400).json({ error: "_id and first_name are required" });
+
+  if (!req.file)
+    return res.status(400).json({ error: "No file uploaded" });
+
+  try {
+    const folderPath = `scannedImages/${first_name}-${_id}/`;
+    const publicId = uuidv4(); // Give a unique name to each uploaded file
+
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: folderPath,
+          public_id: publicId,
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    });
+
+    res.json({
+      status: "ok",
+      message: "Image uploaded successfully",
+      cloudinaryUrl: uploadResult.secure_url,
+      folder: folderPath,
+      publicId,
+    });
+  } catch (err) {
+    console.error("Upload to structured folder failed:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
 
 module.exports = router;

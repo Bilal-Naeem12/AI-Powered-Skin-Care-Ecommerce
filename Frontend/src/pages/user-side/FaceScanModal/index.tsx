@@ -9,6 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {  SkinAnalysisResult } from "@/types/SkinAnalysisResult";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useUserStore from "@/store/useUserStore";
 
 const FaceScanModal: React.FC = () => {
   /* ------------ local state ------------------------------------------------ */
@@ -16,7 +17,8 @@ const FaceScanModal: React.FC = () => {
     "capture" | "countdown" | "loading" | "result"
   >("capture");
   const [countdown, setCountdown] = useState<number>(3);
-
+  const {user} = useUserStore()
+  const userId = user?._id
   /* ------------ refs ------------------------------------------------------- */
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const faceRef = useRef<any>(null); // exposed by <FaceScanner />
@@ -105,15 +107,15 @@ const FaceScanModal: React.FC = () => {
     const byteStr = atob(data);
     const bytes = Uint8Array.from(byteStr, (b) => b.charCodeAt(0));
     const blob = new Blob([bytes], { type: mime });
+ const file = new File([blob], "before.jpg", { type: mime }); // ✅ proper File object
 
-    const fd = new FormData();
-    fd.append("file", blob);
-
+  const fd = new FormData();
+  fd.append("file", file); 
     try {
    
       showLoading();
       clearResult();               // reset any prior result
-      await analyzeSkin(fd); 
+      await analyzeSkin(fd,file,userId); 
   
       closeModal()
       navigate("/ai-tools-page/skin-analysis");

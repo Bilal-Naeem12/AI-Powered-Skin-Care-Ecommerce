@@ -35,8 +35,14 @@ const SkinAnalysisHistorySchema = new mongoose.Schema({
     required: true,
     index: true,             // speed up lookups by user
   },
-
-  scanned_image:   { type: String, required: true },   // base64 or URL
+scanned_image_before: {
+  type: String, // cloudinary URL of uploaded image
+  required: true,
+},
+scanned_image_after: {
+  type: String, // optional postprocessed version (e.g., annotated by AI)
+  required: false,
+},
   detections:      { type: DetectionsSchema, required: true },
   classifications: { type: ClassificationsSchema, required: true },
 

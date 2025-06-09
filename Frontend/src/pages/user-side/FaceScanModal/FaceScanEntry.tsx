@@ -13,6 +13,7 @@ import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 import QRCode, { QRCodeCanvas } from "qrcode.react"; // <–– our QR‐code library
 import { Http2ServerRequest } from "http2";
 import { QrCodeIcon } from "lucide-react";
+import useUserStore from "@/store/useUserStore";
 
 type Step = "choice" | "preview" | "uploading"| "qr";
 
@@ -21,7 +22,8 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const [step, setStep] = useState<Step>("choice");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
+  const {user} = useUserStore()
+  const userId = user?._id
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
 
@@ -62,7 +64,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
 
     try {
       clearResult();               // reset any prior result
-    await analyzeSkin(fd); 
+    await analyzeSkin(fd,file,userId); 
 
       setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
       // setDetections(resp.data.acne.detections.concat(resp.data.puffy_eyes.detections));

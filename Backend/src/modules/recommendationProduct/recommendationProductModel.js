@@ -13,9 +13,10 @@ const RecommendationProductSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  step: {     // optional: which routine step (e.g. "step1")
-    type: String,
-    default: null
+ step: {
+    stepKey: { type: String, required: true },         // e.g. "step1"
+    title: { type: String, required: true },           // e.g. "Cleanse Your Skin"
+    category: { type: String, required: true },        // e.g. "Cleanser"
   },
   recommendedAt: {
     type: Date,

@@ -5,13 +5,15 @@ import CameraView from "@/component/UI/CameraView";
 import ResultButtons from "@/component/UI/ResultButtons";
 import useFaceScanStore from "@/store/useFaceScanStore";
 import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useUserStore from "@/store/useUserStore";
 
 const SkinAnalyzerComponent: React.FC = () => {
   const [viewState, setViewState] = useState<
     "capture" | "countdown" | "loading" | "result"
   >("capture");
   const [countdown, setCountdown] = useState<number>(3);
-
+  const {user} = useUserStore()
+  const userId = user?._id
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const faceRef = useRef<any>(null);
 
@@ -86,14 +88,14 @@ const SkinAnalyzerComponent: React.FC = () => {
     const byteStr = atob(data);
     const bytes = Uint8Array.from(byteStr, (b) => b.charCodeAt(0));
     const blob = new Blob([bytes], { type: mime });
+ const file = new File([blob], "before.jpg", { type: mime }); // ✅ proper File object
 
-    const fd = new FormData();
-    fd.append("file", blob);
-
+  const fd = new FormData();
+  fd.append("file", file); 
     try {
       showLoading();
       clearResult();
-      await analyzeSkin(fd);
+      await analyzeSkin(fd,file,userId);
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);
