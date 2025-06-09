@@ -8,6 +8,7 @@ import type {
   Detections,
 } from "@/types/SkinAnalysisResult";
 import { RecommendationResponse } from "@/types/Recommendation";
+import { RecommendationStepInfo } from "@/types/SkinHistoryEntry";
 
 interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
@@ -53,11 +54,7 @@ const uploadImage = async (input: File | string): Promise<string> => {
   return res.data.cloudinaryUrl;
 };
 
-export interface RecommendationStepInfo {
-  stepKey: string;      // e.g., "step1"
-  title: string;        // e.g., "Cleanse Your Skin"
-  category: string;     // e.g., "Cleanser"
-}
+
 const saveSkinHistory = async (
   userId: string,
   beforeUrl: string,

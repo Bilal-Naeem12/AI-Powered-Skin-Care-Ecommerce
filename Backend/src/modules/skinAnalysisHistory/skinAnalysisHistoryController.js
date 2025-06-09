@@ -62,29 +62,40 @@ if (recProducts.length) {
 exports.getHistoryByUser = async (req, res) => {
   try {
     const { userId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
     if (!mongoose.Types.ObjectId.isValid(userId))
       return res.status(400).json({ error: "Invalid userId" });
 
     const entries = await SkinHistory.find({ userId })
       .sort({ analyzedAt: -1 })
-    .populate({
-    path: "recommendations",
-    populate: {
-      path: "productId",
-      select: "name price images",
-      options: { },
-      // 👇 only keep first image
-      transform: (doc) => {
-        if (doc && doc.images?.length > 0) {
-          doc.images = [doc.images[0]];
-        }
-        return doc;
-      },
-    }
-  })
-  .lean()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({
+        path: "recommendations",
+        populate: {
+          path: "productId",
+          select: "name price images",
+          transform: (doc) => {
+            if (doc?.images?.length > 0) {
+              doc.images = [doc.images[0]];
+            }
+            return doc;
+          },
+        },
+      })
+      .lean();
 
-    res.json(entries);
+    const total = await SkinHistory.countDocuments({ userId });
+
+    res.json({
+      success: true,
+      page,
+      totalPages: Math.ceil(total / limit),
+      totalEntries: total,
+      entries,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch user history" });
