@@ -11,7 +11,7 @@ const AnalyzePage: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Breadcrumb */}
         <Breadcrumb
           paths={[
@@ -22,7 +22,7 @@ const AnalyzePage: React.FC = () => {
 
         {/* Dummy-alert */}
         {!result?.scanned_image && (
-          <div className="flex items-center bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+          <div className="flex items-center bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 sm:p-4 rounded">
             <Warning fontSize="small" />
             <p className="ml-2 text-sm">
               <strong>Note:</strong> No skin analysis run yet. Click “Skin Analysis” below.
@@ -35,12 +35,12 @@ const AnalyzePage: React.FC = () => {
           {/* Skin Analysis Card */}
           <Link
             to="/ai-tools-page/skin-analysis"
-            className="group block p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition"
+            className="group block p-2 sm:p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition"
           >
             <h3 className="text-xl font-semibold text-gray-800 group-hover:text-blue-600 mb-2">
               AI Skin Analysis
             </h3>
-            <img src="/assets/Hero-Section-Image.jpg" className="h-72 w-full object-fill"  alt="" />
+            <img src="/assets/Hero-Section-Image.jpg" className="sm:h-72 w-full object-fill"  alt="" />
             <p className="text-gray-600 mb-4">
               Automatically detect acne, puffy eyes, grade severity & type. Get a full combined report.
             </p>
@@ -52,12 +52,12 @@ const AnalyzePage: React.FC = () => {
           {/* Inpainting Card */}
           <Link
             to="/ai-tools-page/inpainting "
-            className="group block p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition"
+            className="group block p-2 sm:p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition"
           >
             <h3 className="text-xl font-semibold text-gray-800 group-hover:text-green-600 mb-2">
               AI Inpainting
             </h3>
-            <img src="/assets/inpainting.jpg" className="h-72 w-full object-fill"  alt="" />
+            <img src="/assets/inpainting.jpg" className="sm:h-72 w-full object-fill"  alt="" />
             <p className="text-gray-600 mb-4">
               Remove acne or puffy-eye regions with seamless inpainting. Clean up your photo with one click.
             </p>
@@ -69,14 +69,14 @@ const AnalyzePage: React.FC = () => {
 
         {/* Quick Summary of Last Analysis */}
         {result?.scanned_image && (
-          <div className="mt-4 w-fit p-6 bg-white rounded-lg shadow border border-gray-200">
+          <div className="mt-4 sm:w-fit p-2 sm:p-6 bg-white rounded-lg shadow border border-gray-200">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               Last Analysis Summary
             </h3>
             <img
               src={`data:image/jpeg;base64,${result.scanned_image}`}
               alt="Last analysis"
-              className="w-full h-48 object-contain rounded mb-4 border"
+              className="w-full h-96 sm:h-48 object-contain rounded mb-4"
             />
             <div className="flex space-x-4 text-sm text-gray-700">
               <div>

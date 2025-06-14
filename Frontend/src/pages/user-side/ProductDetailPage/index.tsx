@@ -8,7 +8,7 @@ const ProductDetailPage = () => {
   
   return (
     <MainLayout>
-    <div className="container mx-auto px-4 py-8">
+    <div className="sm:container mx-auto w-full px-8 sm:px-4 py-8">
       {/* Product Info */}
       <ProductInfo />
 

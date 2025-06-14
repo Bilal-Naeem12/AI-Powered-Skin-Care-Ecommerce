@@ -15,7 +15,7 @@ function FaceScanResultPage() {
 
   return (
     <MainLayout>
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
         {(!user?.allergenPreferences || user?.allergenPreferences.length === 0) && (
           <Alert
             severity="warning"

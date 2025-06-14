@@ -51,7 +51,7 @@ const AISection = () => {
     {/* Text Section */}
     <div className="md:w-1/2 mt-8 md:mt-0 md:pl-12 text-center md:text-left">
       <h2 className="text-3xl font-bold mb-4">Explore Our Skincare Shop</h2>
-      <p className="text-gray-400 w-[600px] mb-6">
+      <p className="text-gray-400  mb-6">
         Discover dermatologist-approved skincare essentials designed for every skin type. 
         From cleansers to serums — shop trusted, effective products that deliver real results.
       </p>

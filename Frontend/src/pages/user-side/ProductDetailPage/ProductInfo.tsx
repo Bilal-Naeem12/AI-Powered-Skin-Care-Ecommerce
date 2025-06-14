@@ -62,13 +62,13 @@ const ProductDetailPage: React.FC = () => {
   /* ----- main render ----- */
   return (
 
-    <div className="mx-auto max-w-7xl p-4 md:p-8">
+    <div className="mx-auto max-w-7xl sm:p-4 md:p-8">
      <PageOverlay show={loading} />
 
       {/* top section */}
       <div className="grid md:grid-cols-2 gap-10">
         {/* images */}
-        <div className="space-y-3 sticky top-10 self-start">
+        <div className="space-y-3 self-start">
           <img
           src={product?.images[mainIdx]?? image}
             alt={product.name}
@@ -212,14 +212,14 @@ const ProductDetailPage: React.FC = () => {
       </div>
 
       {/* bottom tabs */}
-      <div className="mt-12 shadow card bg-white p-5">
+      <div className="mt-12 shadow card bg-white sm:p-5">
         <Tabs value={tab} onChange={(_, v) => setTab(v)}>
           <Tab label="Details" />
           <Tab label={`Reviews (${product.reviewCount ?? 0})`} />
         </Tabs>
 
         {tab === 0 ? (
-          <div className="p-6">
+          <div className="px-3 py-4  sm:p-6">
             <h2 className="text-xl font-semibold mb-2">How to use</h2>
             <p className="mb-4">{product.usageInstructions ?? "—"}</p>
 

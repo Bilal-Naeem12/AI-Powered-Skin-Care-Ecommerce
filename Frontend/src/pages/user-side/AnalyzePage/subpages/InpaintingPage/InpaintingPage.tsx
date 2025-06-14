@@ -22,7 +22,7 @@ const InpaintingPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Breadcrumb */}
         <Breadcrumb
           paths={[

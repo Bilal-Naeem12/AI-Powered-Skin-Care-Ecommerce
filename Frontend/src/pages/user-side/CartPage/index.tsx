@@ -4,8 +4,8 @@ import MainLayout from "../../../component/Layout/MainLayout";
 import CartItem from "./CartItem";
 import CartTotal from "./CartTotal";
 import CartActions from "./CartActions";
-import useCartStore from "../../../store/useCartStore"; // Import your Zustand store
-import  Product  from "@/types/Product"; // Import Product type
+import useCartStore from "../../../store/useCartStore"; // Import your Zustand store // Import Product type
+import { Product } from "@/types/Product";
 
 // Define the type for cart items
 interface CartItemType {

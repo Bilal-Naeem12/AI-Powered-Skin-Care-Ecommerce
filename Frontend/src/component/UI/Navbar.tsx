@@ -266,20 +266,43 @@ const Navbar: React.FC = () => {
       </Toolbar>
 
       {/* Drawer for Mobile Menu */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
-          <List>
-          <Link to={"/shop"}>        <ListItem >
-           <ListItemText primary="Shop" />
-            </ListItem>
-            </Link>
-            <ListItem>
+    <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+  <Box
+    sx={{ width: 250 }}
+    role="presentation"
+    onClick={toggleDrawer(false)}
+    onKeyDown={toggleDrawer(false)}
+  >
+    <List>
+      <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+        <ListItem >
+          <ListItemText primary="Home" />
+        </ListItem>
+      </Link>
+      <Link to="/shop" style={{ textDecoration: "none", color: "inherit" }}>
+        <ListItem >
+          <ListItemText primary="Shop" />
+        </ListItem>
+      </Link>
+      <Link to="/ai-tools-page" style={{ textDecoration: "none", color: "inherit" }}>
+        <ListItem >
+          <ListItemText primary="AI Tools" />
+        </ListItem>
+      </Link>
+      <Link to="/about-us" style={{ textDecoration: "none", color: "inherit" }}>
+        <ListItem >
+          <ListItemText primary="About Us" />
+        </ListItem>
+      </Link>
+      <Link to="/contact-us-page" style={{ textDecoration: "none", color: "inherit" }}>
+        <ListItem >
+          <ListItemText primary="Contact Us" />
+        </ListItem>
+      </Link>
+    </List>
+  </Box>
+</Drawer>
 
-              <ListItemText primary="About Us" />
-            </ListItem>
-          </List>
-        </Box>
-      </Drawer>
     </AppBar>
   );
 };

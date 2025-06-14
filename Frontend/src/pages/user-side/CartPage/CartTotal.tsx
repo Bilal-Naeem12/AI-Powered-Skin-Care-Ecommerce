@@ -7,7 +7,7 @@ const CartTotal = ({ subtotal }) => {
     const formattedSubtotal = parseFloat(subtotal).toFixed(2);
 
   return (
-    <Box className="bg-white rounded-lg shadow-md p-6">
+    <Box className="bg-white rounded-lg shadow-md  sm:p-6">
       <Typography
         variant="h5"
         fontWeight="bold"

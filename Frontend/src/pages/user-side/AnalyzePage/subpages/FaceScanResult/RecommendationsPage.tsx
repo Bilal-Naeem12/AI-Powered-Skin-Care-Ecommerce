@@ -60,7 +60,7 @@ const RecommendationsPage: React.FC = () => {
     problem === "Dark Circles" ? "Puffy Eyes" : problem;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-2 sm:px-4 py-10">
       <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
         Your Personalized Products
       </h2>
