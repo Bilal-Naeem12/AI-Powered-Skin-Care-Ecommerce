@@ -11,7 +11,7 @@ const HeroSection = () => {
       className="relative bg-cover bg-center p-5 lg:h-screen text-white"
       style={{ backgroundImage: `url(${heroImage})` }}
     >
-      <div className="container text-black mx-auto h-full flex items-center justify-start px-6 md:px-12">
+      <div className="container text-black mx-auto h-full flex items-center justify-start sm:px-6 md:px-12">
         <div className="max-w-lg">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight">
             Highly Effective Skin Care

@@ -41,7 +41,7 @@ const ProfileComponent: React.FC = () => {
   } = user;
 
   return (
-    <section className="max-w-7xl mx-auto p-4 md:p-8">
+    <section className="max-w-7xl mx-auto  md:p-8">
       {/* Card */}
       <div className="rounded-xl shadow-lg bg-white dark:bg-neutral-800 overflow-hidden">
         {/* Header */}

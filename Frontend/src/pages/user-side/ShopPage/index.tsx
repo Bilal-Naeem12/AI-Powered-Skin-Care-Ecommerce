@@ -14,7 +14,7 @@ useEffect(()=>{
 })
   return (
    <MainLayout>
-<div className="p-10 gap-4 flex flex-col mx-auto py-5 bg-white">
+<div className="p-4 sm:p-10 gap-4 flex flex-col mx-auto py-5 bg-white">
 <Breadcrumb
         paths={[
           { name: "Home", link: "/" },

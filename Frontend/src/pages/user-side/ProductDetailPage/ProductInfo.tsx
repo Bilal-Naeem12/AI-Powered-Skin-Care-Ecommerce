@@ -62,7 +62,7 @@ const ProductDetailPage: React.FC = () => {
   /* ----- main render ----- */
   return (
 
-    <div className="mx-auto max-w-7xl sm:p-4 md:p-8">
+    <div className="mx-auto max-w-7xl sm:p-4 ">
      <PageOverlay show={loading} />
 
       {/* top section */}
@@ -72,7 +72,7 @@ const ProductDetailPage: React.FC = () => {
           <img
           src={product?.images[mainIdx]?? image}
             alt={product.name}
-            className="rounded-lg w-full h-[480px] object-contain shadow-sm"
+            className="rounded-lg w-full sm:h-[480px] object-contain shadow-sm"
           />
           <div className="flex gap-2 overflow-x-auto">
             {product.images.map((src) => (
@@ -97,7 +97,7 @@ const ProductDetailPage: React.FC = () => {
         {/* info */}
         <div className="flex flex-col gap-4">
           {/* title & rating */}
-          <h1 className="text-3xl font-semibold">{product.name}</h1>
+          <h1 className="text-xl sm:text-3xl font-semibold">{product.name}</h1>
           <div className="flex items-center gap-2">
             <Rating
               value={product.averageRating ?? 0}

@@ -24,11 +24,11 @@ export default function OrderCard({ order }: Props) {
           {latestStatus?.what}
         </span>
       </div>
-<div className="flex justify-between items-start ">
+<div className="flex flex-col gap-5 sm:flex-row justify-between sm:items-start ">
   
   <div className="">
       <OrderImageCarousel cartItems={order.cartItems} />
- <div className="flex  justify-between mt-5 gap-4">
+ <div className="flex  flex-col  sm:flex-row justify-between mt-5 gap-4">
       
       <p>{order.cartItems.length} items: <span className=" font-semibold">{ import.meta.env.VITE_API_CURRENCY_Symbol}{order.totalAmount.toFixed(2)}</span></p>
        <p>Order Id:  <span className=" font-semibold">{order.orderNumber}</span></p>

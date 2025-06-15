@@ -39,7 +39,7 @@ export default function OrderImageCarousel({ cartItems ,width = "max-w-[500px]"}
   }, []);
 
   return (
-    <div className={`relative ${width} bg-black`}>
+    <div className={`relative ${width}   bg-black`}>
       {/* Scrollable Image Row */}
       <div
         ref={scrollRef}

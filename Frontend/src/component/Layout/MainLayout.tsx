@@ -39,20 +39,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Footer />
 
       {/* sticky action buttons --------------------------------------------- */}
-      <div className="fixed bottom-5 right-5 flex flex-col gap-4 z-50">
-        <button
-          onClick={() => setEntryOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all"
-        >
-          <QrCodeScannerRounded className="w-5 h-5" />
-          <span className="text-sm font-medium">Scan Face</span>
-        </button>
+     <div className="fixed bottom-4 right-4 flex flex-col gap-3 z-50">
+  <button
+    onClick={() => setEntryOpen(true)}
+    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full shadow-md hover:bg-black hover:text-white transition-all
+               text-xs sm:text-sm sm:px-4 sm:py-2 sm:shadow-lg"
+  >
+    <QrCodeScannerRounded className="w-4 h-4 sm:w-5 sm:h-5" />
+    <span className="font-medium">Scan Face</span>
+  </button>
 
-        <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full shadow-lg hover:bg-black hover:text-white transition-all">
-          <ChatIcon className="w-5 h-5" />
-          <span className="text-sm font-medium">Chat With Us</span>
-        </button>
-      </div>
+  <button
+    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full shadow-md hover:bg-black hover:text-white transition-all
+               text-xs sm:text-sm sm:px-4 sm:py-2 sm:shadow-lg"
+  >
+    <ChatIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+    <span className="font-medium">Chat With Us</span>
+  </button>
+</div>
+
 
       {/* entry decision sheet ---------------------------------------------- */}
       {entryOpen && (

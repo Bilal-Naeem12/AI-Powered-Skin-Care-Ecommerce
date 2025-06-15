@@ -8,7 +8,7 @@ export default function OrdersComponent() {
   const [activeTab, setActiveTab] = useState("All");
 
   return (
-    <Card className="px-6 py-4 w-full bg-white min-h-1/2">
+    <Card className="px-2 sm:px-6 py-4 w-full bg-white min-h-1/2">
       <h2 className="text-2xl font-semibold mb-4 ">My Orders</h2>
 
       <div className="flex gap-4 border-b mb-5">

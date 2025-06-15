@@ -12,7 +12,7 @@ const AISection = () => {
     isLoading,
   } = useFaceScanStore();
   return (<>
-    <section className=" py-16">
+    <section className=" p-6 sm:py-16">
       <div className="container mx-auto flex flex-col md:flex-row items-center">
         {/* Image Section */}
         <div className="md:w-2/5 flex justify-center">
@@ -37,7 +37,7 @@ const AISection = () => {
         </div>
       </div>
     </section>
-    <section className="py-16 border border-y-black">
+    <section className="p-6 sm:py-16 border border-y-black">
   <div className="container mx-auto flex flex-col md:flex-row-reverse items-center">
     {/* Image Section */}
     <div className="md:w-2/5 flex justify-center">

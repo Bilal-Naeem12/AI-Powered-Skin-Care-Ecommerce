@@ -48,7 +48,7 @@ const handleSortChange = (option: string) => {
 
 
   return (
-    <div className="container mx-auto my-6 px-4">
+    <div className="container mx-auto my-6 sm:px-4">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Filter Sidebar */}
         <FilterSidebar

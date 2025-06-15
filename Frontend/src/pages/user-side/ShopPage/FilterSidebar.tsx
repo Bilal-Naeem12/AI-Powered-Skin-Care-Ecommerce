@@ -64,7 +64,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   return (
-    <aside className="w-full md:w-1/4 p-4 border rounded-lg shadow-xl bg-white space-y-4">
+    <aside className="w-full md:w-1/4 p-4 border rounded-lg shadow-md bg-white space-y-4">
       <Typography variant="h6" className="font-bold mb-4">
         Filter Products
       </Typography>

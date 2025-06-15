@@ -24,26 +24,26 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
   };
 
   return (
-    <Box className="flex justify-between items-center py-4 border-b">
+    <Box className="flex   justify-between items-center py-4 border-b">
       {/* Product Info */}
-      <Box className="w-[30%] flex items-center gap-4">
+      <Box className="w-[30%] flex flex-col sm:flex-row  justify-center sm:justify-start  items-center gap-4">
         <img
           src={item.product.images[0]} // Assuming the first image is used as the main image
           alt={item.product.name}
           className="w-16 h-16 rounded-lg object-cover"
         />
-        <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
+        <p className="text-xs sm:text-sm">
           {item.product.name}
-        </Typography>
+       </p>
       </Box>
 
       {/* Price */}
-      <Typography
-        className="w-[20%] text-center"
+      <p
+        className="w-[20%] text-center text-sm"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
         {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price}/-
-      </Typography>
+      </p>
 
       {/* Quantity Dropdown */}
       <Box className="w-[20%] text-center">
@@ -65,12 +65,12 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
       </Box>
 
       {/* Total Price for this Item */}
-      <Typography
-        className="w-[20%] text-center"
+      <p
+        className="w-[20%] text-center  text-sm"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
         {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price * item.quantity}/-
-      </Typography>
+      </p>
 
       {/* Delete Button */}
       <Box className="w-[10%] flex justify-center items-center">

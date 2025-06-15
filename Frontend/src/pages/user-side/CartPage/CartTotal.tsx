@@ -7,15 +7,12 @@ const CartTotal = ({ subtotal }) => {
     const formattedSubtotal = parseFloat(subtotal).toFixed(2);
 
   return (
-    <Box className="bg-white rounded-lg shadow-md  sm:p-6">
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        className="mb-6"
-        style={{ fontFamily: "Poppins, sans-serif" }}
-      >
+    <Box className="bg-white rounded-lg shadow-md p-2 sm:p-6">
+          <h4
+     className="text-2xl  font-medium"
+        >
         Cart Total
-      </Typography>
+      </h4>
 
       <Box className="flex justify-between items-center py-3 border-b">
         <Typography style={{ fontFamily: "Poppins, sans-serif" }}>
