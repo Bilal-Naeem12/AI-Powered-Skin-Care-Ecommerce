@@ -659,3 +659,25 @@ switch (intent) {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+
+exports.searchQuery = async (req, res) => {
+  try {
+    const searchQuery = req.query.q;
+
+    if (!searchQuery || searchQuery.trim() === "") {
+      return res.status(400).json({ message: "Search query cannot be empty." });
+    }
+
+    const results = await Product.find({
+      name: { $regex: searchQuery, $options: "i" },
+      isDeleted: { $ne: true }
+    }).select("name price images category brand");
+
+    res.json(results);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Server error while searching." });
+  }
+};

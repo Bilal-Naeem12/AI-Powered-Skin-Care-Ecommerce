@@ -12,7 +12,8 @@ const {
     getFeaturedProducts,uploadImages,getRelatedProductsById,
     recommendProducts,
     uploadReviewImages,
-    queryProductIntent
+    queryProductIntent,
+    searchQuery
 } = require("./productController");
 
 const multer   = require("multer");
@@ -21,6 +22,9 @@ const validateReviewMiddleware = require("../../middleware/validateReviewMiddlew
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() }); // in-RAM buffer
+
+
+router.get("/search", searchQuery);
 
 // **🔹 Featured Products**
 router.get("/featured", getFeaturedProducts);  // Get all featured products
@@ -41,7 +45,6 @@ router.get("/:id/reviews", getProductReviews);  // Get all reviews of a product
 
 // **🔹 Stock Management**
 router.post("/:id/reduce-stock", reduceStock);  // Reduce stock when product is purchased
-
 
 
 /**

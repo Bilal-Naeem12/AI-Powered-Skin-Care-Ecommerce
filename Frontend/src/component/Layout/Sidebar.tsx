@@ -25,7 +25,7 @@ const SidebarComponent: React.FC<SidebarProps> = ({ sidebarOptions }) => {
   };
   
   return (
-    <div   className={`   z-50 sm:top-0 sm:sticky flex border shadow-xl rounded-sm transition-all duration-300 ease-in-out `}>
+    <div   className={` top-[50px] fixed sm:top-0 sm:relative  z-50  flex border shadow-xl rounded-sm transition-all duration-300 ease-in-out `}>
       {/* Sidebar */}
       <aside
         className={`top-0 left-0 bg-white h-[100vh]  text-secondary transition-all duration-300 ease-in-out ${

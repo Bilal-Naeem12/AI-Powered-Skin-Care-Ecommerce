@@ -45,23 +45,29 @@ Wishlist
 
 
 
-Order create hona pa email bhejni hai
 
-Review unhuman ya abusive ho to flag kar dena
-
-AI based suggestion 
 
 payment gateway 
-analytics 
+analytics ##
+save the history of the detections ##
+maintain the history##
+
+
+
+upload the image before saving the history##
 admin order control 
 webhooks for notifications
 enchance chatbot 
 fix uis
 
 Email template UI
-save the history of the detections 
-maintain the history
+Order create hona pa email bhejni hai
 
+Review unhuman ya abusive ho to flag kar dena
 
+AI based suggestion 
+Use CARD UI 
 
-upload the image before saving the history
+Login with google
+braintree for paymentgateway
+oauth

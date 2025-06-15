@@ -9,7 +9,7 @@ const messages = [
 
 const AnnouncementBar: React.FC = () => {
   return (
-    <div className="bg-black text-white overflow-hidden whitespace-nowrap py-2 text-sm font-medium relative">
+    <div className="bg-black sm:block hidden text-white overflow-hidden whitespace-nowrap py-2 text-sm font-medium relative">
      <div className="animate-marquee  flex space-x-10">
         {messages.map((msg, index) => (
           <span key={index} className="mx-4">
