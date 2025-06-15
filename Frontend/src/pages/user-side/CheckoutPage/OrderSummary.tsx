@@ -7,6 +7,7 @@ import {
   RadioGroup,
   FormControlLabel,
   RadioProps,
+  Divider,
 } from "@mui/material";
 import useCartStore from "../../../store/useCartStore";
 import useOrderStore from "../../../store/useOrderStore";
@@ -18,11 +19,7 @@ import { useNavigate } from "react-router-dom";
 import PageOverlay from "@/component/UI/PageOverlay";
 
 const paymentGateways: PaymentGateway[] = [
-  "Stripe",
-  "PayPal",
-  "Google Pay",
-  "Apple Pay",
-  "Bank Transfer",
+
   "Cash on Delivery",
 ];
 
@@ -70,18 +67,18 @@ const navigate = useNavigate();
   const subtotal = getTotalPrice().toFixed(2);
 
   return (
-    <Box className="bg-white rounded-lg shadow-md p-6">
-      <Typography variant="h5" fontWeight="bold" className="mb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
+    <Box className="bg-white rounded-lg shadow-md py-6 px-4 sm:p-6">
+      <h5 className="mb-6 text-2xl font-medium" >
         Order Summary
-      </Typography>
+      </h5>
 
-      {cart.map((item: CartItem) => (
+      {cart.map((item: CartItem) => (<>
         <Box
           key={typeof item.product === "string" ? item.product : item.product._id}
-          className="flex justify-between items-center mb-4"
+          className="flex justify-between items-center my-2"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          <Box className="flex items-center gap-4">
+          <Box className="flex flex-col sm:flex-row justify-start items-start gap-4 w-1/2">
             {typeof item.product !== "string" && (
               <>
                 <img
@@ -89,14 +86,17 @@ const navigate = useNavigate();
                   alt={item.product.name}
                   className="w-16 h-16 rounded-lg object-cover"
                 />
-                <Typography>{item.product.name}</Typography>
+                <p className="text-sm">{item.product.name}</p>
               </>
             )}
           </Box>
-          <Typography>
+          <p className=" text-center">
             {import.meta.env.VITE_API_CURRENCY_Symbol}  {typeof item.product === "string" ? 0 : item.product.price * item.quantity}/-
-          </Typography>
+          </p>
+          
         </Box>
+        <Divider/>
+        </>
       ))}
 
       <Box className="flex justify-between items-center py-3 border-t">

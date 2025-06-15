@@ -23,7 +23,7 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <Box className="container mx-auto px-6 py-10 flex flex-col md:flex-row gap-10">
+      <Box className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col md:flex-row gap-10">
         {/* Billing Form */}
         <Box className="w-full md:w-[60%]">
           <BillingForm />
