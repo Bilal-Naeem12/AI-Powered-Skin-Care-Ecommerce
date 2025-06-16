@@ -7,7 +7,7 @@ export interface SkinHealthGaugeProps {
   /** Optional override of maxSpots; defaults to store value */
   maxSpots?: number;
   /** Override of weights; defaults to store value */
-  weights?: { severity: number; count: number; puffy: number };
+  weights?: { severity: number; count: number; type: number;puffy: number };
 }
 
 const SkinHealthGauge: React.FC<SkinHealthGaugeProps> = ({
@@ -19,37 +19,49 @@ const SkinHealthGauge: React.FC<SkinHealthGaugeProps> = ({
   const M = maxSpots;
 
 
-  const health = useMemo(() => {
-    if (!result) return 0;
+ const health = useMemo(() => {
+  if (!result) return 0;
 
-    const { acne_severity, skin_type } = result.classifications;
-    const dets: Detections = result.detections;
-    const Na = dets.acne.objects.length;
+  const { acne_severity, skin_type } = result.classifications;
+  const dets: Detections = result.detections;
+  const Na = dets.acne.objects.length;
 
-    // 1) severity penalty
-    const S = acne_severity.score;
-    const SevPen =
-      acne_severity.label === "level -1" ? 1 - S : S;
+  // 1) severity penalty
+  const S = acne_severity.score;
+ const severityLabel = acne_severity.label;
+const SevPen =
+  severityLabel === "level 3" ? 1 :
+  severityLabel === "level 2" ? 0.95 :
+  severityLabel === "level 1" ? 0.6 :
+  severityLabel === "level 0" ? 0.3 : 0;
 
-    // 2) count penalty
-    const CountPen = Math.min(Na / M, 1);
+  // 2) count penalty (non-linear scaling for more sensitivity)
+  const CountPen = Math.min(Na / (M * 0.6), 1);  // more punishing when >60% of maxSpots
 
-    // 3) type penalty
-    const T = skin_type.score;
-    const TypePen =
-      skin_type.label.toLowerCase() === "normal" ? 1 - T : T;
+  // 3) type penalty (dry or oily should reduce health, normal should boost)
+  const skinTypeLabel = skin_type.label.toLowerCase();
+  const TypePen =
+    skinTypeLabel === "normal" ? 0 :
+    skinTypeLabel === "dry" ? 0.5  :
+    skinTypeLabel === "oily" ? 0.4  : 0.2 ;
 
-    // 4) puffy penalty
-    const PuffyPen = result.detections.puffy_eyes.objects.length > 0
-      ? result.detections.puffy_eyes.objects.reduce((acc, o) => acc + o.confidence, 0) 
-        / result.detections.puffy_eyes.objects.length
-      : 0;
+  // 4) puffy eye penalty
+  const PuffyPen = dets.puffy_eyes.objects.length > 0
+    ? dets.puffy_eyes.objects.reduce((acc, o) => acc + o.confidence, 0) /
+      dets.puffy_eyes.objects.length
+    : 0;
 
-    // combined badness
-    const B = w_s * SevPen + w_c * CountPen + w_t * TypePen + w_p * PuffyPen;
+  // Updated weights (tuned for visible results)
+  const W = weightsProp || {
+    severity: 0.4,
+    count: 0.4,
+    type: 0.1,
+    puffy: 0.1,
+  };
 
-    return Math.round((1 - B) * 100);
-  }, [result, w_s, w_c, w_t, w_p, M]);
+  const B = W.severity * SevPen + W.count * CountPen + W.type * TypePen + W.puffy * PuffyPen;
+  return Math.round((1 - Math.min(B, 1)) * 100);
+}, [result, weightsProp, M]);
 
   if (!result) {
     return <div className="p-4 text-gray-500">No analysis yet.</div>;

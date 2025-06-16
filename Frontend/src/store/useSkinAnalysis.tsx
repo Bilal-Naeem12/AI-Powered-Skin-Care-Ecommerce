@@ -161,8 +161,8 @@ const afterUrl = await uploadImage(afterFile);
 
         clearResult: () => set({ result: null, error: null }),
 
-        maxSpots: 20,
-        weights: { severity: 0.5, count: 0.2, type: 0.3, puffy: 0.1 },
+        maxSpots: 50,
+        weights: { severity: 0.4, count: 0.3, type: 0.2, puffy: 0.1 },
         setMaxSpots: (n) => set({ maxSpots: n }),
         setWeights: (w) => set({ weights: w }),
 
