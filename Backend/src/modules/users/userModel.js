@@ -76,7 +76,10 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false // Email verification status
     },
-
+verificationTokenExpires: {
+  type: Date,
+  default: null,
+},
     // **Allergen Preferences**
     allergenPreferences: {
         type: [String], // Example: ["Fragrance", "Alcohol", "Parabens"]

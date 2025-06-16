@@ -20,7 +20,7 @@
       max-width: 500px;
     }
     h1 {
-      color: #28a745;
+      color: #FF69B4;
     }
     p {
       margin-top: 20px;
@@ -32,21 +32,35 @@
       font-size: 14px;
       margin-top: 30px;
     }
+    .login-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #FF69B4;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
   </style>
- 
 </head>
 <body>
   <div class="card">
     <h1>🎉 Welcome, <%= name %>!</h1>
     <p>Your email has been successfully verified.</p>
-    <p class="light">Redirecting to login page in a new tab...<br>This tab will close automatically.</p>
-  </div>
-</body>
+    <p class="light">
+      You’ll be redirected to the login page shortly...<br>
+      If not, click the button below.
+    </p>
 
- <script>
+    <a href="<%= loginUrl %>" class="login-button">Go to Login</a>
+  </div>
+
+  <!-- ✅ Auto-redirect after 4 seconds -->
+  <script>
     setTimeout(() => {
-      window.open("<%= loginUrl %>", "_blank");
-      window.close();
+      window.location.href = "<%= loginUrl %>";
     }, 4000);
   </script>
+</body>
 </html>

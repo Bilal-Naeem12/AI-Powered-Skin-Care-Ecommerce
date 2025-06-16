@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendEmail } = require('../../services/emailService');
 const isProd = process.env.NODE_ENV === "production";
+const { registerUser } = require("./userService");
 
 const commonOptions = {
     httpOnly: true,
@@ -21,42 +22,26 @@ const buildUserQuery = ({ name, deleted }) => {
 };
 
 // **🔹 User Registration**
+
 exports.registerUser = async (req, res) => {
-    try {
-        const { first_name, last_name, email, password } = req.body;
-
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: "Email is already in use" });
-
-        // Create new user
-        const newUser = new User({ first_name, last_name, email,password });
-
-        // Generate email verification token
-        const verificationToken = crypto.randomBytes(32).toString("hex");
-        newUser.verificationToken = verificationToken;
-
-        // Save user to DB
-        await newUser.save();
-
-        // Send verification email
-        const verificationLink = `${process.env.BACKEND_URL}/api/users/verify-email?token=${verificationToken}`;
-        await sendEmail(email, "Verify Your Email", `Click here to verify: ${verificationLink}`);
-
-        res.status(201).json({ message: "User registered successfully.\nPlease verify your email." });
-
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const newUser = await registerUser(req.body);
+    res.status(201).json({
+      message: "User registered successfully. Please verify your email.",
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
-
 // **🔹 Verify Email**
 exports.verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
     const user = await User.findOne({ verificationToken: token });
     if (!user) return res.status(400).send("Invalid or expired token");
-
+if (user.verificationTokenExpires && user.verificationTokenExpires < new Date()) {
+    return res.status(400).json({ message: "Verification link has expired." });
+  }
     user.isVerified = true;
     user.verificationToken = null;
     await user.save();

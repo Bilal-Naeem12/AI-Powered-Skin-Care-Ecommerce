@@ -3,29 +3,35 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { sendEmail } = require("../../services/emailService");
+const getVerificationEmailTemplate = require("../../templates/verificationEmailTemplate");
 
 // **🔹 Create New User**
-exports.createUser = async (userData) => {
-    const { email, password } = userData;
+exports.registerUser = async ({ first_name, last_name, email, password }) => {
+  // 1. Check for existing user
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error("Email is already in use");
 
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error("Email already in use.");
 
-    // Hash password before saving
-    userData.password = await bcrypt.hash(password, 10);
+  // 2. Create user & generate token
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  const tokenExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes in ms
 
-    // Generate email verification token
-    userData.verificationToken = crypto.randomBytes(32).toString("hex");
+const newUser = new User({
+  first_name,
+  last_name,
+  email,
+  password,
+  verificationToken,
+  verificationTokenExpires: new Date(tokenExpiry),
+});
+  await newUser.save();
 
-    // Create new user
-    const newUser = await User.create(userData);
+  // 3. Send email
+  const link = `${process.env.BACKEND_URL}/api/users/verify-email?token=${verificationToken}`;
+  const htmlContent = getVerificationEmailTemplate(first_name, link);
+  await sendEmail(email, "Verify Your Email – SkinCare Pro", htmlContent, true); // `true` for HTML body
 
-    // Send verification email
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${userData.verificationToken}`;
-    await sendEmail(email, "Verify Your Email", `Click here to verify: ${verificationLink}`);
-
-    return newUser;
+  return newUser;
 };
 
 // **🔹 Find User by ID**
