@@ -22,7 +22,7 @@ const usePostAuthData = <T, R>() => {
     try {
       const response = await tryRequest();
       setData(response.data);
-         toast.success(successMessage || "Submission successful!");
+         toast.success(successMessage);
     } catch (err: any) {
       if (err.response?.status === 403) {
         try {

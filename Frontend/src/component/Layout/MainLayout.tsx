@@ -35,7 +35,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div>
       <AnnouncementBar />
       <Navbar />
-      <main className="sm:min-h-screen">{children}</main>
+      <main className="">{children}</main>
       <Footer />
 
       {/* sticky action buttons --------------------------------------------- */}

@@ -56,12 +56,13 @@ const ProductDetailPage: React.FC = () => {
 
   /* ----- loading / error UI ----- */
  
-  // if (error || !product)
-  //   return <p className="text-center text-red-600">{error ?? "Not found"}</p>;
-
+  
   /* ----- main render ----- */
   return (
-
+<>
+    { (error || !product ) &&
+     <p className="text-center text-red-600">{error ?? ""}</p>
+    }
     <div className="mx-auto max-w-7xl sm:p-4 ">
      <PageOverlay show={loading} />
 
@@ -239,6 +240,7 @@ const ProductDetailPage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -78,7 +78,8 @@ const handleSortChange = (option: string) => {
           {/* Loading / Error */}
           {loading ? (
             <div className="flex justify-center items-center py-10">
-              <CircularProgress />
+            <CircularProgress sx={{ color: "black" }} />
+
             </div>
           ) : error ? (
             <p className="text-red-500">{error}</p>
@@ -90,13 +91,26 @@ const handleSortChange = (option: string) => {
               {/* Pagination */}
               <div className="flex justify-center mt-8">
                 <Pagination
-                  count={Math.ceil((data?.totalCount ?? 0) / (data?.limit ?? 8))}
-                  page={page}
-                  onChange={handlePageChange}
-                  color="primary"
-                  shape="rounded"
-                  size="large"
-                />
+  count={Math.ceil((data?.totalCount ?? 0) / (data?.limit ?? 8))}
+  page={page}
+  onChange={handlePageChange}
+  shape="rounded"
+  size="large"
+  sx={{
+    "& .MuiPaginationItem-root": {
+      color: "black",
+      borderColor: "black",
+    },
+    "& .Mui-selected": {
+      backgroundColor: "#FF69B4",
+      color: "#fff",
+      "&:hover": {
+        backgroundColor: "#ff85c1",
+      },
+    },
+  }}
+/>
+
               </div>
             </>
           )}

@@ -23,7 +23,6 @@ import StorefrontIcon from "@mui/icons-material/Storefront";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -55,7 +54,7 @@ const Navbar: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false); // State to control search bar visibility
   const [searchValue, setSearchValue] = useState(""); // State to track input value
   const searchRef = useRef<HTMLInputElement>(null); // Ref to track the input field
-  const {isAdmin} = useUserStore()
+  const {user} = useUserStore()
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 const [searchResults, setSearchResults] = useState([]);
 const debouncedSearch = useDebounce(searchValue, 500);
@@ -229,9 +228,23 @@ const debouncedSearch = useDebounce(searchValue, 500);
         </Badge>
       </IconButton>
     </Link>
-          <IconButton onClick={handleMenuOpen}>
-            <Person2Outlined sx={{ fontSize: "1.7rem", color: "gray", "&:hover": { color: "#FF69B4" } }} />
-          </IconButton>
+       <IconButton onClick={handleMenuOpen}>
+  {isLoggedIn && user?.profileImage ? (
+    <Avatar
+      src={user.profileImage}
+      alt="Profile"
+      sx={{ width: 36, height: 36 }}
+    />
+  ) : (
+    <Person2Outlined
+      sx={{
+        fontSize: "1.7rem",
+        color: "gray",
+        "&:hover": { color: "#FF69B4" },
+      }}
+    />
+  )}
+</IconButton>
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}

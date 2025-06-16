@@ -22,7 +22,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const [step, setStep] = useState<Step>("choice");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const {user} = useUserStore()
+  const {user,isLoggedIn} = useUserStore()
   const userId = user?._id
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
@@ -155,45 +155,62 @@ if (data.status === "uploaded" && data.imageUrl) {
           <CloseIcon fontSize="medium" />
         </button>
 
-        {step === "choice" && (
-          <>
-            <h2 className="text-xl font-semibold text-center">
-              How would you like to analyze your skin?
-            </h2>
+     {step === "choice" && (
+  <>
+    {isLoggedIn ? (
+      <>
+        <h2 className="text-xl font-semibold text-center">
+          How would you like to analyze your skin?
+        </h2>
 
-            {/* upload */}
-            <button
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <CloudUploadIcon /> Upload Image
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleChooseFile}
-            />
+        {/* Upload Image */}
+        <button
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <CloudUploadIcon /> Upload Image
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleChooseFile}
+        />
 
-            {/* live */}
-            <button
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
-              onClick={() => {
-                closeAll();
-                openLiveModal();
-              }}
-            >
-              <VideocamIcon /> Live Analysis
-            </button>
-             <button
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-              onClick={handleScanWithPhone}
-            >
-              <QrCodeIcon /> Scan with Phone
-            </button>
-          </>
-        )}
+        {/* Live Analysis */}
+        <button
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
+          onClick={() => {
+            closeAll();
+            openLiveModal();
+          }}
+        >
+          <VideocamIcon /> Live Analysis
+        </button>
+
+        {/* Scan with Phone */}
+        <button
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+          onClick={handleScanWithPhone}
+        >
+          <QrCodeIcon /> Scan with Phone
+        </button>
+      </>
+    ) : (
+      <div className="text-center space-y-4">
+        <h2 className="text-xl font-semibold">Please log in to continue</h2>
+        <p className="text-gray-600">Skin analysis features are only available for registered users.</p>
+        <button
+          className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
+          onClick={() => navigate("/login")}
+        >
+          Log In
+        </button>
+      </div>
+    )}
+  </>
+)}
 
         {step === "preview" && previewUrl && (
           <>
