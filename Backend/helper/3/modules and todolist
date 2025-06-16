@@ -1,0 +1,84 @@
+AbandonedCart
+
+Analytics
+
+AuditLog
+
+Banner
+
+Coupon
+
+Discount
+
+GiftCard
+
+Invoice
+
+LoyaltyPoints
+
+Notification
+
+Referral
+
+ReturnRequest
+
+Review
+
+ReviewFlag
+
+Shipping
+
+Subscription
+
+SupportTicket
+
+SystemConfig
+
+Wishlist
+
+
+
+
+
+
+
+************** WEB TODO LIST **************
+
+
+
+
+
+=========== COMPLETED ===============
+analytics ##
+save the history of the detections ##
+maintain the history##
+upload the image before saving the history##
+admin order control $$
+
+
+
+
+========== EMAIL & NOTIFICATION ===============
+Email template UI
+Order purchased hona pa email bhejni hai
+webhooks for notifications
+
+========== CHAT BOT ==============
+Review unhuman ya abusive ho to flag kar dena
+enchance chatbot 
+
+
+======== AUTH  & PAYMENT ==========
+braintree for paymentgateway
+oauth
+https://codepen.io/quinlo/pen/YONMEa
+Login with google
+Use CARD UI 
+
+
+============ AI =========== 
+AI based suggestion on the basis of reviews
+
+
+========= GERNAL ============
+fix uis
