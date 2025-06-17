@@ -19,6 +19,15 @@ export const getChatbotSettings = (user:User|null) => ({
   },
   },
   
+  chatHistory: {
+		disabled: false,
+		maxEntries: 30,
+		storageKey: "rcb-history",
+		storageType: "LOCAL_STORAGE",
+		viewChatHistoryButtonText: "Load Chat History ⟳",
+		chatHistoryLineBreakText: "----- Previous Chat History -----",
+		autoLoad: false,
+	},
   tooltip: {
     mode: "NEVER",
   },

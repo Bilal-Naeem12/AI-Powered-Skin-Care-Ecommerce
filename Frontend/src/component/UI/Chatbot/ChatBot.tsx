@@ -7,6 +7,7 @@ import { chatbotCustomStyles } from "./Theme/styles";
 import { chatbotFlow } from "./chatbotFlow";
 import useUserStore from "@/store/useUserStore";
 import { useChatbotStore } from "@/store/useChatbotStore";
+import { is } from "date-fns/locale";
 
 export const ChatBotUI = () => {
   const { user, isLoggedIn } = useUserStore();
@@ -16,24 +17,28 @@ export const ChatBotUI = () => {
   const chatbotKey = isLoggedIn ? user?._id ?? "loggedIn" : "guest";
   const chatbotSettings = getChatbotSettings(isLoggedIn ? user : null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        chatbotRef.current &&
-        !chatbotRef.current.contains(event.target as Node)
-      ) {
-        closeChatbot();
-      }
-    };
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (!isOpen) return;
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+    const target = event.target as HTMLElement;
+
+    const isInsideChatbot =
+      chatbotRef.current?.contains(target) ||
+      target.closest(".rcb") !== null; // Covers overlays/tooltips
+
+    if (!isInsideChatbot) {
+      closeChatbot();
     }
+  };
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, closeChatbot]);
+  document.addEventListener("click", handleClickOutside, true); // ✅ Use capture phase
+
+  return () => {
+    document.removeEventListener("click", handleClickOutside, true);
+  };
+}, [isOpen, closeChatbot]);
+
 
   return (
     <AnimatePresence>
