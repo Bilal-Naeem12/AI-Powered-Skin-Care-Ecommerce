@@ -8,6 +8,8 @@ import FaceScanEntry from "@/pages/user-side/FaceScanModal/FaceScanEntry";
 import LoadingModal from "@/pages/user-side/LoadingModal";
 import AnnouncementBar from "../UI/AnnouncementBar";
 import useFaceScanStore from "@/store/useFaceScanStore";
+import { useChatWindow } from "react-chatbotify";
+import { useChatbotStore } from "@/store/useChatbotStore";
 
 /* -------------------------------------------------------------------------- */
 /* props                                                                      */
@@ -30,6 +32,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   /* local flag for entry modal -------------------------------------------- */
   const [entryOpen, setEntryOpen] = useState(false);
+const { toggleChatbot } = useChatbotStore();
 
   return (
     <div>
@@ -50,6 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   </button>
 
   <button
+        onClick={() => toggleChatbot()}
     className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full shadow-md hover:bg-black hover:text-white transition-all
                text-xs sm:text-sm sm:px-4 sm:py-2 sm:shadow-lg"
   >

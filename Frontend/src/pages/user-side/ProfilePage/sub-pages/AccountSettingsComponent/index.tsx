@@ -457,20 +457,26 @@ const allergenPrefs     = watch("allergenPreferences");
 
           {/* ---------- submit ---------- */}
           <Grid item xs={12}>
-            <Button
-              variant="contained"
-              type="submit"
-            className="bg-secondary"
-              fullWidth
-              disabled={isSubmitting}
-              sx={{ py: 1.5 }}
-            >
-              {isSubmitting ? (
-                <CircularProgress size={24} sx={{ color: "white" }} />
-              ) : (
-                "Update"
-              )}
-            </Button>
+           <Button
+  variant="contained"
+  type="submit"
+  fullWidth
+  disabled={isSubmitting}
+  sx={{
+    py: 1.5,
+    backgroundColor: "black",
+    "&:hover": {
+      backgroundColor: "black",
+    },
+  }}
+>
+  {isSubmitting ? (
+    <CircularProgress size={24} sx={{ color: "white" }} />
+  ) : (
+    "Update"
+  )}
+</Button>
+
           </Grid>
         </Grid>
       </CardContent>

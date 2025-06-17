@@ -1,0 +1,10 @@
+.rcb-close-chat-icon,
+.rcb-notification-icon-on {
+  fill: #FFFFFF;
+}
+.rcb-header-buttons button {
+  background: transparent !important;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
