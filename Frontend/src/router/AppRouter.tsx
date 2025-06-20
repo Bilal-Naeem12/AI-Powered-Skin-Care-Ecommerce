@@ -25,6 +25,7 @@ import SkinAnalysisTestPage from "@/pages/Test/skinAnalysisTestPage";
 import FaceScanResultPage from "@/pages/user-side/AnalyzePage/subpages/FaceScanResult";
 import InpaintingPage from "@/pages/user-side/AnalyzePage/subpages/InpaintingPage/InpaintingPage";
 import MobileScan from "@/pages/user-side/FaceScanModal/MobileScan";
+import { setNavigator } from "@/utils/navigation";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -37,13 +38,21 @@ const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   return <>{children}</>;
 };
+const NavigationSetup = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    setNavigator(navigate);
+  }, [navigate]);
 
+  return null;
+};
 
 const AppRouter: React.FC = () => {
   
 
   return (
     <Router>
+        <NavigationSetup />
         <RedirectIfAdmin>
       <Routes>
         <Route path="/admin/*" element={<AdminRouter />} />

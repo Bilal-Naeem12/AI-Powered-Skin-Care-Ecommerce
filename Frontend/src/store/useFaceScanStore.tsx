@@ -4,6 +4,7 @@ import { create } from "zustand";
 interface FaceScanState {
   isModalOpen: boolean;
   isLoading: boolean;
+  entryOpen: boolean;
   capturedImage: string | null;
   faceRef: any | null; // The type for faceRef can be adjusted based on the actual ref object type
   detectedImage: string | null;
@@ -14,6 +15,7 @@ interface FaceScanState {
 
   // Actions
   openModal: () => void;
+  setEntryModal:(value:boolean)=>void;
   closeModal: () => void;
   showLoading: () => void;
   hideLoading: () => void;
@@ -30,6 +32,7 @@ interface FaceScanState {
 // Create the store with Zustand
 const useFaceScanStore = create<FaceScanState>((set, get) => ({
   isModalOpen: false,
+  entryOpen:false,
   isLoading: false,
   capturedImage: null,
   faceRef: null, // Holds the ref
@@ -42,6 +45,7 @@ const useFaceScanStore = create<FaceScanState>((set, get) => ({
 
   // Actions
   openModal: () => set({ isModalOpen: true }),
+  setEntryModal: (value) => set({ entryOpen: value }),
 
   closeModal: () => {
     const ref = get().faceRef;

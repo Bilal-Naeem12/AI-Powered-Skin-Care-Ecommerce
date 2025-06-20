@@ -25,13 +25,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   /* zustand flags ---------------------------------------------------------- */
   const {
     isModalOpen,   // ← renamed for clarity in store
-    openModal,
+    setEntryModal,
     closeModal,
+  entryOpen,
     isLoading,
   } = useFaceScanStore();
 
   /* local flag for entry modal -------------------------------------------- */
-  const [entryOpen, setEntryOpen] = useState(false);
+ 
 const { toggleChatbot } = useChatbotStore();
 
   return (
@@ -44,7 +45,7 @@ const { toggleChatbot } = useChatbotStore();
       {/* sticky action buttons --------------------------------------------- */}
      <div className="fixed bottom-4 right-4 flex flex-col gap-3 z-50">
   <button
-    onClick={() => setEntryOpen(true)}
+    onClick={() => setEntryModal(true)}
     className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full shadow-md hover:bg-black hover:text-white transition-all
                text-xs sm:text-sm sm:px-4 sm:py-2 sm:shadow-lg"
   >
@@ -67,7 +68,7 @@ const { toggleChatbot } = useChatbotStore();
       {entryOpen && (
         <FaceScanEntry
           closeAll={() => {
-            setEntryOpen(false);
+            setEntryModal(false);
             closeModal(); // ensure both closed
           }}
         />
