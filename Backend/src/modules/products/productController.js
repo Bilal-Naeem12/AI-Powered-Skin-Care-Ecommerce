@@ -653,7 +653,7 @@ switch (intent) {
 }
 
 
-    return res.status(200).json({ reply });
+    return res.status(200).json({ reply,image:prod?.images[0],productName:prod.name });
   } catch (error) {
     console.error("Chatbot query error:", error);
     return res.status(500).json({ message: "Internal server error." });

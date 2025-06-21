@@ -1,6 +1,5 @@
 import type { Flow } from "react-chatbotify";
 import type { Params } from "react-chatbotify";
-import { MyInfoCard } from "./MyInfoCard"; // 👈 your custom component
 import useFaceScanStore  from "@/store/useFaceScanStore";
 import { useChatbotStore } from "@/store/useChatbotStore";
 import useUserStore from "@/store/useUserStore";
@@ -61,19 +60,14 @@ export const chatbotFlow: Flow = {
   },
 
 
-  showComponent: {
-    component: () => <MyInfoCard />,
-    path: "afterComponent",
-  },
     repeatOptions: {
     message: "How can I assist you futher?",
     options: {
       items: [
         "Start AI Skin Scan",
-        "Product Recommendations",
+        "Product Inquries",
         "Personalized Skin Consultation",
         "View My Past Analysis",
-        "Routine Advice",
         "Other Help",
       ],
       sendOutput: true,
@@ -82,14 +76,12 @@ export const chatbotFlow: Flow = {
       switch (params.userInput.toLowerCase()) {
         case "start ai skin scan":
           return "aiSkinScan";
-        case "product recommendations":
+        case "product inquries":
           return "productHelp";
         case "personalized skin consultation":
           return "consultationStart";
         case "view my past analysis":
           return "viewAnalysis";
-        case "routine advice":
-          return "routineHelp";
         case "other help":
           return "moreHelp";
         default:
@@ -145,14 +137,14 @@ aiSkinScan: {
       const response = await fetch("https://hook.eu2.make.com/h2u68ejoeik4p35px74ws69w177bw587", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: params.userInput }),
+        body: JSON.stringify({ UserMessage: params.userInput }),
       });
 
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
-      const answer = data?.answer ?? "Sorry, I couldn’t find a clear answer.";
-
+      const answer = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
+      
       await params.injectMessage(answer);
       return "moreHelpLoop";
     } catch (err) {
