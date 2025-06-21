@@ -17,7 +17,7 @@ interface Props {
 export default function ProductCarousel({
   products,
   onProductSelect,
-  width = "max-w-[500px]",
+  width = "max-w-[260px]",
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -54,7 +54,7 @@ export default function ProductCarousel({
     <div className={`relative ${width} mx-auto`}>
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto scrollbar-hide scroll-smooth gap-4 bg-white p-2 rounded-md border"
+        className="flex overflow-x-auto scrollbar-hide scroll-smooth gap-0 bg-white p-2 rounded-md border"
         style={{ scrollSnapType: "x mandatory" }}
       >
         {products.map((item) => (
@@ -68,7 +68,7 @@ export default function ProductCarousel({
               alt={item.name}
               className="w-24 h-24 object-cover rounded border shadow-sm mx-auto"
             />
-            <p className="text-xs mt-1 font-medium line-clamp-2">{item.name}</p>
+            {/* <p className="text-xs mt-1 font-medium line-clamp-2">{item.name}</p> */}
           </div>
         ))}
       </div>

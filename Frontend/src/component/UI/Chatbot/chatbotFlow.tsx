@@ -16,6 +16,16 @@ const dummyproducts = [
       "_id": "6813d8fe1b7e1b71a1378273",
       "name": "Tea Tree Acne Treatment Serum",
       "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
+    },
+     {
+      "_id": "6813d8fe1b7e1b71a1378273",
+      "name": "Tea Tree Acne Treatment Serum",
+      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
+    },
+     {
+      "_id": "6813d8fe1b7e1b71a1378273",
+      "name": "Tea Tree Acne Treatment Serum",
+      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
     }
   ]
 
@@ -157,12 +167,14 @@ path: async (params: Params) => {
     if (!response.ok) throw new Error("Failed to fetch");
 
     const data = await response.json();
-    const products = data?.products ?? dummyproducts;
+    
+    const products = data?.products ?? [];
+
     const productName = data?.productName ?? null;
     const image = data?.image ?? null;
     const reply = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
     const replyNotFound = data?.replyNotFound ?? null;
-
+// const products = dummyproducts;
     // 🖼️ If multiple product matches
     if (products.length > 0) {
       await params.injectMessage(
@@ -171,13 +183,17 @@ path: async (params: Params) => {
   products={products}
   onProductSelect={async (selectedName) => {
     await params.setTextAreaValue(selectedName);
-    await params.goToPath(params.currPath ?? "productHelp");
+    // await params.goToPath(params.currPath ?? "productHelp");
   }}
 />
+
+<div className="bg-[#fb64b6] text-white rounded-[18px_18px_18px_4px] px-4 py-3 max-w-[260px] mx-3 my-2 shadow-lg text-lg capitalize leading-relaxed"><p className="font-medium mb-1">🔍 Multiple matches found</p>
+    <p>Please select the product you'd like to ask about.</p>
+</div>
         </div>
       );
-      return "moreHelpLoop";
-    }
+      
+    }else{
 
     // ❌ If product not found
     if (replyNotFound) {
@@ -198,11 +214,13 @@ path: async (params: Params) => {
         </div>
       );
     }
-
-    // ✅ Always show the reply
     await params.injectMessage(reply);
     return "moreHelpLoop";
+}
+    // ✅ Always show the reply
+    
   } catch (err) {
+    console.log(err)
     return "productHelpError";
   }
 }
