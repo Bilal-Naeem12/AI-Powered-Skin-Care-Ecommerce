@@ -3,7 +3,21 @@ import type { Params } from "react-chatbotify";
 import useFaceScanStore  from "@/store/useFaceScanStore";
 import { useChatbotStore } from "@/store/useChatbotStore";
 import useUserStore from "@/store/useUserStore";
+import ProductCarousel from "../ProductCarousel";
 
+
+const dummyproducts = [
+    {
+      "_id": "6813d8fe1b7e1b71a1378270",
+      "name": "Cetaphil Gentle Clear Triple-Action Acne Serum",
+      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133746/myShop/products/bd1fd8e8-515a-41e2-b988-4060a362f49a.webp"
+    },
+    {
+      "_id": "6813d8fe1b7e1b71a1378273",
+      "name": "Tea Tree Acne Treatment Serum",
+      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
+    }
+  ]
 
 const triggerFaceScan = () => {
   const { setEntryModal } = useFaceScanStore.getState();
@@ -132,38 +146,66 @@ aiSkinScan: {
 
   ),
 //  message: "Let me look that up for you...",
-  path: async (params: Params) => {
-    try {
-      const response = await fetch("https://hook.eu2.make.com/h2u68ejoeik4p35px74ws69w177bw587", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ UserMessage: params.userInput }),
-      });
+path: async (params: Params) => {
+  try {
+    const response = await fetch(import.meta.env.VITE_API_MAKE_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ UserMessage: params.userInput }),
+    });
 
-      if (!response.ok) throw new Error("Failed to fetch");
+    if (!response.ok) throw new Error("Failed to fetch");
 
-      const data = await response.json();
-      const answer = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
-      const productName = data?.productName ?? null;
-      const image = data?.image ?? null;
+    const data = await response.json();
+    const products = data?.products ?? dummyproducts;
+    const productName = data?.productName ?? null;
+    const image = data?.image ?? null;
+    const reply = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
+    const replyNotFound = data?.replyNotFound ?? null;
+
+    // 🖼️ If multiple product matches
+    if (products.length > 0) {
       await params.injectMessage(
-  <>
-    <div className="flex flex-col gap-2 items-center p-3  m-3 border border-gray-200 rounded-lg shadow-sm bg-white max-w-[250px]">
-      <img
-        src={image}
-        alt={productName}
-        className="w-full h-32 object-contain rounded-md border"
-      />
-      <div className="text-sm font-medium text-gray-800">{productName}</div>
-    </div>
-  </>
-);
-      await params.injectMessage(answer);
+        <div className="p-3">
+         <ProductCarousel
+  products={products}
+  onProductSelect={async (selectedName) => {
+    await params.setTextAreaValue(selectedName);
+    await params.goToPath(params.currPath ?? "productHelp");
+  }}
+/>
+        </div>
+      );
       return "moreHelpLoop";
-    } catch (err) {
+    }
+
+    // ❌ If product not found
+    if (replyNotFound) {
+      await params.injectMessage(replyNotFound);
       return "productHelpError";
     }
-  },
+
+    // ✅ If single match with image
+    if (productName && image) {
+      await params.injectMessage(
+        <div className="flex flex-col gap-2 items-center p-3 m-3 border border-gray-200 rounded-lg shadow-sm bg-white max-w-[250px]">
+          <img
+            src={image}
+            alt={productName}
+            className="w-full h-32 object-contain rounded-md border"
+          />
+          <div className="text-sm font-medium text-gray-800">{productName}</div>
+        </div>
+      );
+    }
+
+    // ✅ Always show the reply
+    await params.injectMessage(reply);
+    return "moreHelpLoop";
+  } catch (err) {
+    return "productHelpError";
+  }
+}
 },
 
 

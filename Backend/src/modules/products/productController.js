@@ -695,3 +695,31 @@ exports.getAllProductNames = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch product names" });
   }
 };
+
+
+exports.getProductsByNames = async (req, res) => {
+  try {
+    const { matchProduts } = req.body; // Expecting: matchProduts: [ "Product A", "Product B" ]
+
+    if (!Array.isArray(matchProduts) || matchProduts.length === 0) {
+      return res.status(400).json({ message: "Product matchProduts array is required." });
+    }
+
+    // Find products where name is in the provided array
+    const products = await Product.find(
+      { name: { $in: matchProduts } },
+      "_id name images"
+    );
+
+    const result = products.map((p) => ({
+      _id: p._id,
+      name: p.name,
+      image: Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null
+    }));
+
+    res.status(200).json({ products: result });
+  } catch (error) {
+    console.error("Error fetching products by matchProduts:", error);
+    res.status(500).json({ message: "Failed to fetch products" });
+  }
+};
