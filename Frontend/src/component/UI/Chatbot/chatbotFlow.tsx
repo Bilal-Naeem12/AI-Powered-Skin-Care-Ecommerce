@@ -6,29 +6,7 @@ import useUserStore from "@/store/useUserStore";
 import ProductCarousel from "../ProductCarousel";
 
 
-const dummyproducts = [
-    {
-      "_id": "6813d8fe1b7e1b71a1378270",
-      "name": "Cetaphil Gentle Clear Triple-Action Acne Serum",
-      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133746/myShop/products/bd1fd8e8-515a-41e2-b988-4060a362f49a.webp"
-    },
-    {
-      "_id": "6813d8fe1b7e1b71a1378273",
-      "name": "Tea Tree Acne Treatment Serum",
-      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
-    },
-     {
-      "_id": "6813d8fe1b7e1b71a1378273",
-      "name": "Tea Tree Acne Treatment Serum",
-      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
-    },
-     {
-      "_id": "6813d8fe1b7e1b71a1378273",
-      "name": "Tea Tree Acne Treatment Serum",
-      "image": "https://res.cloudinary.com/dkimm1q5r/image/upload/v1746133614/myShop/products/9b8266ef-010f-402a-bbb2-7be7292bbb2b.jpg"
-    }
-  ]
-
+let counter = false
 const triggerFaceScan = () => {
   const { setEntryModal } = useFaceScanStore.getState();
   setEntryModal(true);
@@ -41,6 +19,13 @@ const isLoggedin = () => {
  return isLoggedIn
 };
 
+
+let selectedProductName: string | null = null;
+let productImageShown = false;
+
+
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const chatbotFlow: Flow = {
   
   start: {
@@ -157,11 +142,24 @@ aiSkinScan: {
   ),
 //  message: "Let me look that up for you...",
 path: async (params: Params) => {
+  const userInput = params.userInput.toLowerCase();
+if (["no", "next", "none"].some(w => userInput.includes(w))) {
+  selectedProductName = null;
+  productImageShown = false;
+  return "moreHelpLoop";
+}
+let enrichedInput = params.userInput;
+if (
+  selectedProductName &&
+  !userInput.includes(selectedProductName.toLowerCase())
+) {
+  enrichedInput = `${params.userInput} about ${selectedProductName}`;
+}
   try {
     const response = await fetch(import.meta.env.VITE_API_MAKE_WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ UserMessage: params.userInput }),
+      body: JSON.stringify({ UserMessage: enrichedInput }),
     });
 
     if (!response.ok) throw new Error("Failed to fetch");
@@ -176,12 +174,14 @@ path: async (params: Params) => {
     const replyNotFound = data?.replyNotFound ?? null;
 // const products = dummyproducts;
     // 🖼️ If multiple product matches
+    selectedProductName = productName
     if (products.length > 0) {
       await params.injectMessage(
         <div className="p-3">
          <ProductCarousel
   products={products}
   onProductSelect={async (selectedName) => {
+      productImageShown = false; // ✅ So new image shows
     await params.setTextAreaValue(selectedName);
     // await params.goToPath(params.currPath ?? "productHelp");
   }}
@@ -193,16 +193,16 @@ path: async (params: Params) => {
         </div>
       );
       
-    }else{
+   
+   return; }else{
 
     // ❌ If product not found
     if (replyNotFound) {
       await params.injectMessage(replyNotFound);
       return "productHelpError";
     }
-
     // ✅ If single match with image
-    if (productName && image) {
+    if (productName && image && !productImageShown) {
       await params.injectMessage(
         <div className="flex flex-col gap-2 items-center p-3 m-3 border border-gray-200 rounded-lg shadow-sm bg-white max-w-[250px]">
           <img
@@ -212,10 +212,23 @@ path: async (params: Params) => {
           />
           <div className="text-sm font-medium text-gray-800">{productName}</div>
         </div>
+        
       );
+        productImageShown = true;
     }
     await params.injectMessage(reply);
-    return "moreHelpLoop";
+
+await delay(10000); // Wait 4 seconds
+
+   await params.injectMessage(
+    <div className="bg-blue-50 text-sm text-gray-800 rounded-[16px_16px_16px_4px] px-4 py-3 max-w-[260px] my-5 shadow-sm" style={{marginLeft:"45px"}}>
+      <p className="font-medium">💬 Want to ask more about <strong>{productName}</strong>?</p>
+      <p className="text-xs mt-1">
+        If yes, type your question (e.g., "What are its ingredients?").<br />
+        If not, just say "no" or "next".
+      </p>
+    </div>
+  );
 }
     // ✅ Always show the reply
     
@@ -226,6 +239,23 @@ path: async (params: Params) => {
 }
 },
 
+confirmFollowup: {
+  path: async (params: Params) => {
+    const msg = params.userInput.toLowerCase();
+
+    if (["no", "next", "none"].some(w => msg.includes(w))) {
+      selectedProductName = null; // clear for safety
+      return "moreHelpLoop";
+    }
+
+    // 🧠 Auto-ask about the stored product
+    if (selectedProductName) {
+      await params.setTextAreaValue(`${msg} about ${selectedProductName}`);
+    }
+
+    return "productHelp";
+  }
+},
 
   consultationStart: {
     message: "Let's begin your personalized consultation.",
