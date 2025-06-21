@@ -13,7 +13,8 @@ const {
     recommendProducts,
     uploadReviewImages,
     queryProductIntent,
-    searchQuery
+    searchQuery,
+    getAllProductNames
 } = require("./productController");
 
 const multer   = require("multer");
@@ -54,6 +55,7 @@ router.post("/:id/reduce-stock", reduceStock);  // Reduce stock when product is 
 
  router.post("/:id/review/images", upload.array("images", 6), uploadReviewImages);
 router.post("/chatbot/query/:intent", queryProductIntent);
+router.get("/chatbot/names", getAllProductNames );
 router.post(
     "/:id/images",
     upload.array("images", 10),

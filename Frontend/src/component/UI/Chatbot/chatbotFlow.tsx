@@ -144,7 +144,20 @@ aiSkinScan: {
 
       const data = await response.json();
       const answer = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
-      
+      const productName = data?.productName ?? null;
+      const image = data?.image ?? null;
+      await params.injectMessage(
+  <>
+    <div className="flex flex-col gap-2 items-center p-3  m-3 border border-gray-200 rounded-lg shadow-sm bg-white max-w-[250px]">
+      <img
+        src={image}
+        alt={productName}
+        className="w-full h-32 object-contain rounded-md border"
+      />
+      <div className="text-sm font-medium text-gray-800">{productName}</div>
+    </div>
+  </>
+);
       await params.injectMessage(answer);
       return "moreHelpLoop";
     } catch (err) {

@@ -681,3 +681,20 @@ exports.searchQuery = async (req, res) => {
     res.status(500).json({ message: "Server error while searching." });
   }
 };
+
+
+exports.getAllProductNames = async (req, res) => {
+  try {
+    const products = await Product.find({}, "name images"); // Include both fields
+
+    const simplifiedProducts = products.map(p => ({
+      name: p.name,
+      image: p.images?.[0] || null // Safely get first image
+    }));
+
+    res.status(200).json({ products: simplifiedProducts });
+  } catch (error) {
+    console.error("Error fetching product names and images:", error);
+    res.status(500).json({ message: "Failed to fetch product data" });
+  }
+};
