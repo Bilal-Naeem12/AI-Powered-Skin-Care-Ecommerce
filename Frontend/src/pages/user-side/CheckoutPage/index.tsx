@@ -23,17 +23,19 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <Box className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col md:flex-row gap-10">
-        {/* Billing Form */}
-        <Box className="w-full md:w-[60%]">
-          <BillingForm />
-        </Box>
+      <Box className=" mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col md:flex-row gap-10">
+  {/* Billing Form */}
+  <Box className="w-full md:w-[60%] overflow-y-auto  pr-2">
+    <BillingForm />
+  </Box>
 
-        {/* Order Summary */}
-        <Box className="w-full md:w-[40%]">
-          <OrderSummary  />
-        </Box>
-      </Box>
+  {/* Sticky Summary */}
+  <Box className="w-full md:w-[40%]">
+    <div className="sticky top-24">
+      <OrderSummary />
+    </div>
+  </Box>
+</Box>
     </MainLayout>
   );
 };

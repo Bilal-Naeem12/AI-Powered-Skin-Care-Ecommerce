@@ -1,9 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Box, Typography, TextField, FormControlLabel, Checkbox } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  RadioGroup,
+  Radio,
+  Button,
+} from "@mui/material";
 import ButtonUI from "../../../component/UI/Button";
 import useUserStore from "../../../store/useUserStore";
 import useOrderStore from "../../../store/useOrderStore";
+import useCartStore from "@/store/useCartStore";
+import { useNavigate } from "react-router-dom";
+import usePostAuthData from "@/hooks/usePostAuthData";
+import { PaymentGateway } from "@/types/Payment";
+import { CartItem } from "@/types/CartItem";
+import PageOverlay from "@/component/UI/PageOverlay";
 
 interface BillingFormData {
   firstName: string;
@@ -19,10 +34,23 @@ interface BillingFormData {
 }
 
 const BillingForm = () => {
-  const { user } = useUserStore();
+  const { user ,setUser} = useUserStore();
   const { order, setOrder } = useOrderStore();
+  const { cart, getTotalPrice, clearCart } = useCartStore();
+  const navigate = useNavigate();
+  const { postData, loading } = usePostAuthData<any, any>();
+  const [showOverlay, setShowOverlay] = useState(false);
+ 
+  const [selectedGateway, setSelectedGateway] =
+    useState<PaymentGateway>("Cash on Delivery");
 
-  const { control, handleSubmit, reset, watch } = useForm<BillingFormData>({
+  const paymentGateways: PaymentGateway[] = ["Cash on Delivery"];
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+  } = useForm<BillingFormData>({
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -37,36 +65,27 @@ const BillingForm = () => {
     },
   });
 
-useEffect(() => {
-  if (user?.address) {
-    const shippingAddress = {
-      street: user.address.street,
-      city: user.address.city,
-      state: user.address.state,
-      country: user.address.country,
-      postal_code: user.address.postal_code,
-    };
-     reset({
+  useEffect(() => {
+    if (user?.address) {
+      reset({
         ...user.address,
         firstName: user.first_name || "",
         lastName: user.last_name || "",
         email: user.email || "",
-        phone:user.phone || ""
-
+        phone: user.phone || "",
       });
 
-    // Immediately update order store with user's saved address
-    setOrder({
-      ...order,
-      shipping: {
-        ...order.shipping,
-        shippingAddress,
-      },
-    });
-  }
-}, [user, reset, setOrder]);
+      setOrder({
+        ...order,
+        shipping: {
+          ...order.shipping,
+          shippingAddress: user.address,
+        },
+      });
+    }
+  }, [user, reset, setOrder]);
 
-  const onSubmit = (data: BillingFormData) => {
+  const handlePlaceOrder = async (data: BillingFormData) => {
     const shippingAddress = {
       street: data.street,
       city: data.city,
@@ -74,48 +93,287 @@ useEffect(() => {
       country: data.country,
       postal_code: data.postal_code,
     };
-    setOrder({ shipping: { ...order.shipping, shippingAddress } });
-    console.log("Shipping Address Saved:", shippingAddress);
+
+    const payload = {
+      userId: (order.userId as any)?._id || order.userId,
+      cartItems: cart.map((item: CartItem) => ({
+        productId:
+          typeof item.product === "string"
+            ? item.product
+            : item.product._id,
+        quantity: item.quantity,
+        selectedVariant: item.selectedVariant,
+        priceAtTimeOfOrder:
+          typeof item.product === "string" ? 0 : item.product.price,
+      })),
+      paymentMethod: selectedGateway,
+      payment: {
+        paymentGateway: selectedGateway,
+      },
+      shippingAddress,
+    };
+
+    setShowOverlay(true);
+
+    await postData(
+      `${import.meta.env.VITE_API_BACKEND_URL}/orders`,
+      payload,
+      "🎉 Order placed successfully!"
+    );
+if (data.saveInfo) {
+  await fetch(`${import.meta.env.VITE_API_BACKEND_URL}/users/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // ✅ send cookies for authentication
+    body: JSON.stringify({
+      first_name: data.firstName,
+      last_name: data.lastName,
+      phone: data.phone,
+      email: data.email,
+      address: {
+        street: data.street,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        postal_code: data.postal_code,
+      },
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log("📝 Profile updated:", res.message);
+      setUser(res.user)
+    })
+    .catch((err) => {
+      console.error("❌ Failed to update profile:", err);
+    });
+}
+    setTimeout(() => {
+      clearCart();
+      navigate("/");
+    }, 2000);
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-md p-6">
-      <Typography variant="h5" fontWeight="bold" className="mb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(handlePlaceOrder)}
+      className="bg-white rounded-lg shadow-md p-6"
+    >
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        className="mb-6"
+        style={{ fontFamily: "Poppins, sans-serif" }}
+      >
         Billing Details
       </Typography>
 
       <Box className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
-        <Controller name="firstName" control={control} render={({ field }) => <TextField {...field} label="First Name*" fullWidth />} />
-        <Controller name="lastName" control={control} render={({ field }) => <TextField {...field} label="Last Name*" fullWidth />} />
-        <Controller name="street" control={control} render={({ field }) => <TextField {...field} label="Street*" fullWidth />} />
-        <Controller name="city" control={control} render={({ field }) => <TextField {...field} label="City*" fullWidth />} />
-        <Controller name="state" control={control} render={({ field }) => <TextField {...field} label="State*" fullWidth />} />
-        <Controller name="country" control={control} render={({ field }) => <TextField {...field} label="Country*" fullWidth />} />
-        <Controller name="postal_code" control={control} render={({ field }) => <TextField {...field} label="Postal Code*" fullWidth />} />
-        <Controller name="phone" control={control} render={({ field }) => <TextField {...field} label="Phone Number*" fullWidth />} />
-        <Controller name="email" control={control} render={({ field }) => <TextField {...field} label="Email Address*" fullWidth />} />
+        {/* Required Form Fields */}
+        <Controller
+          name="firstName"
+          control={control}
+          rules={{ required: "First Name is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="First Name*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="lastName"
+          control={control}
+          rules={{ required: "Last Name is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Last Name*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="street"
+          control={control}
+          rules={{ required: "Street is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Street*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="city"
+          control={control}
+          rules={{ required: "City is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="City*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="state"
+          control={control}
+          rules={{ required: "State is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="State*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="country"
+          control={control}
+          rules={{ required: "Country is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Country*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="postal_code"
+          control={control}
+          rules={{ required: "Postal Code is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Postal Code*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="phone"
+          control={control}
+          rules={{ required: "Phone Number is required" }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Phone Number*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: "Email is required",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Invalid email format",
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              label="Email Address*"
+              fullWidth
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
+        />
       </Box>
 
+      {/* Save Info */}
       <FormControlLabel
         control={
           <Controller
             name="saveInfo"
             control={control}
-            render={({ field }) => <Checkbox {...field} checked={field.value} color="primary" />}
+            render={({ field }) => (
+              <Checkbox {...field} checked={field.value} color="primary" />
+            )}
           />
         }
-        label={<Typography style={{ fontFamily: "Poppins, sans-serif", fontSize: "14px" }}>Save this information for faster checkout next time</Typography>}
+        label={
+          <Typography
+            style={{ fontFamily: "Poppins, sans-serif", fontSize: "14px" }}
+          >
+            Save this information for faster checkout next time
+          </Typography>
+        }
         className="my-4"
       />
 
-      <ButtonUI
-        variant="black"
-        className="w-full mt-4"
-        type="submit"
-        style={{ padding: "12px 0", fontSize: "16px", fontWeight: "bold", fontFamily: "Poppins, sans-serif" }}
+      {/* Payment Gateway */}
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        className="mt-6"
+        style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        Save Shipping Address
-      </ButtonUI>
+        Payment Method
+      </Typography>
+      <RadioGroup
+        value={selectedGateway}
+        onChange={(e) =>
+          setSelectedGateway(e.target.value as PaymentGateway)
+        }
+        className="mt-4"
+      >
+        {paymentGateways.map((gateway) => (
+          <FormControlLabel
+            key={gateway}
+            value={gateway}
+            control={<Radio />}
+            label={gateway}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          />
+        ))}
+      </RadioGroup>
+
+      {/* Submit Button */}
+      <Button
+        variant="contained"
+        fullWidth
+        type="submit"
+        disabled={loading}
+        style={{
+          backgroundColor: "black",
+          color: "white",
+          padding: "12px 0",
+          marginTop: "16px",
+          fontFamily: "Poppins, sans-serif",
+        }}
+      >
+        {loading ? "Placing Order..." : "Place Order"}
+      </Button>
+
+      {/* Overlay */}
+      <PageOverlay show={showOverlay} />
     </Box>
   );
 };
