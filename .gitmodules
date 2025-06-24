@@ -1,0 +1,3 @@
+[submodule "CV-BACKEND/skincare-fastapi"]
+	path = CV-BACKEND/skincare-fastapi
+	url = https://huggingface.co/spaces/bilalnaeem1122/skincare-fastapi
