@@ -9,6 +9,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ProductReviewPage from './sub-pages/OrdersComponent/sub-pages/LeaveReview/ProductReviewPage';
 import OrderDetailPage from './sub-pages/OrdersComponent/sub-pages/OrderDetail';
+import AnalysisDetail from './sub-pages/SkinAnalysisTimeline/AnalysisDetail';
 
 const ProfilePage = () => {
  
@@ -60,6 +61,7 @@ if (error || !user) {
     ))}
 
  <Route path="/orders/:id" element={<OrderDetailPage />} />
+  <Route path="/analysis-timeline/:id" element={<AnalysisDetail />} />
      {/* <Route path="/order/product/:id" element={<ProductReviewPage/>} /> */}
 
   {/* Default Route */}
