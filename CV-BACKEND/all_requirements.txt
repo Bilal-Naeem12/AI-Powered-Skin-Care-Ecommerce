@@ -8,6 +8,7 @@ transformers>=4.39.1
 safetensors
 controlnet-aux==0.0.3
 fastapi==0.108.0
+gunicorn
 uvicorn
 python-multipart
 python-socketio==5.7.2
@@ -147,4 +148,3 @@ win32_setctime==1.2.0
 wsproto==1.2.0
 yacs==0.1.8
 zipp==3.21.0
-
