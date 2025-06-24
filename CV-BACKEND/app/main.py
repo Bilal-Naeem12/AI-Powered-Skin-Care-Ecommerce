@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks
 import logging
 
 # Import API routes
@@ -10,6 +11,8 @@ from app.routes.inpainting import router as inpainting_router
 from app.routes.analyze_skin import router as analyze_skin_router
 from app.routes.acne_severity import router as acne_sev_router
 from app.routes.skin_type import router as skin_type_router
+from app.utils.download_models import download_models
+
 # Initialize FastAPI
 app = FastAPI(title="AI-Powered Skin Care API", version="1.0")
 
@@ -53,3 +56,12 @@ async def not_found_handler(request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"error": "Not Found", "details": exc.detail},
     )
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        download_models()
+        logger.info("✅ Models downloaded successfully.")
+    except Exception as e:
+        logger.error(f"❌ Failed to download models: {e}", exc_info=True)
+        raise RuntimeError("Startup failed due to model download error.")
