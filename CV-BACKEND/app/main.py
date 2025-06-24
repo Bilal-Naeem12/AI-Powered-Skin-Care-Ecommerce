@@ -4,13 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi import BackgroundTasks
 import logging
 
-# Import API routes
-from app.routes.acne import router as acne_router
-from app.routes.puffy_eyes import router as puffy_eyes_router
-from app.routes.inpainting import router as inpainting_router
-from app.routes.analyze_skin import router as analyze_skin_router
-from app.routes.acne_severity import router as acne_sev_router
-from app.routes.skin_type import router as skin_type_router
+
 from app.utils.download_models import download_models
 
 # Initialize FastAPI
@@ -36,6 +30,15 @@ async def startup_event():
     except Exception as e:
         logger.error(f"❌ Failed to download models: {e}", exc_info=True)
         raise RuntimeError("Startup failed due to model download error.")
+    
+
+# Import API routes
+from app.routes.acne import router as acne_router
+from app.routes.puffy_eyes import router as puffy_eyes_router
+from app.routes.inpainting import router as inpainting_router
+from app.routes.analyze_skin import router as analyze_skin_router
+from app.routes.acne_severity import router as acne_sev_router
+from app.routes.skin_type import router as skin_type_router    
 # Include API routes
 app.include_router(acne_router, prefix="/api/acne")
 app.include_router(acne_sev_router, prefix="/api/acne_severity")
