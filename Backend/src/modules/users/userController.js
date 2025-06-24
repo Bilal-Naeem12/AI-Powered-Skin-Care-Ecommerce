@@ -101,6 +101,34 @@ exports.loginUser = async (req, res) => {
     }
 };
 
+
+exports.checkRefreshTokenStatus = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(200).json({ valid: false, reason: "No token" });
+    }
+
+    // Decode token without throwing
+    jwt.verify(token, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(200).json({ valid: false, reason: "Expired or Invalid" });
+      }
+
+      const user = await User.findOne({ _id: decoded.userId, refreshToken: token });
+      if (!user) {
+        return res.status(200).json({ valid: false, reason: "Token doesn't match user" });
+      }
+
+      return res.status(200).json({ valid: true });
+    });
+
+  } catch (err) {
+    return res.status(500).json({ valid: false, reason: "Server error", error: err.message });
+  }
+};
+
 // **🔹 Refresh Token**
 exports.refreshToken = async (req, res) => {
     try {

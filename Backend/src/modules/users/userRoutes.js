@@ -13,7 +13,8 @@ const {
   changeUserRole,
   logoutUser,
   adminSoftDeleteUser,
-  restoreSoftDeletedUser
+  restoreSoftDeletedUser,
+  checkRefreshTokenStatus
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -24,6 +25,7 @@ const router = express.Router();
 
 // **🔹 Authentication Routes**
 router.post("/register", validateUserRegistration, registerUser);  // Register
+router.get("/check-refresh-token", checkRefreshTokenStatus);  // Refresh Token
 router.get("/verify-email", verifyEmail);  // Email Verification
 router.post("/login", validateLogin, loginUser);  // Login
 router.post("/refresh-token", refreshToken);  // Refresh Token

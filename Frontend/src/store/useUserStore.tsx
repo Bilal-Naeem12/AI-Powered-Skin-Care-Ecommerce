@@ -9,7 +9,7 @@ interface UserStore {
   isLoggedIn: boolean;         // Whether user is logged in
   isAdmin: boolean;            // Whether user is admin
   setUser: (user: User) => void;
-  logout: () => void;
+  logout: (showtoast?: boolean) => void;
   checkLogin: () => void;
 }
 
@@ -25,8 +25,8 @@ const useUserStore = create<UserStore>()(
       localStorage.setItem("user", JSON.stringify(user)); // Save user in localStorage
     },
 
-    logout: () => {
-      toast.success("Logout")
+    logout: (showtoast = true) => {
+     showtoast&& toast.success("Logout");
       set({ user: null, isLoggedIn: false, isAdmin: false });
       localStorage.removeItem("user"); 
       

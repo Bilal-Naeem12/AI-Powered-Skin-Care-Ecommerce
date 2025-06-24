@@ -387,7 +387,7 @@ exports.reduceStock = async (productId, quantity) => {
 exports.getFeaturedProducts = async (req, res) => {
     try {
    
-        const featuredProducts = await productModel.find({ isFeatured: true, isDeleted: false }).limit(5);
+        const featuredProducts = await productModel.find({ isFeatured: true, isDeleted: false }).limit(8);
         res.status(200).json(featuredProducts);
     } catch (error) {
       console.error(error)

@@ -16,7 +16,6 @@ import { QrCodeIcon } from "lucide-react";
 import useUserStore from "@/store/useUserStore";
 
 type Step = "choice" | "preview" | "uploading"| "qr";
-
 const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("choice");
@@ -32,6 +31,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     showLoading,
     hideLoading,
     setDetectedImage,
+    setEntryModal,
     setDetections,
   } = useFaceScanStore();
   const {
@@ -203,7 +203,7 @@ if (data.status === "uploaded" && data.imageUrl) {
         <p className="text-gray-600">Skin analysis features are only available for registered users.</p>
         <button
           className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
-          onClick={() => navigate("/login")}
+          onClick={() => {setEntryModal(false); navigate("/login");}}
         >
           Log In
         </button>
