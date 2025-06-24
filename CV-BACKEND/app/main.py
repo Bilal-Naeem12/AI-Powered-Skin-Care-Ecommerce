@@ -22,15 +22,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.on_event("startup")
-async def startup_event():
-    try:
-        download_models()
+try:
+    download_models()
+    logger.info("✅ Models downloaded successfully before route import.")
+except Exception as e:
+    logger.error(f"❌ Model download failed: {e}")
+    raise RuntimeError("Cannot start app — model download failed.")
 
-    except Exception as e:
-        logger.error(f"❌ Failed to download models: {e}", exc_info=True)
-        raise RuntimeError("Startup failed due to model download error.")
-    
 
 # Import API routes
 from app.routes.acne import router as acne_router
