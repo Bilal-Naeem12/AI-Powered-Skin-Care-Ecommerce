@@ -28,7 +28,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+@app.on_event("startup")
+async def startup_event():
+    try:
+        download_models()
 
+    except Exception as e:
+        logger.error(f"❌ Failed to download models: {e}", exc_info=True)
+        raise RuntimeError("Startup failed due to model download error.")
 # Include API routes
 app.include_router(acne_router, prefix="/api/acne")
 app.include_router(acne_sev_router, prefix="/api/acne_severity")
@@ -57,11 +64,3 @@ async def not_found_handler(request: Request, exc: HTTPException):
         content={"error": "Not Found", "details": exc.detail},
     )
 
-@app.on_event("startup")
-async def startup_event():
-    try:
-        download_models()
-        logger.info("✅ Models downloaded successfully.")
-    except Exception as e:
-        logger.error(f"❌ Failed to download models: {e}", exc_info=True)
-        raise RuntimeError("Startup failed due to model download error.")
