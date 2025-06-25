@@ -1,6 +1,13 @@
 import React from "react";
 import { Paper, Avatar, Typography } from "@mui/material";
 import { SkinHistoryEntry } from "@/types/SkinHistoryEntry";
+const severityLabelMap: Record<string, string> = {
+  "level -1": "Clear",
+  "level 0": "Mild",
+  "level 1": "Moderate",
+  "level 2": "Severe",
+  "level 3": "Very Severe"
+};
 
 export function AnalysisCard({
   entry,
@@ -9,7 +16,8 @@ export function AnalysisCard({
   entry: SkinHistoryEntry;
   onClick: () => void;
 }) {
-  const topLabel = entry.classifications.acne_severity.label;
+const rawLabel = entry.classifications.acne_severity.label;
+const topLabel = severityLabelMap[rawLabel] || rawLabel;
   const date = new Date(entry.analyzedAt);
 
   return (

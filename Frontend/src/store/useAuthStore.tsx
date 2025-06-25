@@ -1,20 +1,37 @@
 import { create } from 'zustand';
 import axios from "axios";
+import useUserStore from './useUserStore';
 type AuthState = {
-  isRefreshTokenValid: boolean;
+  isRefreshTokenValid: boolean|undefined;
+    isCheckingToken: boolean;
+    setCheckingToken: (value: boolean) => void;
   setRefreshTokenValid: (value: boolean) => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isRefreshTokenValid: true,
-  setRefreshTokenValid: (value) => set({ isRefreshTokenValid: value }),
+  isRefreshTokenValid: undefined,
+   isCheckingToken: true,
+   setRefreshTokenValid: (value) => set({ isRefreshTokenValid: value, isCheckingToken: false }),
+    setCheckingToken: (value) => set({ isCheckingToken: value }),
 }));
 
 export const checkRefreshToken = async () => {
+  const { setRefreshTokenValid, setCheckingToken } = useAuthStore.getState();
+  const { logout } = useUserStore.getState();
+
+  setCheckingToken(true);
+
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/users/check-refresh-token`, { withCredentials: true });
-    useAuthStore.getState().setRefreshTokenValid(res.data.valid);
+    const res = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/users/check-refresh-token`, {
+      withCredentials: true,
+    });
+
+    if (res.data.valid) {
+      setRefreshTokenValid(true);
+    } else {
+      logout(false);
+    }
   } catch (e) {
-    useAuthStore.getState().setRefreshTokenValid(false);
+    logout(false);
   }
 };

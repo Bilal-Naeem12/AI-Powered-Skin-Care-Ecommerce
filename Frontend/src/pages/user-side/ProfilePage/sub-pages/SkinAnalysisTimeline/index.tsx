@@ -24,7 +24,7 @@ export default function SkinAnalysisTimeline() {
   const [page, setPage] = useState(0);
   const [entries, setEntries] = useState<SkinHistoryEntry[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 6;
+  const limit = 15;
 
   const { data, loading } = useFetchAuthData<SkinHistoryPaginatedResponse>(
     `${import.meta.env.VITE_API_BACKEND_URL}/skin-history/user/${user?._id}?skip=${page *

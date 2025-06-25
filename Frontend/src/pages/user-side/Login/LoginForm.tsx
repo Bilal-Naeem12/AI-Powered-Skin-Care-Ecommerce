@@ -8,6 +8,7 @@ import { toast } from "react-toastify"; // Importing toast
 import axios from "axios";
 import useUserStore from "@/store/useUserStore";
 import { User } from "@/types/User";
+import PageOverlay from "@/component/UI/PageOverlay";
 
 
 interface ApiResponse {
@@ -46,6 +47,7 @@ const LoginForm: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+     setShowOverlay(true)
     try {
       // Make the POST request using axios with withCredentials enabled
       const response = await axios.post<ApiResponse>(
@@ -63,17 +65,21 @@ const LoginForm: React.FC = () => {
       if (response.status === 200) {
         // Handle success (Redirect user, show success toast)
       // Redirect based on role
-  if (response.data.user.role === "admin") {
+
+  
+        useUserStore.getState().setUser(response.data.user);
+        // Show success notification
+        toast.success(response.data.message || "Login successful!");
+          if (response.data.user.role === "admin") {
     navigate("/admin"); // Redirect admin to dashboard
   } else {
     navigate("/"); // Redirect normal users to homepage
   }
-        useUserStore.getState().setUser(response.data.user);
-        // Show success notification
-        toast.success(response.data.message || "Login successful!");
+    
       } else {
         // If response status is not 200, show error message from backend
         toast.error(response.data.message || "Something went wrong!");
+
       }
     } catch (err: any) {
       console.error("Login error:", err);
@@ -87,9 +93,11 @@ const LoginForm: React.FC = () => {
         toast.error("An error occurred. Please try again.");
       }
     }
+    setShowOverlay(false)
   };
   
-
+  const [showOverlay, setShowOverlay] = useState(false);
+ 
   return (
     <Box className="bg-[#f8f8f8] min-h-screen flex items-center justify-center">
       <Box className="container mx-auto flex flex-col md:flex-row items-center gap-10 px-8 md:px-16 lg:px-24">
@@ -140,8 +148,9 @@ const LoginForm: React.FC = () => {
             </Box>
 
             {/* Login Button */}
-            <Box className="mb-4">
+            <Box className="mb-4" >
               <Button
+            
                 type="submit"
                 fullWidth
                 variant="contained"
@@ -197,6 +206,7 @@ const LoginForm: React.FC = () => {
           </form>
         </Box>
       </Box>
+      <PageOverlay show={showOverlay}/>
     </Box>
   );
 };
