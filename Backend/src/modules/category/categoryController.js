@@ -114,3 +114,39 @@ exports.uploadCategoryImage = async (req, res) => {
     res.status(500).json({ error: "Server error uploading image." });
   }
 };
+
+
+// controllers/categoryController.js
+exports.uploadCategoryBanner = async (req, res) => {
+  try {
+    const cat = await categoryModel.findById(req.params.id);
+    if (!cat || cat.isDeleted)
+      return res.status(404).json({ message: "Category not found." });
+
+    if (!req.file)
+      return res.status(400).json({ message: "No file uploaded." });
+
+    /* ---------- upload to Cloudinary ---------- */
+    const bannerUrl = await new Promise((resolve, reject) => {
+      cloud.uploader.upload_stream(
+        {
+          folder: "myShop/category-banners",
+          public_id: uuid(),
+          resource_type: "image",
+        },
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result.secure_url);
+        }
+      ).end(req.file.buffer);
+    });
+
+    cat.bannerUrl = bannerUrl;
+    await cat.save();
+
+    res.status(201).json({ message: "Banner uploaded", bannerUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to upload banner" });
+  }
+};

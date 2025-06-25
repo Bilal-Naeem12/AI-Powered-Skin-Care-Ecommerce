@@ -15,7 +15,8 @@ const {
     queryProductIntent,
     searchQuery,
     getAllProductNames
-    ,getProductsByNames
+    ,getProductsByNames,
+    getProductsByCategoryId
 } = require("./productController");
 
 const multer   = require("multer");
@@ -41,6 +42,8 @@ router.put("/:id", upload.array('images'), updateProduct);  // Update product
 router.delete("/:id", softDeleteProduct);  // Soft delete product
 router.put("/restore/:id", restoreProduct);  // Restore deleted product
 router.get("/:id/related", getRelatedProductsById);  // Get a product by ID
+router.get("/category/:categoryId", getProductsByCategoryId);
+
 // **🔹 Review Routes**
 router.post("/:id/reviews",authMiddleware,validateReviewMiddleware ,addReview);  // Add a review to a product
 router.get("/:id/reviews", getProductReviews);  // Get all reviews of a product

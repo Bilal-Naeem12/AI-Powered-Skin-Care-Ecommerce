@@ -13,7 +13,7 @@ export interface Category {
   
     /** Full https://… URL (or relative path) of hero/thumbnail image */
     imageUrl?: string ;
-  
+  bannerUrl?: string ;
     /** Soft‑delete flag (true = hidden from catalogue) */
     isDeleted: boolean;
   
@@ -25,6 +25,6 @@ export interface Category {
   /* convenience type for a create / update form payload */
   export type CategoryPayload = Pick<
     Category,
-    "name" | "description" | "imageUrl"
+    "name" | "description" | "imageUrl" | "bannerUrl"
   >;
   

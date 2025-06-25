@@ -22,7 +22,11 @@ const CategorySchema = new mongoose.Schema(
       default: null,
       trim: true,
     },
-
+bannerUrl:{
+     type: String,          // full https://… URL  (or relative path)
+      default: null,
+      trim: true,
+},
     /* — soft‑delete flag — */
     isDeleted: { type: Boolean, default: false },
   },

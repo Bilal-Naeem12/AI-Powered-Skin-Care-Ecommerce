@@ -1,10 +1,13 @@
 import React from "react";
 import useFetchData from "@/hooks/useFetchData"; // Update this path if your hook is in a different folder
 import { Category } from "@/types/Category";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Categories: React.FC = () => {
+
+  const navigate = useNavigate();
   const { data: categories, loading, error } = useFetchData<Category[]>(`${import.meta.env.VITE_API_BACKEND_URL}/categories/`);
 
   if (loading) return <div className="text-center py-8">Loading categories...</div>;
@@ -17,6 +20,7 @@ const Categories: React.FC = () => {
         <div
           key={category._id}
           className="flex flex-col items-center text-center group cursor-pointer"
+           onClick={() => navigate(`category/${category._id}`)}
         >
           <div className="w-20 h-20 rounded-full overflow-hidden shadow-md">
             <img

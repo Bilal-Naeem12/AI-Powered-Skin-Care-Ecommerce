@@ -26,6 +26,7 @@ import FaceScanResultPage from "@/pages/user-side/AnalyzePage/subpages/FaceScanR
 import InpaintingPage from "@/pages/user-side/AnalyzePage/subpages/InpaintingPage/InpaintingPage";
 import MobileScan from "@/pages/user-side/FaceScanModal/MobileScan";
 import { setNavigator } from "@/utils/navigation";
+import CategoryPage from "@/pages/user-side/ShopPage/subpage/CategoryPage";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -69,6 +70,7 @@ const AppRouter: React.FC = () => {
 
         <Route path="/contact-us-page" element={<ContactUsPage />} />
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/shop/category/:id" element={<CategoryPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/profile-page/*" element={<ProfilePage />} />

@@ -723,3 +723,28 @@ exports.getProductsByNames = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch products" });
   }
 };
+
+
+exports.getProductsByCategoryId = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
+    const products = await Product.find({
+      category: categoryId,
+      isDeleted: false,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};

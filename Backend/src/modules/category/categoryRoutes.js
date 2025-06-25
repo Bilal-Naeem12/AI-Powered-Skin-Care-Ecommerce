@@ -40,6 +40,13 @@ router.post(
   roleMiddleware("admin"), // "image" = form field name
   ctrl.uploadCategoryImage
 );
+router.post(
+  "/:id/banner",
+  upload.single("banner"),      // field name = banner
+  authMiddleware,
+  roleMiddleware("admin"),
+  ctrl.uploadCategoryBanner      // NEW controller fn
+);
 router.delete(
   "/:id",
   authMiddleware,

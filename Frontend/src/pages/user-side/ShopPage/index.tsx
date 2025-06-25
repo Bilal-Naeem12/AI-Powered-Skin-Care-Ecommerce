@@ -6,6 +6,8 @@ import MainLayout from "@/component/Layout/MainLayout";
 import Shop from "./Shop";
 import Breadcrumb from "@/component/UI/Breadcrumb";
 import Categories from "./Categories";
+import { Navigate, Route, Routes } from "react-router-dom";
+import CategoryPage from "./subpage/CategoryPage";
 
 const ShopPage = () => {
 useEffect(()=>{
@@ -27,6 +29,8 @@ useEffect(()=>{
 
     <Shop/>
     </div>
+
+  
    </MainLayout>
   );
 };
