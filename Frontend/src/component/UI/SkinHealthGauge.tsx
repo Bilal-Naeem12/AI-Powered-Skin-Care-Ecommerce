@@ -30,10 +30,10 @@ const SkinHealthGauge: React.FC<SkinHealthGaugeProps> = ({
   const S = acne_severity.score;
  const severityLabel = acne_severity.label;
 const SevPen =
-  severityLabel === "level 3" ? 1 :
-  severityLabel === "level 2" ? 0.95 :
-  severityLabel === "level 1" ? 0.6 :
-  severityLabel === "level 0" ? 0.3 : 0;
+  severityLabel === "Very Severe" ? 1 :
+  severityLabel === "Severe" ? 0.95 :
+  severityLabel === "Moderate" ? 0.6 :
+  severityLabel === "Mild" ? 0.3 : 0;
 
   // 2) count penalty (non-linear scaling for more sensitivity)
   const CountPen = Math.min(Na / (M * 0.6), 1);  // more punishing when >60% of maxSpots
