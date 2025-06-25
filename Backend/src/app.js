@@ -21,6 +21,7 @@ const indexRouter = require("./routes/indexRouter");
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  "http://localhost:57202",
   'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
 

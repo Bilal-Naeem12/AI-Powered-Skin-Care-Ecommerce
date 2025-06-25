@@ -39,6 +39,17 @@ const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   return <>{children}</>;
 };
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isLoggedIn } = useUserStore();
+  const location = useLocation();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return <>{children}</>;
+};
 const NavigationSetup = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -73,7 +84,9 @@ const AppRouter: React.FC = () => {
         <Route path="/shop/category/:id" element={<CategoryPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/profile-page/*" element={<ProfilePage />} />
+        <Route path="/profile-page/*" element={ <ProtectedRoute>
+      <ProfilePage />
+    </ProtectedRoute>} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
         <Route path="/test-acne-severity" element={< AcneSeverityTestPage/>} />
