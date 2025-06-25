@@ -14,6 +14,7 @@ import QRCode, { QRCodeCanvas } from "qrcode.react"; // <–– our QR‐code li
 import { Http2ServerRequest } from "http2";
 import { QrCodeIcon } from "lucide-react";
 import useUserStore from "@/store/useUserStore";
+import ConsentForm from "@/component/UI/ConsentForm";
 
 type Step = "choice" | "preview" | "uploading"| "qr";
 const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
@@ -25,6 +26,8 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const userId = user?._id
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
+const [consentOpen, setConsentOpen] = useState(false);
+const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
 
   const {
     openModal: openLiveModal,
@@ -43,7 +46,10 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   } = useSkinAnalysisStore();
 
   const navigate = useNavigate();
-
+const checkConsentAndProceed = (next: () => void) => {
+  setOnConsentProceed(() => next);
+  setConsentOpen(true);
+};
   /* select-file handler ---------------------------------------------------- */
   const handleChooseFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -166,7 +172,7 @@ if (data.status === "uploaded" && data.imageUrl) {
         {/* Upload Image */}
         <button
           className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition"
-          onClick={() => fileInputRef.current?.click()}
+         onClick={() => checkConsentAndProceed(() => fileInputRef.current?.click())}
         >
           <CloudUploadIcon /> Upload Image
         </button>
@@ -181,10 +187,12 @@ if (data.status === "uploaded" && data.imageUrl) {
         {/* Live Analysis */}
         <button
           className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
-          onClick={() => {
-            closeAll();
-            openLiveModal();
-          }}
+        onClick={() => {
+  checkConsentAndProceed(() => {
+    closeAll();
+    openLiveModal();
+  });
+}}
         >
           <VideocamIcon /> Live Analysis
         </button>
@@ -192,7 +200,7 @@ if (data.status === "uploaded" && data.imageUrl) {
         {/* Scan with Phone */}
         <button
           className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-          onClick={handleScanWithPhone}
+         onClick={() => checkConsentAndProceed(handleScanWithPhone)}
         >
           <QrCodeIcon /> Scan with Phone
         </button>
@@ -268,7 +276,16 @@ if (data.status === "uploaded" && data.imageUrl) {
     </button>
   </div>
 )}
+
       </motion.div>
+   <ConsentForm
+  open={consentOpen}
+  onAgree={() => {
+    setConsentOpen(false);
+    onConsentProceed(); // Execute the originally intended action
+  }}
+  onCancel={() => setConsentOpen(false)}
+/>
     </div>
   );
 };

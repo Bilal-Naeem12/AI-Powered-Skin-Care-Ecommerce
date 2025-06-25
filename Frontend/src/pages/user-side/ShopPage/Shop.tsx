@@ -90,7 +90,7 @@ const handleSortChange = (option: string) => {
 
               {/* Pagination */}
               <div className="flex justify-center mt-8">
-                <Pagination
+   <Pagination
   count={Math.ceil((data?.totalCount ?? 0) / (data?.limit ?? 8))}
   page={page}
   onChange={handlePageChange}
@@ -98,18 +98,25 @@ const handleSortChange = (option: string) => {
   size="large"
   sx={{
     "& .MuiPaginationItem-root": {
-      color: "black",
-      borderColor: "black",
+      color: "#333", // default text color
+      borderColor: "#ddd",
+      fontWeight: 500,
+      transition: "all 0.3s",
+      "&:hover": {
+        backgroundColor: "#f5f5f5",
+      },
     },
     "& .Mui-selected": {
       backgroundColor: "#FF69B4",
       color: "#fff",
+      borderColor: "#FF69B4",
       "&:hover": {
         backgroundColor: "#ff85c1",
       },
     },
   }}
 />
+
 
               </div>
             </>

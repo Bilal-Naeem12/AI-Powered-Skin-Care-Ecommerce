@@ -52,17 +52,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Button
           variant="black"
           className="px-4 py-2 text-sm"
-           disabled={product.stock === 0}
+           disabled={product.stock === 1}
           onClick={handleAddToCart} // Trigger the add to cart action
         >
-         {product.stock === 0 ? "Out of Stock" : "Add to your cart"} {/* Label change */}
+         {product.stock === 1 ? "Out of Stock" : "Add to your cart"} {/* Label change */}
         </Button>
 
         {/* Favorite Icon */}
-        <MdFavoriteBorder
+        {/* <MdFavoriteBorder
           className="text-pink-400 hover:text-pink-500 cursor-pointer text-xl"
           title="Add to Wishlist"
-        />
+        /> */}
       </div>
     </div>
   );

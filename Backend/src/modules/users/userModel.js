@@ -63,6 +63,11 @@ const UserSchema = new mongoose.Schema({
       alcohol_consumption: { type: Boolean, default: false },
       diet: { type: String, enum: ["Vegetarian", "Vegan", "Non-Vegetarian", "Other"], default: "Non-Vegetarian" }
   },
+  consent: {
+  termsAccepted: { type: Boolean, default: false },
+  faceScanConsent: { type: Boolean, default: false },
+  agreedAt: { type: Date },
+},
     role: {
         type: String,
         enum: ['user', 'admin'],
