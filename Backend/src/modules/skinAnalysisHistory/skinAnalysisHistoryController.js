@@ -59,16 +59,29 @@ if (recProducts.length) {
   }
 };
 // Get all history for a user
+// controllers/skinHistoryController.js
 exports.getHistoryByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const page = parseInt(req.query.page) || 1;
+    const page  = parseInt(req.query.page)  || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const date  = req.query.date;           // ← NEW (yyyy-mm-dd)
 
     if (!mongoose.Types.ObjectId.isValid(userId))
       return res.status(400).json({ error: "Invalid userId" });
 
-    const entries = await SkinHistory.find({ userId })
+    /* ---------- build query ---------- */
+    const query = { userId };
+
+    // If a date is supplied, match entries whose analysedAt falls on that day
+    if (date) {
+    const start = new Date(`${date}T00:00:00`);
+const end   = new Date(`${date}T23:59:59.999`);
+query.analyzedAt = { $gte: start, $lte: end };
+    }
+
+    /* ---------- fetch & paginate ---------- */
+    const entries = await SkinHistory.find(query)
       .sort({ analyzedAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -78,22 +91,20 @@ exports.getHistoryByUser = async (req, res) => {
           path: "productId",
           select: "name price images",
           transform: (doc) => {
-            if (doc?.images?.length > 0) {
-              doc.images = [doc.images[0]];
-            }
+            if (doc?.images?.length) doc.images = [doc.images[0]];
             return doc;
           },
         },
       })
       .lean();
 
-    const total = await SkinHistory.countDocuments({ userId });
+    const total = await SkinHistory.countDocuments(query);
 
     res.json({
       success: true,
       page,
-      totalPages: Math.ceil(total / limit),
-      totalEntries: total,
+      totalPages   : Math.ceil(total / limit),
+      totalEntries : total,
       entries,
     });
   } catch (err) {

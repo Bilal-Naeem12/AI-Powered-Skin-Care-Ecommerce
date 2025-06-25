@@ -83,34 +83,43 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
   <Box
     sx={{
       width: "100%",
-      maxWidth: 800, // optional limit for large screens
-      
-      mx: "auto", // center horizontally
+      maxWidth: 800,
+      height: { xs: "300px", sm: "400px", md: "500px" },
+      mx: "auto",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 2,
       overflow: "hidden",
       mb: 3,
-      bgcolor:"grey",
+      bgcolor: "background.paper", // or remove this if not needed
     }}
   >
     <ReactCompareSlider
       itemOne={
         <ReactCompareSliderImage
           src={scanned_image_after}
-          alt="Before"
-          style={{ objectFit: "contain", width: "100%", height: "100%" }}
+          alt="After"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
         />
       }
       itemTwo={
         <ReactCompareSliderImage
           src={scanned_image_before}
-          alt="After"
-          style={{ objectFit: "contain", width: "100%", height: "100%" }}
+          alt="Before"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
         />
       }
       style={{
+        backgroundColor:"#8d88887a",
         width: "100%",
         height: "100%",
         borderRadius: 8,
@@ -118,7 +127,6 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
     />
   </Box>
 )}
-
 </div> 
   <div className="lg:w-1/2 ">   {/* heading */}
      

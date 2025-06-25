@@ -12,13 +12,6 @@ const HomePage = () => {
 useEffect(() => {
   checkRefreshToken();
 }, []);
-const { isRefreshTokenValid,isCheckingToken } = useAuthStore();
-const {logout} = useUserStore()
-useEffect(() => {
-  if (!isCheckingToken && isRefreshTokenValid === false) {
-    logout(false);
-  }
-}, [isRefreshTokenValid, isCheckingToken, logout]);
 
   return (
     <MainLayout>
