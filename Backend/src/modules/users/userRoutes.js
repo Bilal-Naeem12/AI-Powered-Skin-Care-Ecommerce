@@ -14,7 +14,8 @@ const {
   logoutUser,
   adminSoftDeleteUser,
   restoreSoftDeletedUser,
-  checkRefreshTokenStatus
+  checkRefreshTokenStatus,
+  updateUserConsent
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -38,7 +39,7 @@ router.post("/reset-password", validatePasswordReset, resetPassword);  // Reset 
 router.get("/profile", authMiddleware, getUserProfile);  // Get User Profile
 router.put("/profile", authMiddleware, updateUserProfile);  // Update User Profile
 router.delete("/profile", authMiddleware, softDeleteAccount);  // Soft Delete Account
-
+router.patch("/consent/:userId",authMiddleware, updateUserConsent);
 // **🔹 Admin Routes (Requires Admin Role)**
 router.get("/admin/all-users", authMiddleware, roleMiddleware("admin"), getAllUsers);  // Get All Users
 router.put("/admin/change-role", authMiddleware, roleMiddleware("admin"), changeUserRole);  // Change User Role

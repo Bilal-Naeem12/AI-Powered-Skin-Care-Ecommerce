@@ -28,7 +28,7 @@ const PageOverlay: React.FC<PageOverlayProps> = ({ show, onClose }) => {
 
   return (
     <Backdrop
-      open={show}
+      open={internalShow}
       sx={{
         color: "#fff",
         zIndex: (theme) => theme.zIndex.modal + 2,

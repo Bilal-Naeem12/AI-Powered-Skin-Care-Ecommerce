@@ -15,6 +15,7 @@ import { Http2ServerRequest } from "http2";
 import { QrCodeIcon } from "lucide-react";
 import useUserStore from "@/store/useUserStore";
 import ConsentForm from "@/component/UI/ConsentForm";
+import { User } from "@/types/User";
 
 type Step = "choice" | "preview" | "uploading"| "qr";
 const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
@@ -22,7 +23,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const [step, setStep] = useState<Step>("choice");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const {user,isLoggedIn} = useUserStore()
+  const {user,isLoggedIn,setUser} = useUserStore()
   const userId = user?._id
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
@@ -47,8 +48,14 @@ const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
 
   const navigate = useNavigate();
 const checkConsentAndProceed = (next: () => void) => {
-  setOnConsentProceed(() => next);
-  setConsentOpen(true);
+ if (user?.consent?.termsAccepted && user?.consent?.faceScanConsent) {
+
+    next();
+  } else {
+  
+    setOnConsentProceed(() => next);
+    setConsentOpen(true);
+  }
 };
   /* select-file handler ---------------------------------------------------- */
   const handleChooseFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,10 +287,24 @@ if (data.status === "uploaded" && data.imageUrl) {
       </motion.div>
    <ConsentForm
   open={consentOpen}
-  onAgree={() => {
-    setConsentOpen(false);
-    onConsentProceed(); // Execute the originally intended action
-  }}
+ onAgree={async () => {
+  setConsentOpen(false);
+  try {
+    const res = await axios.patch<{ success: boolean; user: User }>(
+      `${import.meta.env.VITE_API_BACKEND_URL}/users/consent/${userId}`,
+      {},
+      {
+        withCredentials: true, // send cookie/session
+      }
+    );
+
+    const user =  res.data.user;
+    setUser(user); // ✅ update the Zustand store with the new user
+    onConsentProceed();   // ✅ continue with the process
+  } catch (err) {
+    console.error("Consent update failed", err);
+  }
+}}
   onCancel={() => setConsentOpen(false)}
 />
     </div>

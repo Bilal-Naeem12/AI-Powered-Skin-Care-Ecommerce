@@ -71,7 +71,7 @@ const ProductDetailPage: React.FC = () => {
         {/* images */}
         <div className="space-y-3 self-start ">
           <img
-          src={product?.images[mainIdx]?? image}
+          src={product?.images[mainIdx]}
             alt={product?.name}
             className="rounded-lg w-full sm:h-[480px] object-contain shadow-sm bg-white"
           />

@@ -366,3 +366,29 @@ exports.logoutUser = (req, res) => {
     await user.save();
     res.json({ message: "User restored." });
   };
+
+
+
+
+  exports.updateUserConsent = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          "consent.faceScanConsent": true,
+          "consent.termsAccepted": true, // optional if you're collecting this now
+          "consent.agreedAt": new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, user: updatedUser });
+  } catch (err) {
+    console.error("Consent update error:", err);
+    res.status(500).json({ error: "Could not update consent" });
+  }
+};

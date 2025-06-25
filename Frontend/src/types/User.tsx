@@ -51,6 +51,11 @@ export interface SkinAnalysisHistory {
       alcohol_consumption: boolean;
       diet: "Vegetarian" | "Vegan" | "Non-Vegetarian" | "Other";
     };
+      consent: {
+    termsAccepted: boolean;
+    faceScanConsent: boolean;
+    agreedAt: Date | null;
+  };
     role: "user" | "admin";
     profileImage: string | null;
     isVerified: boolean;
