@@ -44,6 +44,7 @@ import useUserStore from "@/store/useUserStore";
 import useCartStore from "@/store/useCartStore";
 import useDebounce from "@/hooks/useDebounce";
 import { Product } from "@/types/Product";
+import NotificationBell from "./NotificationBell";
 
 // Type for Menu Anchor Element
 type AnchorElType = null | HTMLElement;
@@ -164,6 +165,7 @@ const debouncedSearch = useDebounce(searchValue, 500);
               Contact Us
             </Typography>
           </Link>
+         
         </Box>
 
         {/* Right Section - Icons */}
@@ -228,6 +230,8 @@ const debouncedSearch = useDebounce(searchValue, 500);
         </Badge>
       </IconButton>
     </Link>
+
+      <NotificationBell/>
        <IconButton onClick={handleMenuOpen}>
   {isLoggedIn && user?.profileImage ? (
     <Avatar
@@ -388,6 +392,8 @@ const debouncedSearch = useDebounce(searchValue, 500);
                   },
                 }}
               >
+
+               
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Avatar
                     variant="rounded"
