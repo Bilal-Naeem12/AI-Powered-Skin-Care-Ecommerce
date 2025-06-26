@@ -1,6 +1,8 @@
 const SkinHistory = require("./skinAnalysisHistoryModel");
 const mongoose     = require("mongoose");
 const RecommendationProduct = require("../recommendationProduct/recommendationProductModel")
+const { notify } = require("../notification/notificationService");
+
 // Create a new history record
 exports.createHistory = async (req, res) => {
   try {
@@ -51,7 +53,14 @@ if (recProducts.length) {
         populate: { path: "productId", select: "name price image" }
       })
       .lean();
-
+await notify({
+  kind: "ANALYSIS_RESULT",
+  title: "Your skin analysis is ready!",
+  body: "Click to view your latest skin analysis results.",
+  image: req.body.scanned_image_before,
+  userId,
+  data: { skinHistoryId: history._id },
+});
     res.status(201).json(populated);
   } catch (err) {
     console.error("createHistory error:", err);

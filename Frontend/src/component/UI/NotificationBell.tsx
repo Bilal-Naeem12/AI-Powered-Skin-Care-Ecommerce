@@ -1,5 +1,4 @@
-// src/components/NotificationBell.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Badge,
   IconButton,
@@ -15,119 +14,130 @@ import {
   Button,
 } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
-
+import { useNavigate } from "react-router-dom";
+import useNotificationSocket from "@/hooks/useNotificationSocket";
+import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
+import axios from "axios";
+import useUserStore from "@/store/useUserStore";
 import { Link } from "react-router-dom";
 
-/** ----------------------------------------------------------------
- *   1. Dummy data – replace with real-time payloads from Socket.IO
- *  ----------------------------------------------------------------*/
-export type NotificationKind =
-  | "ANALYSIS_READY"
-  | "ORDER_STATUS"
-  | "PROMO"
-  | "SKIN_REMINDER"
-  | "SYSTEM";
+// Avatar icon mapping by kind
+const kindAvatars: Partial<Record<NotificationKind, string>> = {
+  ANALYSIS_RESULT:   "/assets/icons/ANALYSIS_RESULT.png",
+  ORDER_STATUS:      "/assets/icons/ORDER_STATUS.png",
+  ORDER_PLACED:      "/assets/icons/ORDER_PLACED.png",
+  PROMO:             "/assets/icons/PROMO.png",
+  ACCOUNT_SUSPENDED: "/assets/icons/ACCOUNT_SUSPENDED.png",
+};
 
-export interface NotificationItem {
-  id: string;
-  kind: NotificationKind;
-  title: string;
-  description?: string;
-  image?: string; // optional thumbnail
-  createdAt: string; // ISO date string
-  read?: boolean;
-}
-
-const mockNotifications: NotificationItem[] = [
-  {
-    id: "n-1",
-    kind: "ANALYSIS_READY",
-    title: "✨ Your latest skin analysis is ready",
-    description: "Tap to view detailed results and product picks.",
-    createdAt: "2025-06-26T09:00:00Z",
-    image: "/icons/analysis.png",
-    read: true,
-  },
-  {
-    id: "n-2",
-    kind: "ORDER_STATUS",
-    title: "📦 Order #1023 out for delivery",
-    description: "Expected arrival: today by 5 PM.",
-    createdAt: "2025-06-25T15:26:00Z",
-    image: "/icons/package.png",
-    read: true,
-  },
-  {
-    id: "n-3",
-    kind: "PROMO",
-    title: "🎁 15 % off on brightening serums",
-    description: "Limited-time offer. Expires in 24 h.",
-    createdAt: "2025-06-25T12:40:00Z",
-    image: "/icons/discount.png",
-    read: true,
-  },
-];
-
-/** ----------------------------------------------------------------
- *   2. Component
- *  ----------------------------------------------------------------*/
 const NotificationBell: React.FC = () => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const unreadCount = React.useMemo(
-    () => mockNotifications.filter((n) => !n.read).length,
-    []
-  );
+  const { user } = useUserStore();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
-  // 🔔 Open / close handlers
+  const unreadCount = notifications.filter(
+    (n) => !n.readBy?.some((r) => r.userId === user?._id)
+  ).length;
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get<{ notifications: NotificationItem[] }>(
+        `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
+        { withCredentials: true }
+      );
+      const all = Array.isArray(res.data)
+        ? res.data
+        : res.data.notifications || [];
+      setNotifications(all.slice(0, 20)); // max 20
+    } catch (err) {
+      console.error("❌ Failed to fetch notifications", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  useNotificationSocket((newNotif) => {
+    setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
+  });
+
   const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
     setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
+  const handleClickNotification = async (notif: NotificationItem) => {
+    try {
+      // Mark as read if not already
+      const isRead = notif.readBy?.some((r) => r.userId === user?._id);
+      if (!isRead) {
+        await axios.patch(
+          `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
+          {},
+          { withCredentials: true }
+        );
+
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notif._id
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
+              : n
+          )
+        );
+      }
+
+      // Navigate based on kind
+      if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
+        navigate(`/profile-page/analysis-timeline/${notif.data.skinHistoryId}`);
+        handleClose();
+      }
+      // Extend with more kinds as needed
+    } catch (err) {
+      console.error("❌ Failed to mark notification as read", err);
+    }
+  };
+
+  const unread = notifications.filter(
+    (n) => !n.readBy?.some((r) => r.userId === user?._id)
+  );
+  const read = notifications.filter((n) =>
+    n.readBy?.some((r) => r.userId === user?._id)
+  );
+
   return (
     <>
-     <IconButton
-  aria-label="notifications"
-  onClick={handleOpen}
-  disableRipple
-  sx={{
-    /* --- base circle size --- */
-    width: 44,
-    height: 44,
-    borderRadius: "50%",
+      <IconButton
+        aria-label="notifications"
+        onClick={handleOpen}
+        disableRipple
+        sx={{
+          width: 44,
+          height: 44,
+          borderRadius: "50%",
+          color: "#757575",
+          bgcolor: "transparent",
+          transition: "background-color 0.25s ease, color 0.25s ease",
+          "&:hover, &:focus-visible": {
+            bgcolor: "rgba(255, 105, 180, 0.12)",
+            color: "#FF69B4",
+          },
+          ...(Boolean(anchorEl) && {
+            bgcolor: "rgba(255, 105, 180, 0.12)",
+            color: "#FF69B4",
+          }),
+        }}
+      >
+        <Badge
+          badgeContent={unreadCount}
+          color="error"
+          overlap="circular"
+          sx={{ "& .MuiBadge-badge": { top: 6, right: 6 } }}
+        >
+          <NotificationsNoneRoundedIcon sx={{ fontSize: 27 }} />
+        </Badge>
+      </IconButton>
 
-    /* --- default (idle) state --- */
-    color: "#757575",                 // medium-grey outline
-    bgcolor: "transparent",
-
-    transition: "background-color 0.25s ease, color 0.25s ease",
-
-    /* --- hover / focus-visible --- */
-    "&:hover, &:focus-visible": {
-      bgcolor: "rgba(255, 105, 180, 0.12)",    // light pink halo
-      color: "#FF69B4",                        // primary pink outline
-    },
-
-    /* --- keep it pink while popover is open --- */
-    ...(Boolean(anchorEl) && {
-      bgcolor: "rgba(255, 105, 180, 0.12)",
-      color: "#FF69B4",
-    }),
-  }}
->
-  <Badge
-    badgeContent={unreadCount}
-    color="error"
-    overlap="circular"
-    sx={{
-      "& .MuiBadge-badge": {
-        top: 6,
-        right: 6,
-      },
-    }}
-  >
-    <NotificationsNoneRoundedIcon sx={{ fontSize: 27 }} />
-  </Badge>
-</IconButton>
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -141,7 +151,7 @@ const NotificationBell: React.FC = () => {
         </Typography>
         <Divider />
 
-        {mockNotifications.length === 0 ? (
+        {notifications.length === 0 ? (
           <Box sx={{ p: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary">
               You’re all caught up!
@@ -149,22 +159,31 @@ const NotificationBell: React.FC = () => {
           </Box>
         ) : (
           <List dense disablePadding sx={{ maxHeight: 400, overflowY: "auto" }}>
-            {mockNotifications.map((n) => (
+            {[...unread, ...read].map((n) => (
               <ListItem
-                key={n.id}
+                key={n._id}
                 alignItems="flex-start"
+                onClick={() => handleClickNotification(n)}
                 sx={{
-                  bgcolor: n.read ? "transparent" : "#ffeaf6",
+                  bgcolor: n.readBy?.some((r) => r.userId === user?._id)
+                    ? "transparent"
+                    : "#ffeaf6",
                   "&:hover": { bgcolor: "#f8f8f8", cursor: "pointer" },
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar
-                    src={n.image}
-                    sx={{ bgcolor: "#FF69B4" /* primary color */ }}
-                  >
-                    {n.title[0]}
-                  </Avatar>
+                         <Avatar
+                src={n.image || kindAvatars[n.kind]}
+                imgProps={{ style: { objectFit: "contain",   ...(n.image ? {} : { padding: 6 }),} }}
+                sx={{
+                  bgcolor: "#ffa8d3", // light pink background
+                  width: 48,
+                  height: 48,
+                  fontSize: 24,
+                }}
+              >
+                {!(n.image || kindAvatars[n.kind]) && n.title[0]}
+              </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary={n.title}
@@ -175,7 +194,7 @@ const NotificationBell: React.FC = () => {
                         variant="body2"
                         color="text.secondary"
                       >
-                        {n.description}
+                        {n.body || ""}
                       </Typography>
                       <br />
                       <Typography
@@ -195,10 +214,10 @@ const NotificationBell: React.FC = () => {
 
         <Divider />
         <Box sx={{ p: 1, textAlign: "center" }}>
-          <Link to={"/notifications"}> 
-          <Button size="small" onClick={handleClose}>
-            View all
-          </Button>
+          <Link to="/notifications">
+            <Button size="small" onClick={handleClose}>
+              View all
+            </Button>
           </Link>
         </Box>
       </Popover>

@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { sendEmail } = require('../../services/emailService');
 const isProd = process.env.NODE_ENV === "production";
 const { registerUser } = require("./userService");
+const { notify } = require("../notification/notificationService");
 
 const commonOptions = {
     httpOnly: true,
@@ -29,6 +30,13 @@ exports.registerUser = async (req, res) => {
     res.status(201).json({
       message: "User registered successfully. Please verify your email.",
     });
+
+ await notify({
+  kind: "NEW_USER",
+  title: `New user registered: ${newUser.email}`,
+  body: "A new user has signed up. Review their details in the admin panel.",
+  role: "admin"
+});
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -95,7 +103,7 @@ exports.loginUser = async (req, res) => {
   delete safeUser.password;
   delete safeUser.refreshToken;
 
-  res.status(200).json({user:safeUser,message:`Login successful! Welcome ${safeUser.first_name}`});
+  res.status(200).json({user:safeUser,message:`Login successful! Welcome ${safeUser.first_name}`, accessToken});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -317,7 +325,13 @@ exports.changeUserRole = async (req, res) => {
 
     user.role = newRole;
     await user.save();
-
+await notify({
+  kind: "ROLE_CHANGED",
+  title: "Your account role was updated",
+  body: `You have been assigned the role: ${user.role}.`,
+  userId: user._id,
+  data: { newRole: user.role }
+});
     res.json({ message: "User role updated." });
   } catch (err) {
     console.error("changeUserRole:", err);
@@ -334,7 +348,12 @@ exports.adminSoftDeleteUser = async (req, res) => {
 
     user.isDeleted = true;
     await user.save();
-
+await notify({
+  kind: "ACCOUNT_SUSPENDED",
+  title: "Your account has been suspended by an admin",
+  body: "You cannot access the platform until further notice.",
+  userId: user._id
+});
     res.json({ message: "User deleted." });
   } catch (err) {
     console.error("adminSoftDeleteUser:", err);
@@ -363,7 +382,14 @@ exports.logoutUser = (req, res) => {
       return res.status(404).json({ message: "User not found or not deleted." });
     }
     user.isDeleted = false;
+
     await user.save();
+   await notify({
+  kind: "ACCOUNT_RESTORED",
+  title: "Your account has been restored",
+  body: "You now have full access to the platform again.",
+  userId: user._id
+});
     res.json({ message: "User restored." });
   };
 
