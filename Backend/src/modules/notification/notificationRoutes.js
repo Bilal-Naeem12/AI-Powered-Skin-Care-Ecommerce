@@ -1,23 +1,22 @@
-const express = require("express");
-const {
-    createNotification,
-    getUserNotifications,
-    markAsRead,
-    deleteNotification
-} = require("./notificationController");
+const router = require("express").Router();
+const controller = require("./notificationController");
+const { authMiddleware } = require("../../middleware/authMiddleware"); // ⬅️ adjust if yours differs
 
-const router = express.Router();
+router.use(authMiddleware); // protect all routes
 
-// **🔹 Route to Create a New Notification**
-router.post("/create", createNotification);
+// 📥 Get all notifications (user or admin)
+router.get("/", controller.getAll);
 
-// **🔹 Route to Get All Notifications for a User**
-router.get("/:userId", getUserNotifications);
+// 📄 View one notification by ID
+router.get("/:id", controller.getOne);
 
-// **🔹 Route to Mark a Notification as Read**
-router.put("/:notificationId/read", markAsRead);
+// 🆕 Create a notification (admin panel or test route)
+router.post("/", controller.create);
 
-// **🔹 Route to Delete a Notification**
-router.delete("/:notificationId", deleteNotification);
+// ✅ Mark notification as read
+router.patch("/:id/read", controller.markAsRead);
+
+// ❌ Delete notification (admin only)
+router.delete("/:id", controller.remove);
 
 module.exports = router;

@@ -9,11 +9,13 @@ import axios from "axios";
 import useUserStore from "@/store/useUserStore";
 import { User } from "@/types/User";
 import PageOverlay from "@/component/UI/PageOverlay";
+import { createSocket } from "@/utils/socket";
 
 
 interface ApiResponse {
   message: string;
   user:User
+  accessToken:string;
   // Add other properties from your API response here if needed
 }
 // Define Zod schema for validation
@@ -68,6 +70,10 @@ const LoginForm: React.FC = () => {
 
   
         useUserStore.getState().setUser(response.data.user);
+
+        const token = response.data.accessToken; // from backend login response
+const socket = createSocket(token);
+socket.connect();
         // Show success notification
         toast.success(response.data.message || "Login successful!");
           if (response.data.user.role === "admin") {

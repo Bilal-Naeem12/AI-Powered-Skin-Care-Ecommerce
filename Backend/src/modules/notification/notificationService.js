@@ -1,42 +1,55 @@
 const Notification = require("./notificationModel");
-const { formatNotificationMessage, getRelatedModel } = require("./notificationUtils");
+const { getIO } = require("../../socket"); // socket instance
 
-// **🔹 Create Notification**
-exports.createNotification = async (userId, type, relatedId, relatedModel) => {
-    const message = formatNotificationMessage(type, relatedModel, relatedId);
-    const newNotification = new Notification({
-        userId,
-        type,
-        message,
-        relatedId,
-        relatedModel: getRelatedModel(type),
-    });
+/**
+ * Create and push a notification
+ * @param {{
+ *   kind: string,
+ *   title: string,
+ *   body?: string,
+ *   image?: string,
+ *   data?: object,
+ *   userId?: string,
+ *   role?: string
+ * }}
+ */
+exports.notify = async ({
+  kind,
+  title,
+  body = "",
+  image = "",
+  data = {},
+  userId = null,
+  role = null
+}) => {
+  let target;
 
-    await newNotification.save();
-    return newNotification;
-};
+  if (userId) {
+    target = { scope: "user", userId };
+  } else if (role) {
+    target = { scope: "role", role };
+  } else {
+    throw new Error("Notification must target userId or role");
+  }
 
-// **🔹 Get All Notifications for User**
-exports.getUserNotifications = async (userId) => {
-    return await Notification.find({ userId, isDeleted: false }).sort({ sentAt: -1 });
-};
+  const notif = await Notification.create({
+    kind,
+    title,
+    body,
+    image,
+    data,
+    target
+  });
 
-// **🔹 Mark Notification as Read**
-exports.markAsRead = async (notificationId) => {
-    const notification = await Notification.findById(notificationId);
-    if (!notification) throw new Error("Notification not found");
+  const io = getIO();
 
-    notification.isRead = true;
-    await notification.save();
-    return notification;
-};
+  if (userId) {
+    io.to(`user:${userId}`).emit("notifications:new", notif);
+  }
 
-// **🔹 Delete Notification**
-exports.deleteNotification = async (notificationId) => {
-    const notification = await Notification.findById(notificationId);
-    if (!notification) throw new Error("Notification not found");
+  if (role) {
+    io.to(`role:${role}`).emit("notifications:new", notif);
+  }
 
-    notification.isDeleted = true;
-    await notification.save();
-    return notification;
+  return notif;
 };

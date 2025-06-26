@@ -3,6 +3,8 @@ const orderService = require("./orderService");
 const Shipping = require("../shipping/shippingModel");
 const mongoose = require("mongoose")
 const Order = require("./orderModel");
+const { notify } = require("../notification/notificationService");
+
 exports.createOrder = async (req, res, next) => {
   try {
     const order = await orderService.placeOrder({
@@ -12,6 +14,13 @@ exports.createOrder = async (req, res, next) => {
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
     });
+       await notify({
+  kind: "ORDER_PLACED",
+  title: "Order placed successfully",
+  body: `Your order #${order.orderNumber} has been placed.`,
+  userId: order.userId,
+  data: { orderId: order._id }
+});
     res.status(201).json(order);
   } catch (err) {
    next(err);
@@ -27,6 +36,7 @@ exports.updateOrderStatus = async (req, res, next) => {
       shippingStatus: req.body.shippingStatus,
       updatedBy: req.user._id,
     });
+ 
     res.json(order);
   } catch (err) {
  const msg = err.message || "";
@@ -45,6 +55,14 @@ exports.cancelOrder = async (req, res, next) => {
       reason: req.body.reason,
       updatedBy: req.user._id,
     });
+    await notify({
+  kind: "ORDER_STATUS",
+  title: `Order #${order.orderNumber} cancelled`,
+  body: "Your order has been successfully cancelled.",
+  userId: order.userId,
+  data: { orderId: order._id }
+});
+
     res.json(order);
   } catch (err) {
      const msg = err.message || "";
@@ -68,6 +86,13 @@ exports.cancelOrder = async (req, res, next) => {
 exports.processRefund = async (req, res, next) => {
   try {
     const order = await orderService.processRefund({ orderId: req.params.id });
+    await notify({
+  kind: "ORDER_STATUS",
+  title: `Refund processed for Order #${order.orderNumber}`,
+  body: "Your refund has been processed successfully.",
+  userId: order.userId,
+  data: { orderId: order._id }
+});
     res.json(order);
   } catch (err) {
     next(err);
@@ -232,6 +257,13 @@ exports.updateOrder = async (req, res) => {
     }
 
     await order.save();
+    await notify({
+  kind: "ORDER_STATUS",
+  title: `Order #${order.orderNumber} updated`,
+  body: "Your order details have been updated by the admin. Click to view details",
+  userId: order.userId,
+  data: { orderId: order._id }
+});
     res.status(200).json({ message: "Order updated", order });
   } catch (err) {
     console.error("Error updating order:", err);

@@ -9,7 +9,7 @@ const cors = require('cors'); // Cross-Origin Resource Sharing
 const rateLimit = require('express-rate-limit'); // Prevent brute force attacks
 const compression = require('compression'); // Optimize response size
 const mongoose = require('mongoose');
-
+const { init } = require("./socket");   // NEW
 const Product  = require("./modules/products/productModel");
 const Review   = require("./modules/review/reviewModel");
 
@@ -17,10 +17,14 @@ const Review   = require("./modules/review/reviewModel");
 const mainRouter = require('./routes/mainRouter');
 
 const app = express();
+
+const httpServer = init(app);           // wrap express
+
 const indexRouter = require("./routes/indexRouter");
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  "http://localhost:5173",
   "http://localhost:57202",
   'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
@@ -100,8 +104,8 @@ app.use((err, req, res, next) => {
 
 // **Define & Start the Server**
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,"0.0.0.0" ,() => {
-    console.log(`🚀 Server is running on ${process.env.FRONTEND_URL}`);
-});
+httpServer.listen(PORT, "0.0.0.0", () =>
+  console.log(`🚀  API & WS on port ${PORT}`)
+);
 
 module.exports = app;
