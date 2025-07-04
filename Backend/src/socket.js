@@ -26,16 +26,16 @@ function init(app) {
       if (!token) return next(new Error("Token missing"));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const { sub, roles = [] } = decoded;
+      const { sub, role } = decoded;
 
       socket.data.userId = sub;
-      socket.data.roles = roles;
+      socket.data.role = role;
 
       // Join user-specific room
       socket.join(`user:${sub}`);
 
-      // Join all role-based rooms (admin, support, etc.)
-      roles.forEach((role) => socket.join(`role:${role}`));
+      // Join all role-based rooms admin
+      socket.join(`role:${role}`);
 
       next();
     } catch (err) {

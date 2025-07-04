@@ -22,7 +22,7 @@ import useUserStore from "@/store/useUserStore";
 import { Link } from "react-router-dom";
 
 // Avatar icon mapping by kind
-const kindAvatars: Partial<Record<NotificationKind, string>> = {
+export const kindAvatars: Partial<Record<NotificationKind, string>> = {
   ANALYSIS_RESULT:   "/assets/icons/ANALYSIS_RESULT.png",
   ORDER_STATUS:      "/assets/icons/ORDER_STATUS.png",
   ORDER_PLACED:      "/assets/icons/ORDER_PLACED.png",

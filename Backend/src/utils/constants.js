@@ -20,7 +20,8 @@ const NOTIFICATION_KINDS = [
    // ⚙️ Account/Role Related
   "ACCOUNT_SUSPENDED",    // Admin suspended a user account
   "ACCOUNT_RESTORED",     // Admin restored a previously suspended account
-  "ROLE_CHANGED"          // Admin changed user role
+  "ROLE_CHANGED",          // Admin changed user role
+  "MANAGEMENT_ORDER_PLACED"
 ];
 
 module.exports = {

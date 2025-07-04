@@ -21,6 +21,15 @@ exports.createOrder = async (req, res, next) => {
   userId: order.userId,
   data: { orderId: order._id }
 });
+
+  await notify({
+      kind: "MANAGEMENT_ORDER_PLACED",
+      title: "New order received",
+      body: `Order #${order.orderNumber} has been placed by ${req.user.name || "a customer"}.`,
+      role: "admin",
+      data: { orderId: order._id },
+    });
+
     res.status(201).json(order);
   } catch (err) {
    next(err);
