@@ -172,6 +172,7 @@ if (
     const image = data?.image ?? null;
     const reply = data?.reply ?? "Sorry, I couldn’t find a clear answer.";
     const replyNotFound = data?.replyNotFound ?? null;
+    const  replyIrrelavent = data?.replyIrrelavent ?? null;
 // const products = dummyproducts;
     // 🖼️ If multiple product matches
     selectedProductName = productName
@@ -195,7 +196,11 @@ if (
       
    
    return; }else{
-
+    if(replyIrrelavent){
+      await params.injectMessage(replyIrrelavent)
+      return "moreHelpLoop"
+    }
+    console.log(replyIrrelavent)
     // ❌ If product not found
     if (replyNotFound) {
       await params.injectMessage(replyNotFound);
