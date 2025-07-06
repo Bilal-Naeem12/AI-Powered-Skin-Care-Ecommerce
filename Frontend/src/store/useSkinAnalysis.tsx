@@ -9,6 +9,7 @@ import type {
 } from "@/types/SkinAnalysisResult";
 import { RecommendationResponse } from "@/types/Recommendation";
 import { RecommendationStepInfo } from "@/types/SkinHistoryEntry";
+import { verifyAndCropFace } from "@/utils/verifyAndCropFace";
 
 interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
@@ -93,9 +94,20 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
   set({ loading: true, error: null });
 
   try {
-    // 1. Upload the original (before) image to Cloudinary
-    const beforeUrl = await uploadImage(originalImage);
+ let verifiedFile: File;
 
+    if (originalImage instanceof File) {
+      verifiedFile = await verifyAndCropFace(originalImage);
+    } else {
+      throw new Error("Invalid input file for face verification");
+    }
+
+    // Replace the old file in FormData:
+    formData.delete("file");
+    formData.append("file", verifiedFile);
+
+    // ✅ Upload cropped face only:
+    const beforeUrl = await uploadImage(verifiedFile);
     // 2. Send to FastAPI for analysis
     const resp = await axios.post<SkinAnalysisResult>(
       `${import.meta.env.VITE_API_FASTAPI}/skin_analysis/predict`,

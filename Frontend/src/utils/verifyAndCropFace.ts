@@ -14,7 +14,8 @@ export async function loadFaceDetector() {
     model = await faceLandmarksDetection.createDetector(
       faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
       {
-        runtime: "tfjs", refineLandmarks: true 
+        runtime: "tfjs",
+        refineLandmarks: true,
       }
     );
   }
@@ -22,56 +23,68 @@ export async function loadFaceDetector() {
 }
 
 /**
- * Checks image for a single face, verifies it looks forward-ish, crops it.
+ * Checks image for a single face, verifies pose, crops with padding.
+ * @param file The uploaded image file
+ * @param paddingFactor 0.0 to 1.0 (0% to 100% padding around face box)
  */
-export async function verifyAndCropFace(file: File): Promise<File> {
+export async function verifyAndCropFace(
+  file: File,
+  paddingFactor: number = 0.4 // default: 30% padding
+): Promise<File> {
   const img = await createImageBitmap(file);
 
   const detector = await loadFaceDetector();
   const faces = await detector.estimateFaces(img);
 
   if (faces.length === 0) {
-    throw new Error("No face detected. Please upload a clear front-facing photo.");
+    throw new Error("❌ No face detected. Please upload a clear front-facing photo.");
   }
   if (faces.length > 1) {
-    throw new Error("Multiple faces detected. Please upload a photo with one face.");
+    throw new Error("❌ Multiple faces detected. Please upload a photo with one face.");
   }
 
   const face = faces[0];
   const box = face.box;
 
-  // Optional: check pose by landmarks
+  // Optional: pose check
   const keypoints = face.keypoints;
+  const leftEye = keypoints.find(k => k.name === "leftEye");
+  const rightEye = keypoints.find(k => k.name === "rightEye");
 
-  // Estimate pose: check nose and eyes horizontally
-  const leftEye = keypoints.find(k => k.name === "leftEye")!;
-  const rightEye = keypoints.find(k => k.name === "rightEye")!;
-  const noseTip = keypoints.find(k => k.name === "noseTip")!;
-
-  const eyeDeltaX = Math.abs(leftEye.x - rightEye.x);
-  const eyeDeltaY = Math.abs(leftEye.y - rightEye.y);
-  const slope = eyeDeltaY / eyeDeltaX;
-
-  if (slope > 0.15) {
-    throw new Error("Face not looking straight. Please look directly at the camera.");
+  if (leftEye && rightEye) {
+    const eyeDeltaX = Math.abs(leftEye.x - rightEye.x);
+    const eyeDeltaY = Math.abs(leftEye.y - rightEye.y);
+    const slope = eyeDeltaY / eyeDeltaX;
+    if (slope > 0.15) {
+      throw new Error("❌ Face not looking straight. Please face the camera directly.");
+    }
   }
 
-  // Crop to box
+  // ✅ Add adjustable padding
+  const padX = box.width * paddingFactor;
+  const padY = box.height * paddingFactor;
+
+  const cropX = Math.max(0, box.xMin - padX);
+  const cropY = Math.max(0, box.yMin - padY);
+  const cropWidth = Math.min(img.width - cropX, box.width + padX * 2);
+  const cropHeight = Math.min(img.height - cropY, box.height + padY * 2);
+
+  // Canvas to crop
   const canvas = document.createElement("canvas");
-  canvas.width = box.width;
-  canvas.height = box.height;
+  canvas.width = cropWidth;
+  canvas.height = cropHeight;
 
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(
     img,
-    box.xMin,
-    box.yMin,
-    box.width,
-    box.height,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
     0,
     0,
-    box.width,
-    box.height
+    cropWidth,
+    cropHeight
   );
 
   const blob: Blob = await new Promise((resolve) =>
