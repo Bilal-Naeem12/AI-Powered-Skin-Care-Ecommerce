@@ -65,6 +65,7 @@ const AppRouter: React.FC = () => {
 
   return (
     <Router>
+      
         <NavigationSetup />
         <RedirectIfAdmin>
       <Routes>

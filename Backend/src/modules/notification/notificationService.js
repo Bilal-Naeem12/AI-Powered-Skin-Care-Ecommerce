@@ -1,8 +1,8 @@
 const Notification = require("./notificationModel");
-const { getIO } = require("../../socket"); // socket instance
+const { getIO } = require("../../socket");
 
 /**
- * Create and push a notification
+ * Create and push a notification.
  * @param {{
  *   kind: string,
  *   title: string,
@@ -20,7 +20,7 @@ exports.notify = async ({
   image = "",
   data = {},
   userId = null,
-  role = null
+  role = null,
 }) => {
   let target;
 
@@ -38,17 +38,31 @@ exports.notify = async ({
     body,
     image,
     data,
-    target
+    target,
   });
 
   const io = getIO();
 
   if (userId) {
-    io.to(`user:${userId}`).emit("notifications:new", notif);
+    const userRoom = io.sockets.adapter.rooms.get(`user:${userId}`);
+    if (userRoom && userRoom.size > 0) {
+      io.to(`user:${userId}`).emit("notifications:new", notif);
+      console.log(`📣 Emitted to user:${userId}`);
+    } else {
+      console.log(`⚠️ No active sockets for user:${userId} — not emitted`);
+      // Optionally: store to a queue here if you want to deliver later
+    }
   }
 
   if (role) {
-    io.to(`role:${role}`).emit("notifications:new", notif);
+    const roleRoom = io.sockets.adapter.rooms.get(`role:${role}`);
+    if (roleRoom && roleRoom.size > 0) {
+      io.to(`role:${role}`).emit("notifications:new", notif);
+      console.log(`📣 Emitted to role:${role}`);
+    } else {
+      console.log(`⚠️ No active sockets for role:${role} — not emitted`);
+      // Optionally: store to a pending queue if you want to deliver later
+    }
   }
 
   return notif;
