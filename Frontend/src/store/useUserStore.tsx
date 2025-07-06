@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { User } from "@/types/User";
 import { toast } from "react-toastify";
+import useNotificationStore from "./useNotificationStore"; // ✅ import the store
 
 // Define the store state type
 interface UserStore {
@@ -29,7 +30,7 @@ const useUserStore = create<UserStore>()(
      showtoast&& toast.success("Logout");
       set({ user: null, isLoggedIn: false, isAdmin: false });
       localStorage.removeItem("user"); 
-      
+        useNotificationStore.getState().clearNotifications();
     },
 
     checkLogin: () => {

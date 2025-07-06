@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Badge,
   IconButton,
@@ -14,89 +14,26 @@ import {
   Button,
 } from "@mui/material";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
-import { useNavigate } from "react-router-dom";
-import useNotificationSocket from "@/hooks/useNotificationSocket";
+import { useNavigate, Link } from "react-router-dom";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
-import axios from "axios";
 import useUserStore from "@/store/useUserStore";
-import { Link } from "react-router-dom";
+import useNotificationStore from "@/store/useNotificationStore";
 
-// Avatar icon mapping by kind
+// Avatar icon mapping
 export const kindAvatars: Partial<Record<NotificationKind, string>> = {
-  ANALYSIS_RESULT:   "/assets/icons/ANALYSIS_RESULT.png",
-  ORDER_STATUS:      "/assets/icons/ORDER_STATUS.png",
-  ORDER_PLACED:      "/assets/icons/ORDER_PLACED.png",
-  PROMO:             "/assets/icons/PROMO.png",
+  ANALYSIS_RESULT: "/assets/icons/ANALYSIS_RESULT.png",
+  ORDER_STATUS: "/assets/icons/ORDER_STATUS.png",
+  ORDER_PLACED: "/assets/icons/ORDER_PLACED.png",
+  PROMO: "/assets/icons/PROMO.png",
   ACCOUNT_SUSPENDED: "/assets/icons/ACCOUNT_SUSPENDED.png",
 };
 
 const NotificationBell: React.FC = () => {
   const { user } = useUserStore();
+  const { notifications, setNotifications } = useNotificationStore();
   const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-
-  const unreadCount = notifications.filter(
-    (n) => !n.readBy?.some((r) => r.userId === user?._id)
-  ).length;
-
-  const fetchNotifications = async () => {
-    try {
-      const res = await axios.get<{ notifications: NotificationItem[] }>(
-        `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
-        { withCredentials: true }
-      );
-      const all = Array.isArray(res.data)
-        ? res.data
-        : res.data.notifications || [];
-      setNotifications(all.slice(0, 20)); // max 20
-    } catch (err) {
-      console.error("❌ Failed to fetch notifications", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  useNotificationSocket((newNotif) => {
-    setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
-  });
-
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-
-  const handleClickNotification = async (notif: NotificationItem) => {
-    try {
-      // Mark as read if not already
-      const isRead = notif.readBy?.some((r) => r.userId === user?._id);
-      if (!isRead) {
-        await axios.patch(
-          `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
-          {},
-          { withCredentials: true }
-        );
-
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n._id === notif._id
-              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
-              : n
-          )
-        );
-      }
-
-      // Navigate based on kind
-      if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
-        navigate(`/profile-page/analysis-timeline/${notif.data.skinHistoryId}`);
-        handleClose();
-      }
-      // Extend with more kinds as needed
-    } catch (err) {
-      console.error("❌ Failed to mark notification as read", err);
-    }
-  };
 
   const unread = notifications.filter(
     (n) => !n.readBy?.some((r) => r.userId === user?._id)
@@ -104,6 +41,42 @@ const NotificationBell: React.FC = () => {
   const read = notifications.filter((n) =>
     n.readBy?.some((r) => r.userId === user?._id)
   );
+
+  const unreadCount = unread.length;
+
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const handleClickNotification = async (notif: NotificationItem) => {
+    try {
+      const isRead = notif.readBy?.some((r) => r.userId === user?._id);
+      if (!isRead) {
+        await fetch(
+          `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
+          {
+            method: "PATCH",
+            credentials: "include",
+          }
+        );
+        // update locally:
+        setNotifications(
+          notifications.map((n) =>
+            n._id === notif._id
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
+              : n
+          )
+        );
+      }
+
+      if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
+        navigate(`/profile-page/analysis-timeline/${notif.data?.skinHistoryId}`);
+        handleClose();
+      }
+    } catch (err) {
+      console.error("❌ Failed to mark notification as read", err);
+    }
+  };
 
   return (
     <>
@@ -172,18 +145,23 @@ const NotificationBell: React.FC = () => {
                 }}
               >
                 <ListItemAvatar>
-                         <Avatar
-                src={n.image || kindAvatars[n.kind]}
-                imgProps={{ style: { objectFit: "contain",   ...(n.image ? {} : { padding: 6 }),} }}
-                sx={{
-                  bgcolor: "#ffa8d3", // light pink background
-                  width: 48,
-                  height: 48,
-                  fontSize: 24,
-                }}
-              >
-                {!(n.image || kindAvatars[n.kind]) && n.title[0]}
-              </Avatar>
+                  <Avatar
+                    src={n.image || kindAvatars[n.kind]}
+                    imgProps={{
+                      style: {
+                        objectFit: "contain",
+                        ...(n.image ? {} : { padding: 6 }),
+                      },
+                    }}
+                    sx={{
+                      bgcolor: "#ffa8d3",
+                      width: 48,
+                      height: 48,
+                      fontSize: 24,
+                    }}
+                  >
+                    {!(n.image || kindAvatars[n.kind]) && n.title[0]}
+                  </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary={n.title}

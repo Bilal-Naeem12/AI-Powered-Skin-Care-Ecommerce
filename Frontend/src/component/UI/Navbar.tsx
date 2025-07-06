@@ -231,7 +231,7 @@ const debouncedSearch = useDebounce(searchValue, 500);
       </IconButton>
     </Link>
 
-      <NotificationBell/>
+    {isLoggedIn && <NotificationBell/>} 
        <IconButton onClick={handleMenuOpen}>
   {isLoggedIn && user?.profileImage ? (
     <Avatar

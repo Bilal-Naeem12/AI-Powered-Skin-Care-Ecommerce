@@ -7,6 +7,7 @@ import { ChatBotUI } from "./component/UI/Chatbot/ChatBot";
 
 const App: React.FC = () => {
   return (
+    
     <div>
       {/* The ToastContainer is required to display notifications */}
       <ToastContainer

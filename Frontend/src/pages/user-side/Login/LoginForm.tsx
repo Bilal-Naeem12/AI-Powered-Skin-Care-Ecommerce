@@ -71,9 +71,6 @@ const LoginForm: React.FC = () => {
   
         useUserStore.getState().setUser(response.data.user);
 
-        const token = response.data.accessToken; // from backend login response
-const socket = createSocket(token);
-socket.connect();
         // Show success notification
         toast.success(response.data.message || "Login successful!");
           if (response.data.user.role === "admin") {

@@ -385,16 +385,20 @@ exports.reduceStock = async (productId, quantity) => {
 
 // **🔹 Get Featured Products**
 exports.getFeaturedProducts = async (req, res) => {
-    try {
-   
-        const featuredProducts = await productModel.find({ isFeatured: true, isDeleted: false }).limit(8);
-        res.status(200).json(featuredProducts);
-    } catch (error) {
-      console.error(error)
-        res.status(500).json({ error: error.message });
-    }
-};
+  try {
+    const featuredProducts = await productModel.aggregate([
+      { $match: { isFeatured: true, isDeleted: false } },
+      { $sample: { size: 8 } }
+    ]);
 
+    res.status(200).json(
+     featuredProducts,
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 exports.uploadImages =    async (req, res) => {
   try {

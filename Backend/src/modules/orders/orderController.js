@@ -18,9 +18,10 @@ exports.createOrder = async (req, res, next) => {
   kind: "ORDER_PLACED",
   title: "Order placed successfully",
   body: `Your order #${order.orderNumber} has been placed.`,
-  userId: order.userId,
+  userId: order.userId._id,
   data: { orderId: order._id }
 });
+
 
   await notify({
       kind: "MANAGEMENT_ORDER_PLACED",
