@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import useUserStore from "@/store/useUserStore";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
 import axios from "axios";          // ← USE CONFIGURED INSTANCE !!!
+import useNotificationStore from "@/store/useNotificationStore";
 
 /* ------------------------------------------------------------------ */
 /* 1.  Labels & Avatar mapping                                         */
@@ -40,42 +41,42 @@ const NotificationList: React.FC = () => {
   const navigate  = useNavigate();
 
   const [loading,        setLoading]        = useState(true);
-  const [notifications,  setNotifications]  = useState<NotificationItem[]>([]);
+    const { notifications, setNotifications } = useNotificationStore();
   const [filter,         setFilter]         = useState<NotificationKind | "ALL">("ALL");
 
   /* ----------------------------------------------------------------
      2. Fetch on mount (or when user id changes)
   ---------------------------------------------------------------- */
-  useEffect(() => {
-    if (!uid) return;                       // wait for user to be loaded
+  // useEffect(() => {
+  //   if (!uid) return;                       // wait for user to be loaded
 
-    (async () => {
-      try {
-        const res = await axios.get<{ notifications: NotificationItem[] }>(
-        `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,            // baseURL already prepended
-          { withCredentials: true }
-        );
+  //   (async () => {
+  //     try {
+  //       const res = await axios.get<{ notifications: NotificationItem[] }>(
+  //       `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,            // baseURL already prepended
+  //         { withCredentials: true }
+  //       );
 
-        const all = Array.isArray(res.data) ? res.data : res.data.notifications || [];
+  //       const all = Array.isArray(res.data) ? res.data : res.data.notifications || [];
 
-        // unread first → newest first → max 20
-        const sorted = all
-          .sort((a, b) => {
-            const aRead = a.readBy?.some((r) => r.userId === uid);
-            const bRead = b.readBy?.some((r) => r.userId === uid);
-            return Number(aRead) - Number(bRead) ||
-                   new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          })
-          .slice(0, MAX_SHOWN);
+  //       // unread first → newest first → max 20
+  //       const sorted = all
+  //         .sort((a, b) => {
+  //           const aRead = a.readBy?.some((r) => r.userId === uid);
+  //           const bRead = b.readBy?.some((r) => r.userId === uid);
+  //           return Number(aRead) - Number(bRead) ||
+  //                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  //         })
+  //         .slice(0, MAX_SHOWN);
 
-        setNotifications(sorted);
-      } catch (err) {
-        console.error("🔴 Failed to fetch notifications", err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [uid]);
+  //       setNotifications(sorted);
+  //     } catch (err) {
+  //       console.error("🔴 Failed to fetch notifications", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   })();
+  // }, [uid]);
 
   /* ----------------------------------------------------------------
      3. Derived lists (memoised)
@@ -94,38 +95,47 @@ const NotificationList: React.FC = () => {
      4. Click → mark-as-read + navigate
   ---------------------------------------------------------------- */
   const handleClick = async (notif: NotificationItem) => {
-    const isRead = notif.readBy?.some((r) => r.userId === uid);
-
-    if (!isRead) {
-      try {
-        await axios.patch(`/notifications/${notif._id}/read`, {}, { withCredentials: true });
-        setNotifications((prev) =>
-          prev.map((n) =>
+    
+    try {
+      const isRead = notif.readBy?.some((r) => r.userId === user?._id);
+      if (!isRead) {
+        await fetch(
+          `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
+          {
+            method: "PATCH",
+            credentials: "include",
+          }
+        );
+        // update locally:
+        setNotifications(
+          notifications.map((n) =>
             n._id === notif._id
-              ? { ...n, readBy: [...(n.readBy || []), { userId: uid, readAt: new Date().toISOString() }] }
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
               : n
           )
         );
-      } catch (err) {
-        console.warn("Could not mark as read", err);
       }
-    }
 
-    if (notif.kind === "ANALYSIS_RESULT" && (notif as any).data?.skinHistoryId) {
-      navigate(`/profile-page/analysis-timeline/${(notif as any).data.skinHistoryId}`);
+      if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
+        navigate(`/profile-page/analysis-timeline/${notif.data?.skinHistoryId}`);
+  
+      }
+          if (notif.kind === "ORDER_PLACED" && (notif as any).data?.orderId) {
+      navigate(`/profile-page/orders/${(notif as any).data.orderId}`);
     }
+    } catch (err) {
+      console.error("❌ Failed to mark notification as read", err);
+    }
+    
+
+
+    
   };
 
   /* ----------------------------------------------------------------
      5. Render
   ---------------------------------------------------------------- */
-  if (loading) {
-    return (
-      <Box sx={{ py: 5, textAlign: "center" }}>
-        <CircularProgress size={28} />
-      </Box>
-    );
-  }
+  
 
   const combined = [...unread, ...read];
 

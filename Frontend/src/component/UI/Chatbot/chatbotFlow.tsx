@@ -38,7 +38,7 @@ export const chatbotFlow: Flow = {
   },
 
   welcomeOptions: {
-    
+    chatDisabled:true,
     message: "What brings you here today?",
     options: {
       items: [
@@ -70,6 +70,7 @@ export const chatbotFlow: Flow = {
 
 
     repeatOptions: {
+      chatDisabled:true,
     message: "How can I assist you futher?",
     options: {
       items: [
@@ -268,6 +269,7 @@ confirmFollowup: {
   },
 
   askSkinType: {
+    chatDisabled:true,
     message: "How would you describe your skin type?",
     options: {
       items: ["Oily", "Dry", "Combination", "Normal"],
@@ -280,6 +282,7 @@ confirmFollowup: {
   },
 
   askConcerns: {
+     chatDisabled:true,
     message: "What are your current skin concerns?",
     checkboxes: {
       items: ["Acne", "Pigmentation", "Wrinkles", "Sensitivity", "Dullness"],
@@ -336,6 +339,7 @@ viewAnalysis: {
   },
 
   moreHelpLoop: {
+     chatDisabled:true,
     message: "Would you like help with anything else?",
     options: {
       items: ["Yes", "No"],

@@ -1,8 +1,10 @@
 import React from "react";
-import { Box, Typography, TextField, MenuItem, IconButton } from "@mui/material";
+import { Box, Typography, TextField, MenuItem, IconButton, ButtonGroup } from "@mui/material";
 import { MdDelete } from "react-icons/md"; // Import delete icon
 import useCartStore from "../../../store/useCartStore"; // Import the Zustand store
 import {Product} from "@/types/Product"; // Import the Product interface
+import { Minus } from "lucide-react";
+import { Add } from "@mui/icons-material";
 
 // Define the prop types for CartItem component
 interface CartItemProps {
@@ -46,23 +48,60 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
       </p>
 
       {/* Quantity Dropdown */}
-      <Box className="w-[20%] text-center">
-        <TextField
-          select
-          value={item.quantity} // Update the value based on the quantity in the cart
-          onChange={(e) =>
-            handleQuantityChange(item.product._id, parseInt(e.target.value)) // Pass the correct _id for updating
-          }
-          size="small"
-          variant="outlined"
-        >
-          {[...Array(10).keys()].map((q) => (
-            <MenuItem key={q + 1} value={q + 1}>
-              {q + 1}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
+     
+<Box className="w-[120px] text-center ">
+  <ButtonGroup size="small" variant="outlined" className="flex gap-2">
+    <IconButton
+      
+      sx={{
+        borderRadius: 1, 
+       
+      }}
+      onClick={() =>
+        handleQuantityChange(item.product._id, Math.max(1, item.quantity - 1))
+      }
+    >
+      <Minus fontSize="small" />
+    </IconButton>
+
+    <TextField
+    
+      value={item.quantity}
+      onChange={(e) => {
+        const value = parseInt(e.target.value, 10);
+        if (value > 0 && value <= 10) {
+          handleQuantityChange(item.product._id, value);
+        }
+      }}
+      inputProps={{
+        readOnly:true,
+        min: 1,
+        max: 10,
+        style: { textAlign: "center", width: "40px" },
+      }}
+      variant="outlined"
+      size="small"
+    />
+
+  <IconButton
+  sx={{
+   
+    borderRadius: 1, // ⏹️ square shape
+    backgroundColor: "#000", // black background
+    color: "#fff",           // white icon
+    '&:hover': {
+      backgroundColor: "#333", // darker on hover if you like
+    },
+  }}
+  onClick={() =>
+    handleQuantityChange(item.product._id, Math.min(10, item.quantity + 1))
+  }
+>
+  <Add fontSize="small" />
+</IconButton>
+
+  </ButtonGroup>
+</Box>
 
       {/* Total Price for this Item */}
       <p
