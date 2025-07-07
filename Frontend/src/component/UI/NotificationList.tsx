@@ -144,14 +144,21 @@ const NotificationList: React.FC = () => {
       {/* chips */}
       <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap">
         {(["ALL", ...Object.keys(kindLabels)] as const).map((k) => (
-          <Chip
-            key={k}
-            label={k === "ALL" ? "All" : kindLabels[k as NotificationKind]}
-            variant={filter === k ? "filled" : "outlined"}
-            color={filter === k ? "primary" : "default"}
-            size="small"
-            onClick={() => setFilter(k as NotificationKind | "ALL")}
-          />
+      <Chip
+  key={k}
+  label={k === "ALL" ? "All" : kindLabels[k as NotificationKind]}
+  variant={filter === k ? "filled" : "outlined"}
+  color={filter === k ? "default" : "default"} // keep default
+  size="small"
+  onClick={() => setFilter(k as NotificationKind | "ALL")}
+  sx={{
+    ...(filter === k && {
+      backgroundColor: "#000",
+      color: "#fff",
+      borderColor: "#000",
+    }),
+  }}
+/>
         ))}
       </Stack>
 

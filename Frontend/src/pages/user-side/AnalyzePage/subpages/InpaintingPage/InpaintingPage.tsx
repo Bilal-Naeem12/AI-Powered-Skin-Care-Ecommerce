@@ -9,6 +9,7 @@ import {
   ReactCompareSliderHandle,
 } from "react-compare-slider";
 import { GripHorizontal } from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const InpaintingPage: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -50,18 +51,20 @@ const InpaintingPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className=" flex flex-col md:flex-row p-6 gap-10 justify-between ">
-        {/* LEFT SIDE */}
-<div className="flex flex-col md:flex-row  bg-white p-5 shadow-2xl rounded-xl w-full gap-10 ">
-     {/* LEFT SIDE */}
-<div className=" flex flex-col gap-6 flex-1 ">
-  <Breadcrumb
+      
+      <div className=" space-y-5 p-6 gap-10 justify-between ">
+          <Breadcrumb
     paths={[
       { name: "Home", link: "/" },
       { name: "AI Tools", link: "/ai-tools-page" },
       { name: "Inpainting", link: "/inpainting" },
     ]}
-  />
+  />  
+     {/* LEFT SIDE */}
+<div className="flex flex-col md:flex-row  bg-white p-5 shadow-2xl rounded-xl w-full gap-10 ">
+     {/* LEFT SIDE */}
+<div className=" flex flex-col gap-6 flex-1 ">
+ 
 
   <h1 className="text-4xl font-extrabold text-[#FF69B4] leading-tight flex items-center gap-2">
     ✨ AI Acne Inpainting 
@@ -151,20 +154,13 @@ const InpaintingPage: React.FC = () => {
                   className="w-full h-full object-contain"
                 />
                 {loading && (
-                  <Box className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height="100%"
-                      animation="wave"
-                      sx={{
-                        bgcolor: "rgba(0,0,0,0.25)",
-                        opacity: 0.6,
-                      }}
-                    />
-                    <p className="absolute text-white text-lg font-semibold">
-                      Processing…
-                    </p>
+                  <Box className="absolute inset-0 flex items-center justify-center bg-black/50">
+                   
+                  <div className="w-[200px]"> <DotLottieReact
+      src="/assets/gif/sparkles.json"
+      loop
+      autoplay
+    /></div>
                   </Box>
                 )}
               </Box>
@@ -172,6 +168,7 @@ const InpaintingPage: React.FC = () => {
 
             {showCompareSlider && (
               <ReactCompareSlider
+
                 itemOne={
                   <ReactCompareSliderImage
                     src={scanned_image_before!}
@@ -209,7 +206,7 @@ const InpaintingPage: React.FC = () => {
                       color: "#fff",
                     }}
                   >
-                    <GripHorizontal size={20} />
+                    <GripHorizontal size={10} />
                   </ReactCompareSliderHandle>
                 }
                 style={{

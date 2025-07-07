@@ -8,56 +8,40 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import useFaceScanStore from "@/store/useFaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { SkinAnalysisResult } from "@/types/SkinAnalysisResult";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
-import QRCode, { QRCodeCanvas } from "qrcode.react"; // <–– our QR‐code library
-import { Http2ServerRequest } from "http2";
+import { QRCodeCanvas } from "qrcode.react";
 import { QrCodeIcon } from "lucide-react";
 import useUserStore from "@/store/useUserStore";
 import ConsentForm from "@/component/UI/ConsentForm";
 import { User } from "@/types/User";
 
-type Step = "choice" | "preview" | "uploading"| "qr";
+type Step = "choice" | "preview" | "uploading" | "qr";
+
 const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("choice");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const {user,isLoggedIn,setUser} = useUserStore()
-  const userId = user?._id
+  const { user, isLoggedIn, setUser } = useUserStore();
+  const userId = user?._id;
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
-const [consentOpen, setConsentOpen] = useState(false);
-const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
 
-  const {
-    openModal: openLiveModal,
-    showLoading,
-    hideLoading,
-    setDetectedImage,
-    setEntryModal,
-    setDetections,
-  } = useFaceScanStore();
-  const {
-    result,
-    loading,
-    error,
-    analyzeSkin,
-    clearResult,
-  } = useSkinAnalysisStore();
-
+  const { openModal: openLiveModal, showLoading, hideLoading, setDetectedImage, setEntryModal } =
+    useFaceScanStore();
+  const { result, analyzeSkin, clearResult } = useFaceScanStore();
   const navigate = useNavigate();
-const checkConsentAndProceed = (next: () => void) => {
- if (user?.consent?.termsAccepted && user?.consent?.faceScanConsent) {
 
-    next();
-  } else {
-  
-    setOnConsentProceed(() => next);
-    setConsentOpen(true);
-  }
-};
-  /* select-file handler ---------------------------------------------------- */
+  const checkConsentAndProceed = (next: () => void) => {
+    if (user?.consent?.termsAccepted && user?.consent?.faceScanConsent) {
+      next();
+    } else {
+      setOnConsentProceed(() => next);
+      setConsentOpen(true);
+    }
+  };
+
   const handleChooseFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -66,21 +50,16 @@ const checkConsentAndProceed = (next: () => void) => {
     setStep("preview");
   };
 
-  /* confirm & upload ------------------------------------------------------- */
   const handleAnalyze = async () => {
     if (!file) return;
     setStep("uploading");
     showLoading();
-
     const fd = new FormData();
     fd.append("file", file);
-
     try {
-      clearResult();               // reset any prior result
-    await analyzeSkin(fd,file,userId); 
-
+      clearResult();
+      await analyzeSkin(fd, file, userId);
       setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
-      // setDetections(resp.data.acne.detections.concat(resp.data.puffy_eyes.detections));
       closeAll();
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
@@ -90,162 +69,158 @@ const checkConsentAndProceed = (next: () => void) => {
     }
   };
 
-  /* reset selection -------------------------------------------------------- */
   const resetSelection = () => {
     setFile(null);
     setPreviewUrl(null);
     setStep("choice");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-/******************************************************/
-  /*** NEW: Step 4: “Scan with Phone” → generate session ***/
+
   const handleScanWithPhone = async () => {
     try {
-      // 1) Call your backend to create a new “scan session”
-      const resp  = await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session`);
+      const resp = await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session`);
       const id = resp.data.sessionId as string;
       setSessionId(id);
-
-      // 2) Build a full‐URL that a phone can open:
-      //    e.g. https://your‐domain.com/mobile-scan/abc123
-      //    window.location.origin → e.g. https://your‐domain.com
-   const localIP = window.location.origin ; // <-- YOUR computer’s IP!
-const url = `${localIP}/mobile-scan/${id}`;
-//   const localIP = "http://192.168.1.12:5173" ; // <-- YOUR computer’s IP!
-// const url = `${localIP}/mobile-scan/${id}`;
-console.log(url)
-setQrUrl(url);
-
-      // 3) Move into the “qr” step so we render a QR code
+      const localIP = window.location.origin;
+      const url = `${localIP}/mobile-scan/${id}`;
+      setQrUrl(url);
       setStep("qr");
     } catch (err) {
       console.error("❌ could not create scan session", err);
     }
   };
 
-
-   useEffect(() => {
+  useEffect(() => {
     let poller: NodeJS.Timeout;
     if (step === "qr" && sessionId) {
       poller = setInterval(async () => {
         try {
-          // In polling effect:
-const statusResp = await axios.get(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`);
-const data = statusResp.data as { status: string; imageUrl?: string };
-if (data.status === "uploaded" && data.imageUrl) {
-  clearInterval(poller);
-
-  const imgResp = await axios.get(data.imageUrl, { responseType: "blob" });
-  // imgResp.data is of type Blob
-  const blob = imgResp.data as Blob;
-  const fakeFile = new File([blob], "mobile-upload.jpg", { type: blob.type });
-
-  setFile(fakeFile);
-  setPreviewUrl(URL.createObjectURL(blob));
-  setStep("preview");
-}
-        } catch (e) {
-          // If 404 or not found, ignore until it’s created.
-        }
+          const statusResp = await axios.get(
+            `${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`
+          );
+          const data = statusResp.data as { status: string; imageUrl?: string };
+          if (data.status === "uploaded" && data.imageUrl) {
+            clearInterval(poller);
+            const imgResp = await axios.get(data.imageUrl, { responseType: "blob" });
+            const blob = imgResp.data as Blob;
+            const fakeFile = new File([blob], "mobile-upload.jpg", { type: blob.type });
+            setFile(fakeFile);
+            setPreviewUrl(URL.createObjectURL(blob));
+            setStep("preview");
+          }
+        } catch {}
       }, 10000);
       return () => clearInterval(poller);
     }
   }, [step, sessionId]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <motion.div
-        className="relative bg-white rounded-lg w-[90%] max-w-xl p-6 shadow-xl flex flex-col gap-6"
-        initial={{ scale: 0.8, opacity: 0 }}
+        className="relative bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl flex flex-col gap-6 text-center"
+        initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
+        exit={{ scale: 0.9, opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
         <button
           onClick={closeAll}
-          className="absolute top-4 right-2 text-gray-500 hover:text-black"
+          className="absolute top-4 right-4 text-gray-400 hover:text-black"
         >
           <CloseIcon fontSize="medium" />
         </button>
 
-     {step === "choice" && (
-  <>
-    {isLoggedIn ? (
-      <>
-        <h2 className="text-xl font-semibold text-center">
-          How would you like to analyze your skin?
-        </h2>
+        {step === "choice" && (
+          <>
+            {isLoggedIn ? (
+        <>
+  <h2 className="text-2xl font-bold text-black">Analyze Your Skin</h2>
+  <p className="text-gray-500 mb-4">
+    Choose an option below to start your analysis.
+  </p>
 
-        {/* Upload Image */}
-        <button
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition"
-         onClick={() => checkConsentAndProceed(() => fileInputRef.current?.click())}
-        >
-          <CloudUploadIcon /> Upload Image
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleChooseFile}
-        />
+  <div className="flex justify-center gap-4">
+    {/* Upload */}
+    <div
+      className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-pink-50 cursor-pointer transition"
+      onClick={() =>
+        checkConsentAndProceed(() => fileInputRef.current?.click())
+      }
+    >
+      <CloudUploadIcon className="text-[#FF69B4]" />
+      <span className="text-sm mt-2 text-black">Upload</span>
+    </div>
 
-        {/* Live Analysis */}
-        <button
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
-        onClick={() => {
-  checkConsentAndProceed(() => {
-    closeAll();
-    openLiveModal();
-  });
-}}
-        >
-          <VideocamIcon /> Live Analysis
-        </button>
+    {/* Live */}
+    <div
+      className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-purple-50 cursor-pointer transition"
+      onClick={() =>
+        checkConsentAndProceed(() => {
+          closeAll();
+          openLiveModal();
+        })
+      }
+    >
+      <VideocamIcon className="text-[#FF69B4]" />
+      <span className="text-sm mt-2 text-black">Live</span>
+    </div>
 
-        {/* Scan with Phone */}
-        <button
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-         onClick={() => checkConsentAndProceed(handleScanWithPhone)}
-        >
-          <QrCodeIcon /> Scan with Phone
-        </button>
-      </>
-    ) : (
-      <div className="text-center space-y-4">
-        <h2 className="text-xl font-semibold">Please log in to continue</h2>
-        <p className="text-gray-600">Skin analysis features are only available for registered users.</p>
-        <button
-          className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
-          onClick={() => {setEntryModal(false); navigate("/login");}}
-        >
-          Log In
-        </button>
-      </div>
-    )}
-  </>
-)}
+    {/* Phone */}
+    <div
+      className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-indigo-50 cursor-pointer transition"
+      onClick={() => checkConsentAndProceed(handleScanWithPhone)}
+    >
+      <QrCodeIcon className="text-[#FF69B4]" size={24} />
+      <span className="text-sm mt-2 text-black">Phone</span>
+    </div>
+  </div>
+
+  <input
+    ref={fileInputRef}
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={handleChooseFile}
+  />
+</>
+
+            ) : (
+              <div className=" space-y-4">
+                <h2 className="text-xl font-bold text-black">Please log in to continue</h2>
+                <p className="text-gray-600 text-left">
+                  Skin analysis features are only available for registered users.
+                </p>
+                <button
+                  className="px-6 py-3 rounded-full bg-[#FF69B4] text-white hover:bg-pink-600 transition"
+                  onClick={() => {
+                    setEntryModal(false);
+                    navigate("/login");
+                  }}
+                >
+                  Log In
+                </button>
+              </div>
+            )}
+          </>
+        )}
 
         {step === "preview" && previewUrl && (
           <>
-            <h2 className="text-lg font-semibold text-center">Preview</h2>
+            <h2 className="text-xl font-bold text-black">Preview</h2>
             <img
               src={previewUrl}
               alt="preview"
-              className="w-full h-72 object-contain rounded-md border"
+              className="w-full h-72 object-contain rounded-lg border"
             />
-
-            <div className="flex gap-3">
-            
+            <div className="flex gap-4">
               <button
-                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gray-300 text-gray-800 hover:bg-gray-400"
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition"
                 onClick={resetSelection}
               >
-                <ReplayIcon /> Choose another
+                <ReplayIcon /> Choose Another
               </button>
               <button
-                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-secondary text-white hover:bg-secondary/90"
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-[#FF69B4] text-white hover:bg-pink-600 transition"
                 onClick={handleAnalyze}
               >
                 <CheckIcon /> Analyze
@@ -255,58 +230,50 @@ if (data.status === "uploaded" && data.imageUrl) {
         )}
 
         {step === "uploading" && (
-          <p className="text-center text-sm text-gray-600">
-            Uploading &amp; analyzing…
-          </p>
+          <p className="text-gray-600">Uploading &amp; analyzing…</p>
         )}
-      {step === "qr" && qrUrl && (
-  <div className="flex flex-col items-center gap-4">
-    <h2 className="text-lg font-semibold text-center">
-      Scan with your phone
-    </h2>
-    <div className="p-4 bg-gray-100 rounded-lg flex flex-col items-center">
-      <QRCodeCanvas value={qrUrl} size={200} />   {/* QR code shows here */}
-      <p className="mt-4 text-sm text-gray-500 text-center">
-        Open your camera app on your phone, scan this code,<br />
-        and follow the instructions to upload your photo.
-      </p>
-    </div>
-    <button
-      className="mt-2 text-sm text-blue-600 hover:underline"
-      onClick={() => {
-        setSessionId(null);
-        setQrUrl("");
-        setStep("choice");
-      }}
-    >
-      ← Back to choices
-    </button>
-  </div>
-)}
 
+        {step === "qr" && qrUrl && (
+          <div className="flex flex-col items-center gap-4">
+            <h2 className="text-xl font-bold text-black">Scan with your phone</h2>
+            <div className="p-4 bg-gray-100 rounded-xl flex flex-col items-center">
+              <QRCodeCanvas value={qrUrl} size={200} />
+              <p className="mt-4 text-sm text-gray-600 text-center">
+                Open your camera app, scan this code,<br /> and follow the instructions.
+              </p>
+            </div>
+            <button
+              className="text-sm text-indigo-600 hover:underline"
+              onClick={() => {
+                setSessionId(null);
+                setQrUrl("");
+                setStep("choice");
+              }}
+            >
+              ← Back
+            </button>
+          </div>
+        )}
+
+        <ConsentForm
+          open={consentOpen}
+          onAgree={async () => {
+            setConsentOpen(false);
+            try {
+              const res = await axios.patch<{ success: boolean; user: User }>(
+                `${import.meta.env.VITE_API_BACKEND_URL}/users/consent/${userId}`,
+                {},
+                { withCredentials: true }
+              );
+              setUser(res.data.user);
+              onConsentProceed();
+            } catch (err) {
+              console.error("Consent update failed", err);
+            }
+          }}
+          onCancel={() => setConsentOpen(false)}
+        />
       </motion.div>
-   <ConsentForm
-  open={consentOpen}
- onAgree={async () => {
-  setConsentOpen(false);
-  try {
-    const res = await axios.patch<{ success: boolean; user: User }>(
-      `${import.meta.env.VITE_API_BACKEND_URL}/users/consent/${userId}`,
-      {},
-      {
-        withCredentials: true, // send cookie/session
-      }
-    );
-
-    const user =  res.data.user;
-    setUser(user); // ✅ update the Zustand store with the new user
-    onConsentProceed();   // ✅ continue with the process
-  } catch (err) {
-    console.error("Consent update failed", err);
-  }
-}}
-  onCancel={() => setConsentOpen(false)}
-/>
     </div>
   );
 };
