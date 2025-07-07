@@ -19,11 +19,11 @@ export interface FaceScannerHandle {
 
 // Set your real capture/display size
 const VIDEO_WIDTH = 800;
-const VIDEO_HEIGHT = 400;
-const OVAL_WIDTH = 250;
-const OVAL_HEIGHT = 300;
-const PREVIEW_WIDTH = 570;
-const PREVIEW_HEIGHT = 400;
+const VIDEO_HEIGHT = 700;
+const OVAL_WIDTH = 400;
+const OVAL_HEIGHT = 500;
+const PREVIEW_WIDTH = 800;
+const PREVIEW_HEIGHT = 700;
 
 
 const cropStartX = Math.floor((VIDEO_WIDTH - PREVIEW_WIDTH) / 2);
@@ -212,40 +212,41 @@ const cropCanvasRef = useRef<HTMLCanvasElement>(null);
   // The outer card can be any size, but make sure the video/canvas/overlay
   // container is always at the true width/height!
   return (
-    <div className="flex items-center justify-center bg-white rounded-2xl shadow-lg">
-      <div
-        className="relative rounded-xl overflow-hidden border border-gray-200"
-        style={{ width: `${VIDEO_WIDTH}px`, height: `${VIDEO_HEIGHT}px` }}
-      >
-        <video
-          ref={videoRef}
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          style={{ transform: "scaleX(-1)" }}
-          width={VIDEO_WIDTH}
-          height={VIDEO_HEIGHT}
-          muted
-          playsInline
-          autoPlay
-        />
-        <canvas
-          ref={canvasRef}
-          className="absolute top-0 left-0 w-full h-full"
-          width={VIDEO_WIDTH}
-          height={VIDEO_HEIGHT}
-        />
-        <canvas
-          ref={overlayRef}
-          className="absolute top-0 left-0 w-full h-full pointer-events-none"
-          width={VIDEO_WIDTH}
-          height={VIDEO_HEIGHT}
-        />
-        
-<canvas
-  ref={cropCanvasRef}
-  style={{ display: "none" }}
-/>
-      </div>
-    </div>
+<div className="flex items-center justify-center bg-white rounded-2xl shadow-lg w-full">
+  <div
+    className="relative rounded-xl overflow-hidden border border-gray-200 w-full"
+    style={{
+      aspectRatio: `${VIDEO_WIDTH} / ${VIDEO_HEIGHT}`,
+      maxWidth: `${VIDEO_WIDTH}px`
+    }}
+  >
+    <video
+      ref={videoRef}
+      className="absolute top-0 left-0 w-full h-full object-cover"
+      style={{ transform: "scaleX(-1)" }}
+      muted
+      playsInline
+      autoPlay
+    />
+    <canvas
+      ref={canvasRef}
+      className="absolute top-0 left-0 w-full h-full"
+      width={VIDEO_WIDTH}
+      height={VIDEO_HEIGHT}
+    />
+    <canvas
+      ref={overlayRef}
+      className="absolute top-0 left-0 w-full h-full pointer-events-none"
+      width={VIDEO_WIDTH}
+      height={VIDEO_HEIGHT}
+    />
+    <canvas
+      ref={cropCanvasRef}
+      style={{ display: "none" }}
+    />
+  </div>
+</div>
+
   );
 });
 

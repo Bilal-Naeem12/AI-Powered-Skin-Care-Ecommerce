@@ -9,6 +9,7 @@ import type {
 } from "@/types/SkinAnalysisResult";
 import { RecommendationResponse } from "@/types/Recommendation";
 import { RecommendationStepInfo } from "@/types/SkinHistoryEntry";
+import { verifyAndCropFace } from "@/utils/verifyAndCropFace";
 
 interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
@@ -92,9 +93,49 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         analyzeSkin: async (formData: FormData, originalImage: File|string, userId: string|undefined) => {
   set({ loading: true, error: null });
 
-  try {
-    // 1. Upload the original (before) image to Cloudinary
-    const beforeUrl = await uploadImage(originalImage);
+ try {
+    // ✅ 1️⃣ Verify & crop on FastAPI
+    let verifiedBlob: Blob;
+
+    if (originalImage instanceof File) {
+      const verifyForm = new FormData();
+      verifyForm.append("file", originalImage);
+
+      const verifyResp = await axios.post<{ cropped_image: string }>(
+        `${import.meta.env.VITE_API_FASTAPI}/face/verify-crop`,
+        verifyForm,
+        {
+          headers: {
+            // ⚠️ For multipart FormData, let Axios set headers — boundary must match!
+            // So just omit it!
+          },
+        }
+      );
+
+      const base64String = verifyResp.data.cropped_image;
+
+      // ✅ 2️⃣ Convert base64 -> Blob -> File
+      const byteCharacters = atob(base64String);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      verifiedBlob = new Blob([byteArray], { type: "image/jpeg" });
+    } else {
+      throw new Error("Invalid input file for face verification");
+    }
+
+    const verifiedFile = new File([verifiedBlob], "face-cropped.jpg", {
+      type: "image/jpeg",
+    });
+
+    // ✅ 3️⃣ Replace file in FormData before sending to /predict
+    formData.delete("file");
+    formData.append("file", verifiedFile);
+
+    // ✅ 4️⃣ Upload cropped face to Cloudinary
+    const beforeUrl = await uploadImage(verifiedFile);
 
     // 2. Send to FastAPI for analysis
     const resp = await axios.post<SkinAnalysisResult>(
