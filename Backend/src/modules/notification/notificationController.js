@@ -4,12 +4,12 @@ const mongoose = require("mongoose");
 // GET /api/notifications
 exports.getAll = async (req, res) => {
   const userId = req.user.id;
-  const roles = req.user.roles || [];
+  const role = req.user.role || [];
 
   const query = {
     $or: [
       { "target.scope": "user", "target.userId": userId },
-      { "target.scope": "role", "target.role": { $in: roles } }
+      { "target.scope": "role", "target.role": { $in: role } }
     ]
   };
 
@@ -70,4 +70,26 @@ exports.remove = async (req, res) => {
 
   await Notification.findByIdAndDelete(id);
   res.status(204).end();
+};
+
+
+exports.markAllRead = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    // Find all notifications that the user hasn't read yet
+    const result = await Notification.updateMany(
+      { "readBy.userId": { $ne: userId } },
+      { $push: { readBy: { userId: userId, readAt: new Date() } } }
+    );
+
+    res.status(200).json({
+      message: "All notifications marked as read.",
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (err) {
+    console.error("Failed to mark all as read:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };

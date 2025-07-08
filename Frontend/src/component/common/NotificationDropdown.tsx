@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import { kindAvatars } from "../UI/NotificationBell";
-import { NotificationItem } from "@/types/NotificationItem";
+import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
 import useNotificationSocket from "@/hooks/useNotificationSocket";
 
 export default function NotificationDropdown() {
@@ -13,7 +13,13 @@ export default function NotificationDropdown() {
   const [notifying, setNotifying] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const navigate = useNavigate();
-
+ const kindAvatars: Partial<Record<NotificationKind, string>> = {
+  ANALYSIS_RESULT: "/assets/icons/ANALYSIS_RESULT.png",
+  ORDER_STATUS: "/assets/icons/ORDER_STATUS.png",
+  MANAGEMENT_ORDER_PLACED: "/assets/icons/ORDER_PLACED.png",
+  PROMO: "/assets/icons/PROMO.png",
+  ACCOUNT_SUSPENDED: "/assets/icons/ACCOUNT_SUSPENDED.png",
+};
   // Fetch only MANAGEMENT_ORDER_PLACED notifications
   const fetchNotifications = async () => {
     try {

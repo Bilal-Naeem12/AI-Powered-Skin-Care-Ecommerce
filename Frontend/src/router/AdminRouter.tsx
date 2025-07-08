@@ -23,6 +23,7 @@ import "flatpickr/dist/flatpickr.css";
 import AdminProfile from "@/pages/admin-side/Users/AdminProfile";
 import DeletedUsers from "@/pages/admin-side/Users/DeletedUsers";
 import ManageCategories from "@/pages/admin-side/Products/ManageCategories";
+import OrderTrackingPage from "@/pages/admin-side/Orders & Payments/OrderTracking";
 
 const AdminRouter: React.FC = () => {
 
@@ -46,6 +47,8 @@ const AdminRouter: React.FC = () => {
 
           <Route path="products" element={<ManageProducts />} />
           <Route path="products/categories" element={<ManageCategories />} />
+
+  <Route path="/order-tracking" element={<OrderTrackingPage />} />
 
 
           <Route path="orders" element={<ManageOrders />} />

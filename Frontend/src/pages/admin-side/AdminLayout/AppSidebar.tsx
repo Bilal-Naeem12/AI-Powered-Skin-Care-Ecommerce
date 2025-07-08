@@ -47,9 +47,6 @@ const navItems: NavItem[] = [
       { name: "Products", path: "/admin/products" },
       { name: "Categories", path: "/admin/products/categories" },
       { name: "Brands", path: "/admin/brands" },
-      { name: "Inventory", path: "/admin/inventory" },
-      { name: "Discounts", path: "/admin/discounts" },
-      { name: "Promotions", path: "/admin/promotions" },
     ],
   },
   {

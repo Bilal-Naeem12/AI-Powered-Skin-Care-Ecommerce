@@ -19,4 +19,6 @@ router.patch("/:id/read", controller.markAsRead);
 // ❌ Delete notification (admin only)
 router.delete("/:id", controller.remove);
 
+router.patch("/mark-all-read", controller.markAllRead);
+
 module.exports = router;

@@ -55,17 +55,17 @@ maintain the history##
 upload the image before saving the history##
 admin order control $$
 enchance chatbot 
+webhooks for notifications
+Review unhuman ya abusive ho to flag kar dena
 
 
 
 ========== EMAIL & NOTIFICATION ===============
 Email template UI
 Order purchased hona pa email bhejni hai
-webhooks for notifications
+
 
 ========== CHAT BOT ==============
-Review unhuman ya abusive ho to flag kar dena
-
 
 
 ======== AUTH  & PAYMENT ==========
@@ -85,3 +85,4 @@ fix uis
 FIX THE CAMERA ON MOBILE VIEW 
 fix chatbot to give other than the skincare message
 fix analytics 
+Audit Log?
