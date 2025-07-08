@@ -24,6 +24,7 @@ const scanSessionRoutes = require("../modules/scanSession/scanSessionRouter");
 const skinHistoryRoutes = require("../modules/skinAnalysisHistory/skinAnalysisHistoryRoutes");
 const recommendationProductRoutes = require("../modules/recommendationProduct/recommendationProductRoutes");
 const categoryRoutes = require("../modules/category/categoryRoutes")
+const refundRequestRoutes = require("../modules/refundRequest/refundRequestRoutes")
 const router = express.Router();
 
 // **Main Router** - Combine all module routes under /api/{moduleName}
@@ -52,6 +53,6 @@ router.use("/scan-session", scanSessionRoutes);
 
 router.use("/skin-history",skinHistoryRoutes );
 router.use("/recommendations",recommendationProductRoutes );
-
+router.use("/refund-requests",refundRequestRoutes);
 
 module.exports = router;

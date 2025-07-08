@@ -7,11 +7,14 @@ import axios from "axios";
 import { kindAvatars } from "../UI/NotificationBell";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
 import useNotificationSocket from "@/hooks/useNotificationSocket";
+import useNotificationStore from "@/store/useNotificationStore";
+import useUserStore from "@/store/useUserStore";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifying, setNotifying] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+    const { user } = useUserStore();
+   const { notifications, setNotifications } = useNotificationStore();
   const navigate = useNavigate();
  const kindAvatars: Partial<Record<NotificationKind, string>> = {
   ANALYSIS_RESULT: "/assets/icons/ANALYSIS_RESULT.png",
@@ -19,6 +22,7 @@ export default function NotificationDropdown() {
   MANAGEMENT_ORDER_PLACED: "/assets/icons/ORDER_PLACED.png",
   PROMO: "/assets/icons/PROMO.png",
   ACCOUNT_SUSPENDED: "/assets/icons/ACCOUNT_SUSPENDED.png",
+  MANAGEMENT_REFUND_REQUEST:"/assets/icons/MANAGEMENT_REFUND_REQUEST.png",
 };
   // Fetch only MANAGEMENT_ORDER_PLACED notifications
   const fetchNotifications = async () => {
@@ -38,25 +42,43 @@ export default function NotificationDropdown() {
     fetchNotifications();
   }, []);
 
-  // Listen to socket for new real-time notifications
-  useNotificationSocket((newNotif: NotificationItem) => {
-    if (newNotif.kind === "MANAGEMENT_ORDER_PLACED") {
-      setNotifications((prev) => [newNotif, ...prev.filter(n => n.kind === "MANAGEMENT_ORDER_PLACED").slice(0, 29)]);
-      setNotifying(true);
-    }
-  });
-
+  
   const handleClick = () => {
     setIsOpen(!isOpen);
     setNotifying(false); // Clear ping dot
   };
 
-  const handleItemClick = (n: NotificationItem) => {
+  const handleItemClick =async (notif: NotificationItem) => {
+     try {
+      const isRead = notif.readBy?.some((r) => r.userId === user?._id);
+      if (!isRead) {
+        await fetch(
+          `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
+          {
+            method: "PATCH",
+            credentials: "include",
+          }
+        );
+        // update locally:
+        setNotifications(
+          notifications.map((n) =>
+            n._id === notif._id
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
+              : n
+          )
+        );
+      }
+    
     setIsOpen(false);
-    if (n.kind === "MANAGEMENT_ORDER_PLACED" && n.data?.orderId) {
-      navigate(`/admin/orders/${n.data.orderId}`);
+    if (notif.kind === "MANAGEMENT_ORDER_PLACED" && notif.data?.orderId) {
+      navigate(`/admin/orders/${notif.data?.orderId}`);
+    } 
+    if (notif.kind === "MANAGEMENT_REFUND_REQUEST" && notif.data?.orderId) {
+      navigate(`/admin/orders/${notif.data?.orderId}`);
+    }}catch (err) {
+      console.error("❌ Failed to mark notification as read", err);
     }
-  };
+    };
 
   return (
     <div className="relative">

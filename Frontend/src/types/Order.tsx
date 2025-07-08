@@ -13,7 +13,7 @@ export type OrderStatus =
  | "Created"   // Order initiated, payment pending
   | "Paid"      // Payment completed, processing/shipping starts
   | "Cancelled" // Order cancelled before/after payment
-
+  |  "Refunded"
 export interface OrderStatusHistory {
   what: OrderStatus;
   updatedAt: string;

@@ -14,9 +14,12 @@ exports.createOrder = async (req, res, next) => {
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
     });
+   const firstImage = order.cartItems?.[0]?.productId?.images?.[0] || null;
+
        await notify({
   kind: "ORDER_PLACED",
   title: "Order placed successfully",
+  image:firstImage || undefined,
   body: `Your order #${order.orderNumber} has been placed.`,
   userId: order.userId._id,
   data: { orderId: order._id }
@@ -26,6 +29,7 @@ exports.createOrder = async (req, res, next) => {
   await notify({
       kind: "MANAGEMENT_ORDER_PLACED",
       title: "New order received",
+        image:firstImage || undefined,
       body: `Order #${order.orderNumber} has been placed by ${req.user.name || "a customer"}.`,
       role: "admin",
       data: { orderId: order._id },
@@ -267,11 +271,14 @@ exports.updateOrder = async (req, res) => {
     }
 
     await order.save();
+   const firstImage = order.cartItems?.[0]?.productId?.images?.[0] || null;
+
     await notify({
   kind: "ORDER_STATUS",
+  image:firstImage||undefined,
   title: `Order #${order.orderNumber} updated`,
   body: "Your order details have been updated by the admin. Click to view details",
-  userId: order.userId,
+  userId: order.userId._id,
   data: { orderId: order._id }
 });
     res.status(200).json({ message: "Order updated", order });

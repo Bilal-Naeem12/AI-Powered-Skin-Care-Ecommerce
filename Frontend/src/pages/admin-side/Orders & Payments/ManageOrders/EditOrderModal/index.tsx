@@ -17,10 +17,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import { Order } from "@/types/Order";
+import { Order, OrderStatus } from "@/types/Order";
 import usePutAuthData from "@/hooks/usePutAuthData";
-
-type OrderStatus = "Created" | "Paid" | "Cancelled";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 interface FormState {
   orderStatus: OrderStatus;
@@ -41,8 +42,8 @@ interface Props {
   onClose: () => void;
   onSuccess?: () => void; // refresh parent list
 }
-
-const CARRIERS = ["DHL", "FedEx", "UPS", "USPS", "Other"] as const;
+const ORDER_STATUSES = ["Created","Paid","Cancelled","Refunded"] as const;
+const Carrier = ["DHL", "FedEx", "UPS", "USPS", "Other"] as const;
 const SHIPPING_STATUSES = [
   "Pending",
   "Processing",
@@ -104,12 +105,21 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
 
   const handleSave = () => {
     if (!order || !form) return;
+  // Current history
+  const currentHistory = order.statusHistory || [];
 
-    const patch: Partial<Order> = {
-      statusHistory: [
-        ...(order.statusHistory || []),
+  // Get the last status in the existing history
+  const lastStatus = currentHistory.at(0)?.what;
+    console.log(lastStatus)
+  // Determine what to send
+  const updatedHistory = lastStatus === form.orderStatus
+    ? currentHistory // no duplicate push
+    : [
+        ...currentHistory,
         { what: form.orderStatus, updatedAt: new Date().toISOString() } as any,
-      ],
+      ];
+    const patch: Partial<Order> = {
+      statusHistory: updatedHistory,
       shippingId: {
         ...order.shippingId,
         carrier: form.carrier,
@@ -152,7 +162,7 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
                   update("orderStatus", e.target.value as OrderStatus)
                 }
               >
-                {["Created", "Paid", "Cancelled"].map((s) => (
+                {ORDER_STATUSES.map((s) => (
                   <FormControlLabel key={s} value={s} control={<Radio />} label={s} />
                 ))}
               </RadioGroup>
@@ -167,10 +177,10 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
                     size="small"
                     value={form.carrier}
                     onChange={(e) =>
-                      update("carrier", e.target.value as typeof CARRIERS[number])
+                      update("carrier", e.target.value as typeof Carrier[number])
                     }
                   >
-                    {CARRIERS.map((c) => (
+                    {Carrier.map((c) => (
                       <MenuItem key={c} value={c}>
                         {c}
                       </MenuItem>
@@ -212,15 +222,33 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="ETA"
-                  type="date"
-                  InputLabelProps={{ shrink: true }}
-                  value={form.eta}
-                  onChange={(e) => update("eta", e.target.value)}
-                />
+ <LocalizationProvider dateAdapter={AdapterDateFns}>
+  <DesktopDatePicker
+    label="ETA"
+    inputFormat="yyyy-MM-dd"
+    value={form.eta ? new Date(form.eta) : null}
+    onChange={(newValue) => update("eta", newValue ? newValue.toISOString() : "")}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        fullWidth
+        size="small"
+        sx={{
+          '& .MuiInputBase-root': {
+            height: '40px',   // match your normal TextField height
+          },
+          '& .MuiInputBase-input': {
+            padding: '10px 14px', // adjust for clean vertical alignment
+          },
+          '& .MuiInputAdornment-root': {
+            marginRight: '8px', // optional, tweak if the icon shifts
+          },
+        }}
+      />
+    )}
+  />
+</LocalizationProvider>
+
               </Grid>
 
               {[

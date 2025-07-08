@@ -16,7 +16,8 @@ export type NotificationKind =
   | "ACCOUNT_RESTORED"
   | "ROLE_CHANGED"
 
-  | "MANAGEMENT_ORDER_PLACED"; // admin: internal order notification
+  | "MANAGEMENT_ORDER_PLACED"
+  |"MANAGEMENT_REFUND_REQUEST"; // admin: internal order notification
 
   export interface ReadState {
   userId: string;

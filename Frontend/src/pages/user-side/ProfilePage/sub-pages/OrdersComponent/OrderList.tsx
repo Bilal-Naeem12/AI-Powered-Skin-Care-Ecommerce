@@ -18,7 +18,7 @@ export default function OrderList({ statusFilter }: Props) {
   const filtered = statusFilter === "All"
     ? orders
     : orders.filter(order =>
-        order.statusHistory?.at(-1)?.what === statusFilter
+        order.statusHistory?.at(0)?.what === statusFilter
       );
 
   return (

@@ -32,6 +32,13 @@ const ShippingSchema = new mongoose.Schema({
     estimatedDeliveryDate: {
         type: Date
     },
+//     Status	Meaning
+// Pending	Order is ready but shipment has not started yet
+// Processing	Warehouse is packing, labeling, or handing to carrier
+// Out for Delivery	Carrier is physically delivering to the customer today
+// Delivered	Delivered to the customer
+// Cancelled	Shipment was cancelled before being sent
+// Returned	Delivered but customer returned the package to sender
     shippingStatus: {
         type: String,
         enum: ["Pending", "Processing", "Out for Delivery", "Delivered", "Cancelled","Returned"],

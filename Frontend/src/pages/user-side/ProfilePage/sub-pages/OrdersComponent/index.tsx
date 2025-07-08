@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import OrderList from "./OrderList";
 import { Card } from "@mui/material";
 
-const tabs = ["All", "Processing", "Shipped", "Delivered", "Returns"];
+const tabs = [ "All","Created"   // Order initiated, payment pending
+, "Paid"      // Payment completed, processing/shipping starts
+  ,"Cancelled" // Order cancelled before/after payment
+  , "Refunded"];
 
 export default function OrdersComponent() {
   const [activeTab, setActiveTab] = useState("All");

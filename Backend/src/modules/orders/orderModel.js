@@ -27,13 +27,14 @@ const OrderSchema = new Schema(
     paymentId:   { type: Types.ObjectId, ref: "Payment"  },
     shippingId:  { type: Types.ObjectId, ref: "Shipping" },
     invoiceId:   { type: Types.ObjectId, ref: "Invoice"  },
+   refundRequest: { type: Boolean, default: false },
 
     /* order-level timeline (optional but useful) */
    statusHistory: [
   {
     what: {
       type: String,
-     enum: ["Created","Unpaid","Paid","Cancelled","Closed"],
+     enum: ["Created","Paid","Cancelled","Refunded"],
 
     },
     updatedAt: { type: Date, default: Date.now },

@@ -72,7 +72,12 @@ const NotificationBell: React.FC = () => {
       if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
         navigate(`/profile-page/analysis-timeline/${notif.data?.skinHistoryId}`);
         handleClose();
+      }    if ((notif.kind === "ORDER_PLACED" ||    "ORDER_STATUS" ) && notif.data?.orderId) {
+        navigate(`/profile-page/orders/${notif.data?.orderId}`);
+        handleClose();
       }
+
+  
     } catch (err) {
       console.error("❌ Failed to mark notification as read", err);
     }

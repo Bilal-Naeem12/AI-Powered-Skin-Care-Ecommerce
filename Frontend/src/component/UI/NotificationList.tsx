@@ -120,7 +120,7 @@ const NotificationList: React.FC = () => {
         navigate(`/profile-page/analysis-timeline/${notif.data?.skinHistoryId}`);
   
       }
-          if (notif.kind === "ORDER_PLACED" && (notif as any).data?.orderId) {
+          if ((notif.kind === "ORDER_PLACED" ||"ORDER_STATUS") && (notif as any).data?.orderId) {
       navigate(`/profile-page/orders/${(notif as any).data.orderId}`);
     }
     } catch (err) {

@@ -22,6 +22,9 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { User } from "@/types/User";
 import ProfilePicUploader from "@/component/UI/ProfilePicUploader";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 interface ApiResponse {
   user: User;
@@ -277,17 +280,38 @@ const allergenPrefs     = watch("allergenPreferences");
               {...register("phone")}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Date of birth"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              error={!!errors.date_of_birth}
-              helperText={errors.date_of_birth?.message}
-              {...register("date_of_birth")}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6}>
+  <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <DesktopDatePicker
+      label="Date of birth"
+      inputFormat="yyyy-MM-dd"
+      value={watch("date_of_birth") ? new Date(watch("date_of_birth")) : null}
+      onChange={(newValue) =>
+        setValue("date_of_birth", newValue ? newValue.toISOString().slice(0, 10) : "")
+      }
+      renderInput={(params:any) => (
+        <TextField
+          {...params}
+          fullWidth
+          size="small"
+          error={!!errors.date_of_birth}
+          helperText={errors.date_of_birth?.message}
+          sx={{
+            "& .MuiInputBase-root": {
+              height: "40px",
+            },
+            "& .MuiInputBase-input": {
+              padding: "10px 14px",
+            },
+            "& .MuiInputAdornment-root": {
+              marginRight: "8px",
+            },
+          }}
+        />
+      )}
+    />
+  </LocalizationProvider>
+</Grid>
 
           {/* ---------- selects ---------- */}
           {/* ---------- gender ---------- */}

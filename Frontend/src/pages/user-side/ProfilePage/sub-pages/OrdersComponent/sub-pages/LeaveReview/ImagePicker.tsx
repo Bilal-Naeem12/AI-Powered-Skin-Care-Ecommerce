@@ -4,55 +4,63 @@ import axios from "axios";
 import usePostAuthData from "@/hooks/usePostAuthData";
 
 interface Props {
-  productId: string;                // used in request URL
+  productId: string;                // used for default fallback URL
   onUploaded: (urls: string[]) => void;
+
+  /**
+   * Optional: fully custom upload endpoint.
+   * If not provided, fallback is `/api/products/{productId}/review/images`
+   */
+  uploadUrl?: string;
 }
 
-export default function ImagePicker({ productId, onUploaded }: Props) {
+export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props) {
   const [files, setFiles] = useState<File[]>([]);
-//   const [loading, setLoading] = useState(false);
-const { data: resp, loading, postData } =                 // ⬅️ NEW
-  usePostAuthData<{ images: string[] }, FormData>();
-const [justUploaded, setJustUploaded] = useState(false);
+  const { data: resp, loading, postData } =
+    usePostAuthData<{ images: string[] }, FormData>();
 
-  /* --- drag / drop --- */
+  const [justUploaded, setJustUploaded] = useState(false);
+
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     handleFiles(e.dataTransfer.files);
   };
+
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList) return;
     const newFiles = Array.from(fileList).slice(0, 6 - files.length);
     setFiles((prev) => [...prev, ...newFiles]);
   };
+
   const remove = (idx: number) => setFiles(files.filter((_, i) => i !== idx));
 
-  /* --- upload to backend --- */
-const upload = async () => {
-  if (!files.length) return;
+  const upload = async () => {
+    if (!files.length) return;
 
-  const form = new FormData();
-  files.forEach((f) => form.append("images", f));
-    setJustUploaded(true); // ✅ mark that we're uploading
-await postData(                                    // ⬅️ NEW
-   `${import.meta.env.VITE_API_BACKEND_URL}/products/${productId}/review/images`,          // relative URL
-   form,                                            // payload
-   "Images uploaded successfully!"                  // toast message
- );
+    const form = new FormData();
+    files.forEach((f) => form.append("images", f));
 
+    setJustUploaded(true);
 
+    // ✅ fallback to default if no custom `uploadUrl` given
+    const targetUrl =uploadUrl?
+      `${import.meta.env.VITE_API_BACKEND_URL}${uploadUrl}` :
+      `${import.meta.env.VITE_API_BACKEND_URL}/products/${productId}/review/images`;
 
-};
-useEffect(() => {
-  if (justUploaded && resp?.images?.length) {
-    onUploaded(resp.images);       // ✅ use actual response
-    setFiles([]);                  // ✅ reset files
-    setJustUploaded(false);       // ✅ reset flag
-  }
-}, [resp, justUploaded]);          // ✅ run when resp updates
+    await postData(targetUrl, form, "Images uploaded successfully!");
+  };
+
+  useEffect(() => {
+    if (justUploaded && resp?.images?.length) {
+      onUploaded(resp.images);
+      setFiles([]);
+      setJustUploaded(false);
+    }
+  }, [resp, justUploaded]);
+
   return (
     <div className="space-y-3">
-      {/* drop-zone */}
+      {/* Drop zone */}
       <div
         className="border-2 border-dashed border-gray-300 rounded p-4 text-center cursor-pointer"
         onDragOver={(e) => e.preventDefault()}
@@ -74,7 +82,7 @@ useEffect(() => {
         />
       </div>
 
-      {/* previews */}
+      {/* Previews */}
       {files.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {files.map((f, idx) => (
@@ -95,7 +103,7 @@ useEffect(() => {
         </div>
       )}
 
-      {/* upload button */}
+      {/* Upload button */}
       <button
         type="button"
         disabled={!files.length || loading}
