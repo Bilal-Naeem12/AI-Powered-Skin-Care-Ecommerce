@@ -35,89 +35,104 @@ const navigate = useNavigate();
         )}
 
         {/* Tool cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Skin Analysis Card */}
-     <div className="relative">
-  <Link
-    to={isLoggedIn ? "/ai-tools-page/skin-analysis" : "#"}
-    onClick={(e) => {
-      if (!isLoggedIn) e.preventDefault();
-    }}
-    className="group block p-2 sm:p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition relative"
-  >
-    <h3 className="text-xl font-semibold text-gray-800 group-hover:text-blue-600 mb-2">
-      AI Skin Analysis
-    </h3>
-    <img
-      src="/assets/Hero-Section-Image.jpg"
-      className="sm:h-72 w-full object-fill"
-      alt=""
-    />
-    <p className="text-gray-600 mb-4">
-      Automatically detect acne, puffy eyes, grade severity & type. Get a full combined report.
-    </p>
-    <span className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-      Go to Analysis →
-    </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  {/* Skin Analysis Card */}
+  <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition group">
+    <Link
+      to={isLoggedIn ? "/ai-tools-page/skin-analysis" : "#"}
+      onClick={(e) => {
+        if (!isLoggedIn) e.preventDefault();
+      }}
+      className="flex flex-col h-full"
+    >
+      <div className="aspect-video overflow-hidden">
+        <img
+          src="/assets/Hero-Section-Image.jpg"
+          alt="Skin Analysis"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-pink-600">
+          AI Skin Analysis
+        </h3>
+        <p className="text-gray-600 text-sm flex-1">
+          Automatically detect acne, puffy eyes, grade severity & type. Get a full combined report.
+        </p>
+        <span className="inline-block mt-4 self-start px-4 py-2 bg-pink-100 text-pink-700 rounded-full text-sm font-medium hover:bg-pink-200 transition">
+          Go to Analysis →
+        </span>
+      </div>
+    </Link>
 
-    {/* Overlay */}
-   {!isLoggedIn && (
-  <div
-    onClick={() => navigate("/login")}
-    className="absolute inset-0 bg-gray-600/40 bg-opacity-50 flex flex-col items-center justify-center rounded-lg text-white text-center space-y-2 px-4 cursor-pointer hover:bg-gray-700/50 transition"
-  >
-    <LockIcon fontSize="large" className="text-white" />
-    <div className="flex items-center gap-2 text-sm sm:text-base font-medium">
-      
-      <span>Login to unlock this AI feature</span>
-    </div>
+    {!isLoggedIn && (
+      <div
+        onClick={() => navigate("/login")}
+        className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white backdrop-blur cursor-pointer hover:bg-black/50 transition"
+      >
+        <LockIcon fontSize="large" />
+        <span className="mt-2 text-sm font-medium">Login to unlock this AI feature</span>
+      </div>
+    )}
   </div>
-)}
 
-  </Link>
-</div>
-          {/* Inpainting Card */}
-      <div className="relative">
-  <Link
-    to={isLoggedIn ? "/ai-tools-page/inpainting" : "#"}
-    onClick={(e) => {
-      if (!isLoggedIn) e.preventDefault();
-    }}
-    className="group block p-2 sm:p-6 bg-white rounded-lg shadow hover:shadow-lg border border-gray-200 transition relative"
-  >
-    <h3 className="text-xl font-semibold text-gray-800 group-hover:text-green-600 mb-2">
-      AI Inpainting
-    </h3>
-    <img
-      src="/assets/inpainting.jpg"
-      className="sm:h-72 w-full object-fill"
-      alt="Inpainting"
-    />
-    <p className="text-gray-600 mb-4">
-      Remove acne or puffy-eye regions with seamless inpainting. Clean up your photo with one click.
-    </p>
-    <span className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded hover:bg-green-200">
-      Go to Inpainting →
-    </span>
+  {/* Inpainting Card */}
+  <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition group">
+    <Link
+      to={isLoggedIn ? "/ai-tools-page/inpainting" : "#"}
+      onClick={(e) => {
+        if (!isLoggedIn) e.preventDefault();
+      }}
+      className="flex flex-col h-full"
+    >
+ <div className="aspect-video overflow-hidden relative group">
+  {/* BEFORE image */}
+  <img
+    src="/assets/inpainting_before.jpg"
+    alt="Inpainting Before"
+    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+  />
 
-    {/* Lock Overlay */}
-  {!isLoggedIn && (
+  {/* WHITE FLASH overlay */}
   <div
-    onClick={() => navigate("/login")}
-    className="absolute inset-0 bg-gray-600/40 bg-opacity-50 flex flex-col items-center justify-center rounded-lg text-white text-center space-y-2 px-4 cursor-pointer hover:bg-gray-700/50 transition"
-  >
-    <LockIcon fontSize="large" className="text-white" />
-    <div className="flex items-center gap-2 text-sm sm:text-base font-medium">
-      
-      <span>Login to unlock this AI feature</span>
-    </div>
-  </div>
-)}
+    className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+  ></div>
 
-  </Link>
+  {/* AFTER image */}
+  <img
+    src="/assets/inpainting_after.jpg"
+    alt="Inpainting After"
+    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+  />
 </div>
 
-        </div>
+
+      <div className="p-5 flex flex-col flex-1">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600">
+
+          AI Inpainting
+        </h3>
+        <p className="text-gray-600 text-sm flex-1">
+          Remove acne or puffy-eye regions with seamless inpainting. Clean up your photo with one click.
+        </p>
+             <span className="inline-block mt-4 self-start px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition">
+
+          Go to Inpainting →
+        </span>
+      </div>
+    </Link>
+
+    {!isLoggedIn && (
+      <div
+        onClick={() => navigate("/login")}
+        className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white backdrop-blur cursor-pointer hover:bg-black/50 transition"
+      >
+        <LockIcon fontSize="large" />
+        <span className="mt-2 text-sm font-medium">Login to unlock this AI feature</span>
+      </div>
+    )}
+  </div>
+</div>
 
         {/* Quick Summary of Last Analysis */}
         {/* {result?.scanned_image && (

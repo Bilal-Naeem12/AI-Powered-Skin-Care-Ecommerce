@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between mb-8">
           {/* Logo and Social Media */}
           <div className="mb-6 md:mb-0">
-            <img src="/assets/logo2.png" alt="Skin Care Pro" className="h-10 mb-4" />
+            <img src="/assets/footer.png" alt="Skin Care Pro" className="h-10 mb-4" />
             <p className="font-bold">FOLLOW US</p>
             <div className="flex space-x-4 mt-4">
               <a href="#" className="hover:text-pink-500">

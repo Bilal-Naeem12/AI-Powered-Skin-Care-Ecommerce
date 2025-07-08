@@ -21,7 +21,8 @@ import { Dialog, DialogContent } from "@mui/material";
 import useUserStore from "@/store/useUserStore";
 import { motion } from "framer-motion";
 import useFetchData from "@/hooks/useFetchData";
-import { ProductReview } from "@/types/Product";
+import { Product, ProductReview } from "@/types/Product";
+import ProductRatingBreakdown from "./PlayStoreStyleRating";
 
 /* ---------- schema & types ---------- */
 const FormSchema = z.object({
@@ -32,18 +33,18 @@ const FormSchema = z.object({
 type FormValues = z.infer<typeof FormSchema>;
 
 interface Props {
-  productId: string;
+  product?: Product|null;
 }
 
 /* ------------------------------------------------------------------ */
-const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
+const SimpleReviewSection: React.FC<Props> = ({ product }) => {
   const { user } = useUserStore();
 
   /* fetch existing reviews */
   const { data: reviews, loading, error } = useFetchData<
     ProductReview[]
   >(
-    `${import.meta.env.VITE_API_BACKEND_URL}/products/${productId}/reviews`
+    `${import.meta.env.VITE_API_BACKEND_URL}/products/${product?._id}/reviews`
   );
   const [openImage, setOpenImage] = useState<string | null>(null);
   /* form setup */
@@ -63,7 +64,7 @@ const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
   /* send review */
   const onSubmit = async (data: FormValues) => {
     await axios.post(
-      `${import.meta.env.VITE_API_BACKEND_URL}/products/${productId}/reviews`,
+      `${import.meta.env.VITE_API_BACKEND_URL}/products/${product?._id}/reviews`,
       {
         rating: data.rating,
         reviewText: data.reviewText,
@@ -87,10 +88,9 @@ const SimpleReviewSection: React.FC<Props> = ({ productId }) => {
   return (
     <div className="space-y-6 p-6">
   
-      {/* list reviews */}
-      {(!reviews || reviews.length === 0) && (
-        <p className="text-gray-500">No reviews yet.</p>
-      )}
+   
+
+      <ProductRatingBreakdown ratingBuckets={product?.ratingBuckets} maxCount={product?.reviewCount}/>
       {reviews?.map((rv) => (
         <Paper
           key={rv._id}

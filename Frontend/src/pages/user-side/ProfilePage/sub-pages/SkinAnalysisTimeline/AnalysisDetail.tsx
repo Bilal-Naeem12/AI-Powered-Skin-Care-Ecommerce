@@ -132,7 +132,7 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
      
 
       {/* key stat cards */}
-      <Grid container spacing={2} sx={{ mb: { xs: 3, sm: 4 } }}>
+      <Grid container rowSpacing={2} sx={{ mb: { xs: 3, sm: 4 } }}>
         {[
           { title: "Skin Type", data: skin_type, color: "primary.main" },
           { title: "Acne Severity", data: acne_severity, color: "error.main" },
@@ -142,7 +142,7 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
         ? severityLabelMap[data.label] || data.label
         : data.label;
 
-         return <Grid item xs={12} sm={6} key={title}>
+         return <Grid  md={6} spacing={5} key={title}>
             <Card elevation={2} sx={{ height: "100%" }}>
               <CardContent
                 sx={{ textAlign: "center", p: { xs: 1.5, sm: 2 } }}
@@ -171,14 +171,14 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
   }}
 >
       {/* charts */}
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+      <Grid container  rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid  xs={12} md={6}>
           <ClassificationPie
             title="Skin-Type Distribution"
             data={skin_type}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid  xs={12} md={6}>
           <ClassificationPie
             title="Acne-Severity Distribution"
             data={acne_severity}
@@ -189,7 +189,7 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
       </Grid>
       </Box>
       </div></div>
-        <Grid item xs={12}>
+        <Grid  xs={12} md={6}>
           <DetectionsBar detections={detections} />
         </Grid>
     </Card>

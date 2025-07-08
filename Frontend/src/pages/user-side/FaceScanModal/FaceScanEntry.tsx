@@ -13,6 +13,7 @@ import { QrCodeIcon } from "lucide-react";
 import useUserStore from "@/store/useUserStore";
 import ConsentForm from "@/component/UI/ConsentForm";
 import { User } from "@/types/User";
+import useSkinAnalysisStore from "@/store/useSkinAnalysis";
 
 type Step = "choice" | "preview" | "uploading" | "qr";
 
@@ -30,7 +31,7 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
 
   const { openModal: openLiveModal, showLoading, hideLoading, setDetectedImage, setEntryModal } =
     useFaceScanStore();
-  const { result, analyzeSkin, clearResult } = useFaceScanStore();
+  const { result, analyzeSkin, clearResult } = useSkinAnalysisStore();
   const navigate = useNavigate();
 
   const checkConsentAndProceed = (next: () => void) => {

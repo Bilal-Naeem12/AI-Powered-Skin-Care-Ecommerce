@@ -236,7 +236,7 @@ const ProductDetailPage: React.FC = () => {
             </ul>
           </div>
         ) : (
-          <ReviewSection productId={product?._id} />
+          <ReviewSection product={product} />
         )}
       </div>
     </div>

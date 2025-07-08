@@ -86,24 +86,24 @@ import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAn
           icon: BarChart3, // Use a relevant icon for skin routine
           component: SkinAnalysisTimeline, // Define SkinRoutineComponent
         },
-            {
-          name: "My Skin Routine",
-          path: "/profile-page/skin-routine", // Path for Skin Routine
-          icon: Calendar, // Use a relevant icon for skin routine
-          component: SkinRoutineComponent, // Define SkinRoutineComponent
-        },
+        //     {
+        //   name: "My Skin Routine",
+        //   path: "/profile-page/skin-routine", // Path for Skin Routine
+        //   icon: Calendar, // Use a relevant icon for skin routine
+        //   component: SkinRoutineComponent, // Define SkinRoutineComponent
+        // },
         {
           name: "My Orders",
           path: "/profile-page/orders",
           icon: FileText,
           component: OrdersComponent, // Define OrdersComponent
         },
-        {
-          name: "My Rewards",
-          path: "/profile-page/rewards",
-          icon: DollarSign,
-          component: RewardsComponent, // Define RewardsComponent
-        },
+        // {
+        //   name: "My Rewards",
+        //   path: "/profile-page/rewards",
+        //   icon: DollarSign,
+        //   component: RewardsComponent, // Define RewardsComponent
+        // },
         {
           name: "Skin Analyzer",
           path: "/profile-page/skin-analyzer",
@@ -122,12 +122,12 @@ import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAn
           icon: HelpCircle,
           component: FAQComponent, // Define FAQComponent
         },
-        {
-          name: "Refer a Friend",
-          path: "/profile-page/refer-a-friend",
-          icon: Clipboard,
-          component: ReferAFriendComponent, // Define ReferAFriendComponent
-        },
+        // {
+        //   name: "Refer a Friend",
+        //   path: "/profile-page/refer-a-friend",
+        //   icon: Clipboard,
+        //   component: ReferAFriendComponent, // Define ReferAFriendComponent
+        // },
        
       ],
     },

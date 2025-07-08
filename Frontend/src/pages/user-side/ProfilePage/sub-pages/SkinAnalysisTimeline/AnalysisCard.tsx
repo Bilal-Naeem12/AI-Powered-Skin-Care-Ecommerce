@@ -29,7 +29,7 @@ const topLabel = severityLabelMap[rawLabel] || rawLabel;
       <Avatar 
         variant="rounded" 
         src={entry.scanned_image_after || entry.scanned_image_before} 
-        sx={{ width: "100%", height: 140, mb: 1 }} 
+        sx={{ width: "100%", height: 300, mb: 1 }} 
       />
       <Typography variant="subtitle2">
         {date.toLocaleDateString()}
