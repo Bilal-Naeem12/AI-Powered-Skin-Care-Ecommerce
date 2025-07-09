@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import usePostAuthData from "@/hooks/usePostAuthData";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import { RecommendationResponse, RoutineStep } from "@/types/Recommendation";
 import RoutineSection from "@/component/UI/RecommendedProduct";
 
@@ -17,7 +17,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import FaceIcon from "@mui/icons-material/Face";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { CrossIcon } from "lucide-react";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 
 const RecommendationsPage: React.FC = () => {
   const result = useSkinAnalysisStore((state) => state.result);

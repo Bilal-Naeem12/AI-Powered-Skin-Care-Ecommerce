@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Instructions from "@/component/UI/Instructions";
 import CameraView from "@/component/UI/CameraView";
 import ResultButtons from "@/component/UI/ResultButtons";
-import useFaceScanStore from "@/store/useFaceScanStore";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
-import useUserStore from "@/store/useUserStore";
+import useFaceScanStore from "@/store/FaceScanStore";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
+import useUserStore from "@/store/UserStore";
 
 const SkinAnalyzerComponent: React.FC = () => {
   const [viewState, setViewState] = useState<

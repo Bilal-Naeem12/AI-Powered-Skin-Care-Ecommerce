@@ -9,8 +9,8 @@ import {
   RadioProps,
   Divider,
 } from "@mui/material";
-import useCartStore from "../../../store/useCartStore";
-import useOrderStore from "../../../store/useOrderStore";
+import useCartStore from "../../../store/CartStore";
+import useOrderStore from "../../../store/OrderStore";
 import { CartItem } from "@/types/CartItem";
 import { PaymentGateway } from "@/types/Payment";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
@@ -37,7 +37,7 @@ const navigate = useNavigate();
       <h5 className="mb-6 text-2xl font-medium" >
         Order Summary
       </h5>
-
+<div className=" overflow-y-auto max-h-[365px] my-10 px-5">
       {cart.map((item: CartItem) => (<>
         <Box
           key={typeof item.product === "string" ? item.product : item.product._id}
@@ -64,8 +64,8 @@ const navigate = useNavigate();
         <Divider/>
         </>
       ))}
-
-      <Box className="flex justify-between items-center py-3 border-t">
+</div>
+      <Box className="flex justify-between items-center py-3 ">
         <Typography>Subtotal:</Typography>
         <Typography>{import.meta.env.VITE_API_CURRENCY_Symbol} {subtotal}/-</Typography>
       </Box>

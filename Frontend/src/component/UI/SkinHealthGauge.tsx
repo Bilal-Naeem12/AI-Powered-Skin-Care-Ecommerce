@@ -1,6 +1,6 @@
 // src/components/SkinHealthGauge.tsx
 import React, { useMemo } from "react";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import type { Classification, Detections } from "@/types/SkinAnalysisResult";
 
 export interface SkinHealthGaugeProps {

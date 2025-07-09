@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { useNavigate } from "react-router-dom";
 
 const usePostAuthData = <T, R>() => {

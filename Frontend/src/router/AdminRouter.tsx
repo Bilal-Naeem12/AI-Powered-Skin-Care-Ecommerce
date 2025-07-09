@@ -2,7 +2,7 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 
-import AdminDashboard from "@/pages/admin-side/AdminDashboard";
+import AdminDashboard from "@/pages/admin-side";
 import AdminNotFound from "@/pages/admin-side/AdminNotFound";
 import ManageOrders from "@/pages/admin-side/Orders & Payments/ManageOrders";
 import ManageProducts from "@/pages/admin-side/Products/ManageProducts";

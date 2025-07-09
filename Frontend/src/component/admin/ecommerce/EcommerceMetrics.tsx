@@ -30,11 +30,12 @@ export default function EcommerceMetrics({ kpi }: Props) {
               <span className="text-sm text-gray-500 dark:text-gray-400">{c.label}</span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{c.value}</h4>
             </div>
-            <Badge color={c.trend >= 0 ? "success" : "error"}>
+          <div className="space-y-1">  <Badge color={c.trend >= 0 ? "success" : "error"}>
               {c.trend >= 0 ? <ArrowUpIcon /> : <ArrowDownIcon />}
               {Math.abs(c.trend).toFixed(2)}%
             </Badge>
-          </div>
+            <p className=" font-light text-gray-500 text-[0.8rem]">Vs last month</p>
+          </div> </div>
         </div>
       ))}
     </div>

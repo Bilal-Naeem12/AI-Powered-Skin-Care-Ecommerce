@@ -8,7 +8,7 @@ import {
   HiOutlineCog,
 } from "react-icons/hi";
 import { MdLocationOn } from "react-icons/md";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { Detail } from "./Detail";
 
 const heading = "text-lg font-semibold text-primary";

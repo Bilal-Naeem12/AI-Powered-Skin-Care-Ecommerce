@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "./Button";
-import useCartStore from "@/store/useCartStore";
+import useCartStore from "@/store/CartStore";
 import { RecommendedProduct, RoutineStep } from "@/types/Recommendation";
 import { Link } from "react-router-dom";
 

@@ -1,5 +1,6 @@
 // src/modules/analytics/analyticsController.js
 const AnalyticsService = require("./analyticsService");
+const { floorDate, ceilDate,shiftDate } = require("../../utils/dateUtils");
 
 /* ----- admin CRUD (optional) ----- */
 exports.createAnalytics = async (req, res) => {
@@ -105,11 +106,10 @@ exports.lineChart = async (req, res) => {
 };
 
 exports.leaderboard = async (req, res) => {
-  const { metric, limit = 10 } = req.query;
-  const data = await AnalyticsService.getLeaderboard(metric, +limit);
+  const { metric, period = "Month", limit = 10 } = req.query;
+  const data = await AnalyticsService.getLeaderboard(metric, period, +limit);
   res.json(data);
 };
-
 
 
 
@@ -192,7 +192,7 @@ exports.dashboardOverview = async (req, res) => {
       }));
 
     // 3. Fetch the top 10 products by “ProductViews” (monthly buckets):
-    const topProducts = await AnalyticsService.getLeaderboard("ProductViews", 10);
+    const topProducts = await AnalyticsService.getLeaderboard("ProductViews", period,10);
 
     // 4. Build the response payload:
     res.json({
@@ -228,50 +228,3 @@ exports.dashboardOverview = async (req, res) => {
 /* ─────────────── Date Helper Functions ─────────────────────────── */
 /* These must match exactly the ones in analyticsModel.js for floorDate / shiftDate. */
 
-function floorDate(date, period) {
-  const d = new Date(date);
-  switch (period) {
-    case "Day":
-      d.setHours(0, 0, 0, 0);
-      break;
-    case "Week":
-      d.setDate(d.getDate() - d.getDay());
-      d.setHours(0, 0, 0, 0);
-      break;
-    case "Month":
-      d.setDate(1);
-      d.setHours(0, 0, 0, 0);
-      break;
-    case "Quarter":
-      d.setMonth(Math.floor(d.getMonth() / 3) * 3, 1);
-      d.setHours(0, 0, 0, 0);
-      break;
-    case "Year":
-      d.setMonth(0, 1);
-      d.setHours(0, 0, 0, 0);
-      break;
-  }
-  return d;
-}
-
-function shiftDate(date, period, offset) {
-  const d = new Date(date);
-  switch (period) {
-    case "Day":
-      d.setDate(d.getDate() + offset);
-      break;
-    case "Week":
-      d.setDate(d.getDate() + 7 * offset);
-      break;
-    case "Month":
-      d.setMonth(d.getMonth() + offset);
-      break;
-    case "Quarter":
-      d.setMonth(d.getMonth() + 3 * offset);
-      break;
-    case "Year":
-      d.setFullYear(d.getFullYear() + offset);
-      break;
-  }
-  return d;
-}

@@ -1,6 +1,6 @@
 // src/components/FaceScanResult.tsx
 import React, { useState } from "react";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import { Classification, Classifications, Detections } from "@/types/SkinAnalysisResult";
 const severityLabelMap: Record<string, string> = {
   "level -1": "Clear",

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import FaceScanner from "@/component/UI/FaceScanner";
-import useFaceScanStore from "@/store/useFaceScanStore";
+import useFaceScanStore from "@/store/FaceScanStore";
 
 /* -------- props ----------------------------------------------------------- */
 interface Props {

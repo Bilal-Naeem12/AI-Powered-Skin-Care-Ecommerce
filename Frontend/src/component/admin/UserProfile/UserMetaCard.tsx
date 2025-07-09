@@ -3,7 +3,7 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import userImg from "@/assets/avatar-default.png"
 export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();

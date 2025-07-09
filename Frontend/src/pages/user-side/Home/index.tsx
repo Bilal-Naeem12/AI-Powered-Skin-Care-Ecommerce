@@ -4,8 +4,8 @@ import AISection from './AISection';
 import ProductShowcase from './ProductShowcase';
 import MainLayout from '../../../component/Layout/MainLayout';
 import { useEffect } from 'react';
-import { checkRefreshToken, useAuthStore  } from '@/store/useAuthStore';
-import useUserStore from '@/store/useUserStore';
+import { checkRefreshToken, useAuthStore  } from '@/store/AuthStore';
+import useUserStore from '@/store/UserStore';
 
 const HomePage = () => {
 

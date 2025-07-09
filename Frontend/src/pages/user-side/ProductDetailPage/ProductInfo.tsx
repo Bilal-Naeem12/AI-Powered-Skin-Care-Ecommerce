@@ -16,7 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import useFetchData from "@/hooks/useFetchData";
-import useCartStore from "@/store/useCartStore";
+import useCartStore from "@/store/CartStore";
 import { Product, ProductVariant } from "@/types/Product";
 import ReviewSection from "@/component/UI/ReviewSection";
 import image from "@/assets/anaylsis.png"

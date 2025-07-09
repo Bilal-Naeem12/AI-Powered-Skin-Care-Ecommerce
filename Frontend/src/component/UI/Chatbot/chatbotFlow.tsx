@@ -1,8 +1,8 @@
 import type { Flow } from "react-chatbotify";
 import type { Params } from "react-chatbotify";
-import useFaceScanStore  from "@/store/useFaceScanStore";
-import { useChatbotStore } from "@/store/useChatbotStore";
-import useUserStore from "@/store/useUserStore";
+import useFaceScanStore  from "@/store/FaceScanStore";
+import { useChatbotStore } from "@/store/ChatbotStore";
+import useUserStore from "@/store/UserStore";
 import ProductCarousel from "../ProductCarousel";
 
 

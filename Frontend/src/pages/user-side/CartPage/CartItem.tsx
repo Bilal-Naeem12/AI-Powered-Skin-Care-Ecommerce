@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, TextField, MenuItem, IconButton, ButtonGroup } from "@mui/material";
 import { MdDelete } from "react-icons/md"; // Import delete icon
-import useCartStore from "../../../store/useCartStore"; // Import the Zustand store
+import useCartStore from "../../../store/CartStore"; // Import the Zustand store
 import {Product} from "@/types/Product"; // Import the Product interface
 import { Minus } from "lucide-react";
 import { Add } from "@mui/icons-material";

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { User } from "@/types/User";
 import { toast } from "react-toastify";
-import useNotificationStore from "./useNotificationStore"; // ✅ import the store
+import useNotificationStore from "./NotificationStore"; // ✅ import the store
 
 // Define the store state type
 interface UserStore {

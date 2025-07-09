@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import Breadcrumb from "@/component/UI/Breadcrumb";
 import MainLayout from "@/component/Layout/MainLayout";
-import useInpaintingStore from "@/store/useInpaintingStore";
+import useInpaintingStore from "@/store/InpaintingStore";
 import { Skeleton, Box, Modal, Card } from "@mui/material";
 import {
   ReactCompareSlider,

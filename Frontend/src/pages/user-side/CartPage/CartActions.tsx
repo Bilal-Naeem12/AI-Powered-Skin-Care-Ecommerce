@@ -1,8 +1,8 @@
 import React from "react";
 import Button from "../../../component/UI/Button";
 import { Link } from "react-router-dom";
-import useUserStore from "@/store/useUserStore";
-import useCartStore from "@/store/useCartStore";
+import useUserStore from "@/store/UserStore";
+import useCartStore from "@/store/CartStore";
 
 const CartActions = () => {
 const {isCartEmpty} = useCartStore()

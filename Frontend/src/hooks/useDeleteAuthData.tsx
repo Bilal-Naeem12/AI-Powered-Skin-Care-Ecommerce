@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 
 export function useDeleteAuthData() {
   const [loading, setLoading] = useState(false);

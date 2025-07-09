@@ -2,13 +2,42 @@ import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import ChartTab from "../../common/ChartTab";
 import { LinePoint } from "@/types/DashboardResponse";
+import { PERIOD_MAP, useChartTabStore } from "@/store/adminstores/chartTabStore";
 interface Props { points: LinePoint[] }
 export default function StatisticsChart({ points }: Props) {
-
+  const periodKey = useChartTabStore((s) => s.statisticsPeriod);
+  const backendPeriod = PERIOD_MAP[periodKey];
    const sorted = [...points].sort((a, b) => +new Date(a.date) - +new Date(b.date));
- const categories = sorted.map(p =>
-    new Date(p.date).toLocaleString("default", { month: "short" })
-  );
+
+const categories = sorted.map((p) => {
+  if (!p.date && p.startDate) {
+    p.date = p.startDate; // fallback: use startDate
+  }
+
+  if (!p.date) return "N/A";
+
+  const d = new Date(p.date);
+  if (isNaN(d.getTime())) return "N/A";
+
+  if (backendPeriod === "Month") {
+    return d.toLocaleString("default", { month: "short" });
+  }
+
+  if (backendPeriod === "Week") {
+    return d.toLocaleDateString("default", { weekday: "short" });
+  }
+
+  if (backendPeriod === "Day") {
+    return d.toLocaleTimeString("default", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  }
+
+  return d.toISOString();
+});
+
 
    const revenueData = sorted.map(p => parseFloat(p.value.toFixed(0)));
 
@@ -114,7 +143,7 @@ export default function StatisticsChart({ points }: Props) {
           </p>
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
-          {/* <ChartTab /> */}
+          <ChartTab />
         </div>
       </div>
 

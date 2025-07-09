@@ -4,12 +4,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import Instructions from "../../../component/UI/Instructions";
 import CameraView from "../../../component/UI/CameraView";
 import ResultButtons from "../../../component/UI/ResultButtons";
-import useFaceScanStore from "@/store/useFaceScanStore";
+import useFaceScanStore from "@/store/FaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {  SkinAnalysisResult } from "@/types/SkinAnalysisResult";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
-import useUserStore from "@/store/useUserStore";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
+import useUserStore from "@/store/UserStore";
 
 const FaceScanModal: React.FC = () => {
   /* ------------ local state ------------------------------------------------ */

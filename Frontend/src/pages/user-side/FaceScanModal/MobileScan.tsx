@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 
 const MobileScan = () => {
   const { sessionId } = useParams<{ sessionId: string }>();

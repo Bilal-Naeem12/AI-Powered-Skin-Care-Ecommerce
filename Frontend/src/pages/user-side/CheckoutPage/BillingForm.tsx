@@ -11,9 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import ButtonUI from "../../../component/UI/Button";
-import useUserStore from "../../../store/useUserStore";
-import useOrderStore from "../../../store/useOrderStore";
-import useCartStore from "@/store/useCartStore";
+import useUserStore from "../../../store/UserStore";
+import useOrderStore from "../../../store/OrderStore";
+import useCartStore from "@/store/CartStore";
 import { useNavigate } from "react-router-dom";
 import usePostAuthData from "@/hooks/usePostAuthData";
 import { PaymentGateway } from "@/types/Payment";

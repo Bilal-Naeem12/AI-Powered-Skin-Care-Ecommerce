@@ -5,15 +5,15 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckIcon from "@mui/icons-material/Check";
 import ReplayIcon from "@mui/icons-material/Replay";
-import useFaceScanStore from "@/store/useFaceScanStore";
+import useFaceScanStore from "@/store/FaceScanStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { QrCodeIcon } from "lucide-react";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import ConsentForm from "@/component/UI/ConsentForm";
 import { User } from "@/types/User";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 
 type Step = "choice" | "preview" | "uploading" | "qr";
 

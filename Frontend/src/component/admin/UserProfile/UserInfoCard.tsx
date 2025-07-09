@@ -3,7 +3,7 @@ import { useModal } from "@/hooks/useModal";
 import { Modal } from "../ui/modal";
 
 import Label from "../form/Label";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";

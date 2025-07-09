@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ImagePicker from "../LeaveReview/ImagePicker"; // ✅ re-use your existing picker!
 import usePostAuthData from "@/hooks/usePostAuthData";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 
 interface Props {
   orderId: string;

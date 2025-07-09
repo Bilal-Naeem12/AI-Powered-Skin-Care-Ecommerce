@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import useUserStore from "@/store/useUserStore"; // Import the UserStore
+import useUserStore from "@/store/UserStore"; // Import the UserStore
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 

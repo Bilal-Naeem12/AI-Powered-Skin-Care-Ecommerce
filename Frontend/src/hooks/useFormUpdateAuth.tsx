@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '@/store/useUserStore';
+import useUserStore from '@/store/UserStore';
 
 export function useFormUpdateAuth(apiUrl: string, onSuccess?: () => void) {
   const navigate = useNavigate();

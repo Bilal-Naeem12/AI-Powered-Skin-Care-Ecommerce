@@ -4,9 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../component/UI/Breadcrumb";
 import MainLayout from "../../../component/Layout/MainLayout";
 import { Warning } from "@mui/icons-material";
-import useSkinAnalysisStore from "@/store/useSkinAnalysis";
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import LockIcon from "@mui/icons-material/Lock";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 const AnalyzePage: React.FC = () => {

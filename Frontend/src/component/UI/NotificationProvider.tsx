@@ -1,9 +1,9 @@
 import { useEffect, useCallback } from "react";
 import axios from "axios";
-import useSocketStore from "@/store/useSocketStore";
+import useSocketStore from "@/store/SocketStore";
 import useNotificationSocket from "@/hooks/useNotificationSocket";
-import useNotificationStore from "@/store/useNotificationStore";
-import useUserStore from "@/store/useUserStore";
+import useNotificationStore from "@/store/NotificationStore";
+import useUserStore from "@/store/UserStore";
 import { NotificationItem } from "@/types/NotificationItem";
 
 /**

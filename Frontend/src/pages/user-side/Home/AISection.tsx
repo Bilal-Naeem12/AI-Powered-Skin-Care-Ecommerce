@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../../../component/UI/Button";
 import { MdArrowForward } from "react-icons/md";
-import useFaceScanStore from "@/store/useFaceScanStore";
+import useFaceScanStore from "@/store/FaceScanStore";
 import { Link } from "react-router-dom";
 
 const AISection = () => {

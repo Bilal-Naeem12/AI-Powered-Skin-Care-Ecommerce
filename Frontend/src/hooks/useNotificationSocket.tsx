@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import useSocketStore from "@/store/useSocketStore";
-import useUserStore from "@/store/useUserStore";
+import useSocketStore from "@/store/SocketStore";
+import useUserStore from "@/store/UserStore";
 import { NotificationItem } from "@/types/NotificationItem";
 
 /**

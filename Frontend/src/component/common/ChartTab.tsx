@@ -1,45 +1,18 @@
-import { useState } from "react";
+import { useChartTabStore } from "@/store/adminstores/chartTabStore";
 
-const ChartTab: React.FC = () => {
-  const [selected, setSelected] = useState<
-    "optionOne" | "optionTwo" | "optionThree"
-  >("optionOne");
+export default function ChartTab() {
+  const { statisticsPeriod, setStatisticsPeriod } = useChartTabStore();
 
-  const getButtonClass = (option: "optionOne" | "optionTwo" | "optionThree") =>
-    selected === option
-      ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-      : "text-gray-500 dark:text-gray-400";
+  const getButtonClass = (key: string) =>
+    statisticsPeriod === key
+      ? "font-semibold text-gray-900 bg-white p-2"
+      : "text-gray-600 hover:text-gray-700 p-2";
 
   return (
-    <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 dark:bg-gray-900">
-      <button
-        onClick={() => setSelected("optionOne")}
-        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
-          "optionOne"
-        )}`}
-      >
-        Monthly
-      </button>
-
-      <button
-        onClick={() => setSelected("optionTwo")}
-        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
-          "optionTwo"
-        )}`}
-      >
-        Quarterly
-      </button>
-
-      <button
-        onClick={() => setSelected("optionThree")}
-        className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
-          "optionThree"
-        )}`}
-      >
-        Annually
-      </button>
+    <div className="flex items-center gap-0.5 rounded-md bg-gray-100 p-1 dark:bg-gray-900">
+   <button onClick={() => setStatisticsPeriod("months")} className={getButtonClass("months")}>5 months</button>
+      <button onClick={() => setStatisticsPeriod("days7")} className={getButtonClass("days7")}>7 days</button>
+      <button onClick={() => setStatisticsPeriod("hours24")} className={getButtonClass("hours24")}>24 hours</button>
     </div>
   );
-};
-
-export default ChartTab;
+}

@@ -18,7 +18,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { Dialog, DialogContent } from "@mui/material";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { motion } from "framer-motion";
 import useFetchData from "@/hooks/useFetchData";
 import { Product, ProductReview } from "@/types/Product";

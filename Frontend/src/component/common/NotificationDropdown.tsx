@@ -7,8 +7,8 @@ import axios from "axios";
 import { kindAvatars } from "../UI/NotificationBell";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
 import useNotificationSocket from "@/hooks/useNotificationSocket";
-import useNotificationStore from "@/store/useNotificationStore";
-import useUserStore from "@/store/useUserStore";
+import useNotificationStore from "@/store/NotificationStore";
+import useUserStore from "@/store/UserStore";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);

@@ -7,9 +7,9 @@ import FaceScanModal from "@/pages/user-side/FaceScanModal";
 import FaceScanEntry from "@/pages/user-side/FaceScanModal/FaceScanEntry";
 import LoadingModal from "@/pages/user-side/LoadingModal";
 import AnnouncementBar from "../UI/AnnouncementBar";
-import useFaceScanStore from "@/store/useFaceScanStore";
+import useFaceScanStore from "@/store/FaceScanStore";
 import { useChatWindow } from "react-chatbotify";
-import { useChatbotStore } from "@/store/useChatbotStore";
+import { useChatbotStore } from "@/store/ChatbotStore";
 
 /* -------------------------------------------------------------------------- */
 /* props                                                                      */

@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { useEffect } from "react";
 
 const LayoutContent: React.FC = () => {

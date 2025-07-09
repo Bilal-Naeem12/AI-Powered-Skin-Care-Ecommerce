@@ -3,8 +3,8 @@ import BillingForm from "./BillingForm";
 import OrderSummary from "./OrderSummary";
 import MainLayout from "../../../component/Layout/MainLayout";
 import { Box } from "@mui/material";
-import useCartStore from "../../../store/useCartStore"; // Import the Zustand store
-import useUserStore from "@/store/useUserStore";
+import useCartStore from "../../../store/CartStore"; // Import the Zustand store
+import useUserStore from "@/store/UserStore";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,7 @@ const CheckoutPage: React.FC = () => {
   </Box>
 
   {/* Sticky Summary */}
-  <Box className="w-full md:w-[40%]">
+  <Box className="w-full md:w-[40%] ">
     <div className="sticky top-24">
       <OrderSummary />
     </div>

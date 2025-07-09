@@ -1,7 +1,7 @@
 import React from "react";
 import { MdFavoriteBorder } from "react-icons/md"; // Importing icons
 import { Link } from "react-router-dom";
-import useCartStore from "../../store/useCartStore"; // Import Zustand store
+import useCartStore from "../../store/CartStore"; // Import Zustand store
 import Button from "./Button"; // Import the Button component
 
 // Importing the Product interface

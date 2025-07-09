@@ -6,7 +6,7 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; // Importing toast
 import axios from "axios";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { User } from "@/types/User";
 import PageOverlay from "@/component/UI/PageOverlay";
 import { createSocket } from "@/utils/socket";

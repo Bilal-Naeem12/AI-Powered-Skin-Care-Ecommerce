@@ -4,7 +4,7 @@ import SkinHealthGauge from '@/component/UI/SkinHealthGauge'
 import MainLayout from '@/component/Layout/MainLayout';
 import Breadcrumb from '@/component/UI/Breadcrumb';
 import RecommendationsPage from './RecommendationsPage';
-import useUserStore from '@/store/useUserStore';
+import useUserStore from '@/store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button } from '@mui/material';
 import { WarningAmber } from '@mui/icons-material';

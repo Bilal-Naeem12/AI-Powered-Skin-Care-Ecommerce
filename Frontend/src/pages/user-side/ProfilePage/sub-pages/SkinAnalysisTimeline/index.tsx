@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { CalendarFilter } from "./CalendarFilter";
 import { AnalysisCard } from "./AnalysisCard";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import useFetchAuthData from "@/hooks/useFetchAuthData";
 import { SkinHistoryEntry } from "@/types/SkinHistoryEntry";
 import { SkinHistoryPaginatedResponse } from "@/types/SkinHistoryPaginatedResponse";

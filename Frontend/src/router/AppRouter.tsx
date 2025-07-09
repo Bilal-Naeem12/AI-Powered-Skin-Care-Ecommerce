@@ -18,7 +18,7 @@ import ResetPasswordPageWrapper from "@/pages/user-side/ResetPasswordPage/ResetP
 import ForgotPasswordFormPage from "@/pages/user-side/ForgetPassword";
 import ProductImageUploader from "@/component/UI/ProductImageUploader";
 import AdminRouter from "./AdminRouter";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import AcneSeverityTestPage from "@/pages/Test/acneSeverityTest";
 import SkinTypeTestPage from "@/pages/Test/skinTypeTest";
 import SkinAnalysisTestPage from "@/pages/Test/skinAnalysisTestPage";
@@ -69,7 +69,7 @@ const AppRouter: React.FC = () => {
         <NavigationSetup />
         <RedirectIfAdmin>
       <Routes>
-        <Route path="/admin/*" element={<AdminRouter />} />
+        <Route path="/admin/*" element={<ProtectedRoute><AdminRouter /></ProtectedRoute>} />
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

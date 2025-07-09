@@ -1,11 +1,11 @@
 // src/modules/analytics/analyticsModel.js
 const { Schema, model, Types } = require("mongoose");
-
+const { floorDate, ceilDate,shiftDate } = require("../../utils/dateUtils");
 /* ── 1. Metric catalogue ───────────────────────────── */
 const METRIC_TYPES = [
   /* commerce */          "TotalOrders", "TotalRevenue", "AverageOrderValue", "RefundRate",
   /* user */              "NewUsers", "ActiveUsers", "ReturningCustomers", "CustomerChurn",
-  /* product engagement */"ProductViews", "MostPurchasedProduct", "AbandonedCarts",
+  /* product engagement */"ProductViews", "MostPurchasedProduct", "AbandonedCarts","TotalUsers",
   /* custom */            "Custom"
 ];
 
@@ -79,38 +79,6 @@ AnalyticsSchema.statics.updateTrend = async function (metricType, period = "Day"
 };
 
 /* ── 4. Date helpers ──────────────────────────────── */
-function floorDate(date, period) {
-  const d = new Date(date);
-  switch (period) {
-    case "Day":     d.setHours(0, 0, 0, 0); break;
-    case "Week":    d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); break;
-    case "Month":   d.setDate(1); d.setHours(0,0,0,0); break;
-    case "Quarter": d.setMonth(Math.floor(d.getMonth()/3)*3, 1); d.setHours(0,0,0,0); break;
-    case "Year":    d.setMonth(0, 1); d.setHours(0,0,0,0); break;
-  }
-  return d;
-}
-function ceilDate(date, period) {
-  const d = floorDate(date, period);
-  switch (period) {
-    case "Day":     d.setDate(d.getDate() + 1); break;
-    case "Week":    d.setDate(d.getDate() + 7); break;
-    case "Month":   d.setMonth(d.getMonth() + 1); break;
-    case "Quarter": d.setMonth(d.getMonth() + 3); break;
-    case "Year":    d.setFullYear(d.getFullYear() + 1); break;
-  }
-  return d;
-}
-function shiftDate(date, period, offset) {
-  const d = new Date(date);
-  switch (period) {
-    case "Day":     d.setDate(d.getDate() + offset); break;
-    case "Week":    d.setDate(d.getDate() + 7 * offset); break;
-    case "Month":   d.setMonth(d.getMonth() + offset); break;
-    case "Quarter": d.setMonth(d.getMonth() + 3 * offset); break;
-    case "Year":    d.setFullYear(d.getFullYear() + offset); break;
-  }
-  return d;
-}
+
 
 module.exports = model("Analytics", AnalyticsSchema);

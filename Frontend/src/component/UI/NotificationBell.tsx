@@ -16,8 +16,8 @@ import {
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import { useNavigate, Link } from "react-router-dom";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
-import useUserStore from "@/store/useUserStore";
-import useNotificationStore from "@/store/useNotificationStore";
+import useUserStore from "@/store/UserStore";
+import useNotificationStore from "@/store/NotificationStore";
 
 // Avatar icon mapping
 export const kindAvatars: Partial<Record<NotificationKind, string>> = {

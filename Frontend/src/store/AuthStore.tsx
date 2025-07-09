@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axios from "axios";
-import useUserStore from './useUserStore';
+import useUserStore from './UserStore';
 type AuthState = {
   isRefreshTokenValid: boolean|undefined;
     isCheckingToken: boolean;

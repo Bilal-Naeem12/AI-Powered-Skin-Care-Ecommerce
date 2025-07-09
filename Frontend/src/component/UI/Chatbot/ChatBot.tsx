@@ -5,8 +5,8 @@ import "./Theme/styles.css";
 import { getChatbotSettings } from "./Theme/settings";
 import { chatbotCustomStyles } from "./Theme/styles";
 import { chatbotFlow } from "./chatbotFlow";
-import useUserStore from "@/store/useUserStore";
-import { useChatbotStore } from "@/store/useChatbotStore";
+import useUserStore from "@/store/UserStore";
+import { useChatbotStore } from "@/store/ChatbotStore";
 import { is } from "date-fns/locale";
 
 export const ChatBotUI = () => {

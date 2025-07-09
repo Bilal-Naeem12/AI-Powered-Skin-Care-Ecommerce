@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"; // Add useNav
 import UserImage from "@/assets/avatar-default.png";
 import { SidebarSection } from "@/data/profileSidebarOptions";
 import { ChevronRight, ChevronLeft, ChevronDown, LogOut } from "lucide-react";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 
 interface SidebarProps {
   sidebarOptions: SidebarSection[];  // Receive sections as a prop

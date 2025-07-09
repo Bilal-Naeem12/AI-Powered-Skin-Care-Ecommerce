@@ -6,10 +6,10 @@ import {
 } from "@mui/material";
 import CircleIcon from "@mui/icons-material/Circle";
 import { useNavigate } from "react-router-dom";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { NotificationItem, NotificationKind } from "@/types/NotificationItem";
 import axios from "axios";          // ← USE CONFIGURED INSTANCE !!!
-import useNotificationStore from "@/store/useNotificationStore";
+import useNotificationStore from "@/store/NotificationStore";
 
 /* ------------------------------------------------------------------ */
 /* 1.  Labels & Avatar mapping                                         */

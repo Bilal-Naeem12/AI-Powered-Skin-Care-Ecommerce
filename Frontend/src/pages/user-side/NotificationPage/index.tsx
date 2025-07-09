@@ -6,8 +6,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import NotificationList from "@/component/UI/NotificationList";
 import MainLayout from "@/component/Layout/MainLayout";
-import useNotificationStore from "@/store/useNotificationStore";
-import useUserStore from "@/store/useUserStore";
+import useNotificationStore from "@/store/NotificationStore";
+import useUserStore from "@/store/UserStore";
 
 const NotificationsPage: React.FC = () => {
   const navigate = useNavigate();

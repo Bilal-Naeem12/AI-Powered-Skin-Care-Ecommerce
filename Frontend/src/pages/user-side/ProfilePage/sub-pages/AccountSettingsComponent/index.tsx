@@ -17,7 +17,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useUserStore from "@/store/useUserStore";
+import useUserStore from "@/store/UserStore";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { User } from "@/types/User";
