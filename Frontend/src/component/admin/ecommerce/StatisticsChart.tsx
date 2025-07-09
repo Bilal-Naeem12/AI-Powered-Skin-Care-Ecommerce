@@ -2,7 +2,7 @@ import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import ChartTab from "../../common/ChartTab";
 import { LinePoint } from "@/types/DashboardResponse";
-import { PERIOD_MAP, useChartTabStore } from "@/store/adminstores/chartTabStore";
+import { PERIOD_MAP, useChartTabStore } from "@/store/ChartTabStore";
 interface Props { points: LinePoint[] }
 export default function StatisticsChart({ points }: Props) {
   const periodKey = useChartTabStore((s) => s.statisticsPeriod);

@@ -7,7 +7,7 @@ import MonthlySalesChart  from "@/component/admin/ecommerce/MonthlySalesChart";
 import StatisticsChart    from "@/component/admin/ecommerce/StatisticsChart";
 import {MonthlyTarget}      from "@/component/admin/ecommerce/MonthlyTarget";
 import RecentOrders       from "@/component/admin/ecommerce/RecentOrders";
-import { useChartTabStore, PERIOD_MAP } from "@/store/adminstores/chartTabStore"; // adjust path!
+import { useChartTabStore, PERIOD_MAP } from "@/store/ChartTabStore"; 
 
 import {
   DashboardResponse,

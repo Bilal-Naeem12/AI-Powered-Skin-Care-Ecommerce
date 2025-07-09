@@ -1,4 +1,4 @@
-import { useChartTabStore } from "@/store/adminstores/chartTabStore";
+import { useChartTabStore } from "@/store/ChartTabStore";
 
 export default function ChartTab() {
   const { statisticsPeriod, setStatisticsPeriod } = useChartTabStore();
