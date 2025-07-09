@@ -13,23 +13,72 @@ exports.calculateAnalyticsTrend = (metricType, period = "Day") =>
 /* ---------- Dashboard helpers ---------- */
 exports.getKPICard = async (metricType, period = "Day") => {
   if (period === "Week") {
-    // Get last 7 days
-    const daysStart = shiftDate(floorDate(new Date(), "Day"), "Day", -6);
+    const today = floorDate(new Date(), "Day");
+    const daysStart = shiftDate(today, "Day", -6); // last 7 days
 
+    // Get last 7 Day docs
     const docs = await Analytics.find({
       metricType,
       period: "Day",
-      startDate: { $gte: daysStart }
-    }).lean();
+      startDate: { $gte: daysStart, $lte: today }
+    }).sort({ startDate: 1 }).lean();
 
-    // Sum them
-    const total = docs.reduce((sum, doc) => sum + (doc.value || 0), 0);
+    // Build map for easy sum
+    const map = Object.fromEntries(
+      docs.map(d => [d.startDate.toISOString().slice(0, 10), d.value || 0])
+    );
 
-    return { metricType, period: "Week", value: total, docs: docs.length };
+    let total = 0;
+    const breakdown = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = shiftDate(daysStart, "Day", i);
+      const key = d.toISOString().slice(0, 10);
+      const v = map[key] || 0;
+
+      breakdown.push({
+        label: key,
+        v: v
+      });
+
+      total += v;
+    }
+
+    // Return same shape as a real Analytics doc
+    return {
+      _id: null, // or a virtual `_id` if you want
+      metricType,
+      period: "Week",
+      startDate: daysStart,
+      endDate: shiftDate(today, "Day", 1), // exclusive end
+      value: total,
+      breakdown: breakdown,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      __v: 0,
+      dimension: {},
+      associatedEntity: null,
+      entityModel: null,
+      trendAbs: 0,
+      trendPct: 0
+    };
   }
 
-  // Month or Day: just use the stored doc
-  return Analytics.findOne({ metricType, period }).sort({ startDate: -1 }).lean();
+  // Real doc for Day or Month
+  const today = floorDate(new Date(), period);
+  const doc = await Analytics.findOne({
+    metricType,
+    period,
+    startDate: today
+  }).lean();
+
+  if (!doc) {
+    return await Analytics.findOne({ metricType, period })
+      .sort({ startDate: -1 })
+      .lean();
+  }
+
+  return doc;
 };
 
 exports.getLineChart = async (metricType, period = "Month", units = 12) => {

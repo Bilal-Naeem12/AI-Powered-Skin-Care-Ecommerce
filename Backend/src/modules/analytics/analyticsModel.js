@@ -46,8 +46,13 @@ AnalyticsSchema.statics.bump = async function (
 ) {
   const start = floorDate(date, period);
   const end   = ceilDate(date, period);
-  const label = date.toISOString().slice(0, 10);
+    const label = period === "Day"
+    ? date.toISOString().slice(0, 13) + ":00:00Z"
+    : date.toISOString().slice(0, 10);
 
+
+
+    console.log("heloo0" + label + "period"+period)
   const query = { metricType, period, startDate: start, ...link };
 
   await this.updateOne(

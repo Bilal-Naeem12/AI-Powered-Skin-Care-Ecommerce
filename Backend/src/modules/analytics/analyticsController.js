@@ -1,7 +1,7 @@
 // src/modules/analytics/analyticsController.js
 const AnalyticsService = require("./analyticsService");
 const { floorDate, ceilDate,shiftDate } = require("../../utils/dateUtils");
-
+const Analytics = require("./analyticsModel");
 /* ----- admin CRUD (optional) ----- */
 exports.createAnalytics = async (req, res) => {
   try {
@@ -100,8 +100,8 @@ exports.kpiCard = async (req, res) => {
 };
 
 exports.lineChart = async (req, res) => {
-  const { metric, months = 12 } = req.query;
-  const data = await AnalyticsService.getLineChart(metric, "Month", +months);
+  const { metric, period="Month",units = 12 } = req.query;
+  const data = await AnalyticsService.getLineChart(metric, period, units);
   res.json(data);
 };
 
@@ -115,18 +115,52 @@ exports.leaderboard = async (req, res) => {
 
 
 async function fetchKPIWithChange(metricType, period) {
-  // 1. Determine the “startDate” for the current period and the previous period.
-  //    For example, if today is June 18, 2025 and period="Month", then:
-  //      currentStart = 2025-06-01
-  //      previousStart = 2025-05-01
-  //
-  //    We re‐use the same floorDate() logic as in analyticsModel.
   const now = new Date();
+
+  if (period === "Week") {
+    // 🟢 Calculate this week’s Monday
+    const today = floorDate(now, "Day");
+    const dayOfWeek = today.getUTCDay(); // Sunday = 0, Monday = 1
+    const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const currentStart = shiftDate(today, "Day", daysToMonday);
+    const previousStart = shiftDate(currentStart, "Day", -7);
+
+    // 🟢 Fetch all Day docs for current + previous week
+    const [currentDocs, prevDocs] = await Promise.all([
+      Analytics.find({
+        metricType,
+        period: "Day",
+        startDate: { $gte: currentStart, $lte: shiftDate(currentStart, "Day", 6) }
+      }).lean(),
+      Analytics.find({
+        metricType,
+        period: "Day",
+        startDate: { $gte: previousStart, $lte: shiftDate(previousStart, "Day", 6) }
+      }).lean()
+    ]);
+
+    // 🟢 Sum values
+    const currentValue = currentDocs.reduce((sum, d) => sum + (d.value || 0), 0);
+    const prevValue = prevDocs.reduce((sum, d) => sum + (d.value || 0), 0);
+
+    let pctChange = 0;
+    if (prevValue === 0) {
+      pctChange = currentValue === 0 ? 0 : 100;
+    } else {
+      pctChange = ((currentValue - prevValue) / prevValue) * 100;
+    }
+
+    return {
+      currentValue,
+      prevValue,
+      pctChange: parseFloat(pctChange.toFixed(2))
+    };
+  }
+
+  // ✅ Non-week: floor dates, look up normal doc
   const currentStart = floorDate(now, period);
   const previousStart = floorDate(shiftDate(now, period, -1), period);
 
-  // 2. Look up the document for the currentStart and previousStart.
-  //    We use .lean() for efficiency. If no doc exists, treat its value as 0.
   const [currentDoc, prevDoc] = await Promise.all([
     AnalyticsService.getKPICardByStart(metricType, period, currentStart),
     AnalyticsService.getKPICardByStart(metricType, period, previousStart),
@@ -135,8 +169,6 @@ async function fetchKPIWithChange(metricType, period) {
   const currentValue = currentDoc?.value || 0;
   const prevValue = prevDoc?.value || 0;
 
-  // 3. Compute percentage change. If prevValue is 0 and currentValue > 0, treat as +100%.
-  //    If both are zero, pctChange = 0.
   let pctChange = 0;
   if (prevValue === 0) {
     pctChange = currentValue === 0 ? 0 : 100;
@@ -147,9 +179,10 @@ async function fetchKPIWithChange(metricType, period) {
   return {
     currentValue,
     prevValue,
-    pctChange: parseFloat(pctChange.toFixed(2)), // round to two decimals
+    pctChange: parseFloat(pctChange.toFixed(2))
   };
 }
+
 /**
  * Dashboard overview endpoint:
  *   GET /api/analytics/dashboard?period=Month&months=6
@@ -184,12 +217,7 @@ exports.dashboardOverview = async (req, res) => {
     // 2. Fetch line‐chart data for “TotalRevenue” over the last N months:
     const revenueTrend = await AnalyticsService.getLineChart("TotalRevenue", period, months);
     //    We only need the startDate/value pairs for the front‐end:
-    const lineChart = (revenueTrend || [])
-      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-      .map((dp) => ({
-        date: dp.startDate,
-        value: dp.value
-      }));
+    const lineChart = revenueTrend ||[] 
 
     // 3. Fetch the top 10 products by “ProductViews” (monthly buckets):
     const topProducts = await AnalyticsService.getLeaderboard("ProductViews", period,10);
