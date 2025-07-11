@@ -14,6 +14,7 @@ import useUserStore from "@/store/UserStore";
 import ConsentForm from "@/component/UI/ConsentForm";
 import { User } from "@/types/User";
 import useSkinAnalysisStore from "@/store/SkinAnalysis";
+import FaceVerificationModal from "./FaceVerificationModal";
 
 type Step = "choice" | "preview" | "uploading" | "qr";
 
@@ -28,6 +29,25 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const [qrUrl, setQrUrl] = useState<string>("");
   const [consentOpen, setConsentOpen] = useState(false);
   const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
+  const [faceVerifyOpen, setFaceVerifyOpen] = useState(false);
+type Mode = "general" | "progress";
+
+const [mode, setMode] = useState<Mode | null>(null);
+const [askModeOpen, setAskModeOpen] = useState(false);
+const [nextAction, setNextAction] = useState<() => void>(() => {});
+
+
+
+
+
+const handleChoice = (next: () => void) => {
+  // Save what the user wants to do
+  setNextAction(() => next);
+  // Open the mode choice modal
+  setAskModeOpen(true);
+};
+
+
 
   const { openModal: openLiveModal, showLoading, hideLoading, setDetectedImage, setEntryModal } =
     useFaceScanStore();
@@ -42,6 +62,34 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
       setConsentOpen(true);
     }
   };
+
+
+  const confirmMode = (selected: Mode) => {
+  setMode(selected);
+  setAskModeOpen(false);
+
+  // ✅ Now do normal consent check flow:
+  if (user?.consent?.termsAccepted && user?.consent?.faceScanConsent) {
+    // If Progress mode, you might run verification here
+    if (selected === "progress") {
+ setFaceVerifyOpen(true); 
+      // e.g. open a new modal or run verification
+
+    } else {
+      nextAction();
+    }
+  } else {
+    setOnConsentProceed(() => () => {
+      if (selected === "progress") {
+      setFaceVerifyOpen(true); 
+
+      } else {
+        nextAction();
+      }
+    });
+    setConsentOpen(true);
+  }
+};
 
   const handleChooseFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -144,9 +192,8 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     {/* Upload */}
     <div
       className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-pink-50 cursor-pointer transition"
-      onClick={() =>
-        checkConsentAndProceed(() => fileInputRef.current?.click())
-      }
+     onClick={() => handleChoice(() => fileInputRef.current?.click())}
+
     >
       <CloudUploadIcon className="text-[#FF69B4]" />
       <span className="text-sm mt-2 text-black">Upload</span>
@@ -155,12 +202,11 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     {/* Live */}
     <div
       className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-purple-50 cursor-pointer transition"
-      onClick={() =>
-        checkConsentAndProceed(() => {
-          closeAll();
-          openLiveModal();
-        })
-      }
+     onClick={() => handleChoice(() => {
+  closeAll();
+  openLiveModal();
+})}
+
     >
       <VideocamIcon className="text-[#FF69B4]" />
       <span className="text-sm mt-2 text-black">Live</span>
@@ -169,7 +215,8 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
     {/* Phone */}
     <div
       className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-indigo-50 cursor-pointer transition"
-      onClick={() => checkConsentAndProceed(handleScanWithPhone)}
+onClick={() => handleChoice(handleScanWithPhone)}
+
     >
       <QrCodeIcon className="text-[#FF69B4]" size={24} />
       <span className="text-sm mt-2 text-black">Phone</span>
@@ -275,7 +322,57 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
           onCancel={() => setConsentOpen(false)}
         />
       </motion.div>
+    {askModeOpen && (
+  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-5">
+    <motion.div
+      className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl text-center flex flex-col gap-4"
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+    >
+      <h2 className="text-xl font-bold">Choose Mode</h2>
+      <p className="text-gray-600 mb-4">
+        Is this for a general analysis or to track your skin progress securely?
+      </p>
+      <div className="flex gap-3">
+       
+         <button
+          onClick={() => confirmMode("progress")}
+          className="py-3 px-5  w-1/2 rounded-full bg-pink-600 text-white hover:bg-pink-700"
+        >
+          Progress Tracking
+        </button> <button
+          onClick={() => confirmMode("general")}
+          className="py-3 px-5  w-1/2 rounded-full bg-black text-white hover:bg-gray-900"
+        >
+          General Analysis
+        </button>
+      
+      </div>
+      <button
+        onClick={() => setAskModeOpen(false)}
+        className="text-sm text-gray-500 hover:underline mt-2"
+      >
+        Cancel
+      </button>
+    </motion.div>
+  </div>
+)}
+
+
+
+{faceVerifyOpen && (
+  <FaceVerificationModal
+    userId={userId ?? ""}
+    onVerified={() => {
+      setFaceVerifyOpen(false);
+    nextAction()
+    }}
+    onCancel={() => setFaceVerifyOpen(false)}
+  />
+)}
     </div>
+
   );
 };
 

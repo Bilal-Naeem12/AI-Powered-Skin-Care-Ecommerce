@@ -138,6 +138,16 @@ verificationTokenExpires: {
             orderedAt: { type: Date, default: Date.now }
         }
     ],
+
+    faceVerificationData: [
+  {
+    uploadedImage: String,
+    analysisResult: String,
+    comparedToPrevious: String,
+    uploadedAt: { type: Date, default: Date.now },
+    hash: String, // ✅ Add hash for secure validation
+  },
+],
     verificationToken: {
         type: String, // Stores the verification token
         default: null // Initially null, will be set when user registers

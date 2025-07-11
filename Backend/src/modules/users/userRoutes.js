@@ -16,7 +16,8 @@ const {
   restoreSoftDeletedUser,
   checkRefreshTokenStatus,
   updateUserConsent,
-  completeWalkthrough
+  completeWalkthrough,
+  getLatestFaceVerificationImage
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -32,6 +33,9 @@ router.get("/verify-email", verifyEmail);  // Email Verification
 router.post("/login", validateLogin, loginUser);  // Login
 router.post("/refresh-token", refreshToken);  // Refresh Token
 router.patch("/:id/walkthrough", authMiddleware, completeWalkthrough);
+
+router.get("/:id/face-verification", authMiddleware, getLatestFaceVerificationImage);
+
 // **🔹 Password Reset Routes**
 router.post("/request-password-reset", requestPasswordReset);  // Request Password Reset
 router.post("/reset-password", validatePasswordReset, resetPassword);  // Reset Password

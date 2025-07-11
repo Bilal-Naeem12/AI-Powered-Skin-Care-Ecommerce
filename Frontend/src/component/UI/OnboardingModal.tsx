@@ -23,6 +23,37 @@ const [allergens, setAllergens] = useState<string[]>(user?.allergenPreferences ?
 const allergenForm = useForm<{ allergens: string[] }>({
   defaultValues: { allergens: allergens },
 });
+
+async function handleUploadFaceVerification(
+  capturedImage: string  , // base64
+) {
+  try {
+    // Convert base64 data URL to Blob
+    const blob = await (await fetch(capturedImage)).blob();
+
+    const formData = new FormData();
+    formData.append("file", blob, "face-scan.jpg");
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BACKEND_URL}/scan-session/upload-face-verification`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+
+    // You might store in user context or local state:
+    return ;
+
+  } catch (err) {
+    console.error("❌ Upload failed:", err);
+    throw err;
+  }
+}
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,6 +84,9 @@ const allergenForm = useForm<{ allergens: string[] }>({
  if (user?.walkThroughCompleted) return null;
 const handleFinishOnboarding = async () => {
   try {
+
+       await handleUploadFaceVerification(faceImage??"");
+
    const response = await axios.patch<{user:User}>(
   `${import.meta.env.VITE_API_BACKEND_URL}/users/${user?._id}/walkthrough`,
   {
@@ -130,8 +164,9 @@ setUser(updatedUser);
       description="Align your face properly to scan, or upload a clear photo instead."
       onCapture={(dataUrl) => {
         setFaceImage(dataUrl);
-        nextStep();
+     
       }}
+      onContinue={   nextStep}
    
     />
 

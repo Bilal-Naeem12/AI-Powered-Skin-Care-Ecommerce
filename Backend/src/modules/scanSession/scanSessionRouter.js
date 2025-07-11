@@ -6,7 +6,8 @@ const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 const { authMiddleware } = require("../../middleware/authMiddleware");
-
+const crypto = require('crypto');
+const User = require("../users/userModel")
 const router = express.Router();
 
 // ⬇️ Cloudinary config (from .env)
@@ -131,5 +132,75 @@ router.post("/upload-to-folder", upload.single("file"),authMiddleware, async (re
   }
 });
 
+
+
+router.post(
+  "/upload-face-verification",
+  upload.single("file"),
+  authMiddleware,
+  async (req, res) => {
+    const userId = req.user._id;
+    const { first_name } = req.user;
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    try {
+      // Folder structure: faceVerification/user-id
+      const folderPath = `faceVerification/${first_name}-${userId}/`;
+      const publicId = uuidv4();
+
+      // Upload image to Cloudinary
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: folderPath,
+            public_id: publicId,
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      });
+
+      const secureUrl = uploadResult.secure_url;
+
+      // Generate HMAC hash for later verification
+      const hash = crypto
+        .createHmac("sha256", process.env.PROGRESS_HASH_SECRET)
+        .update(secureUrl)
+        .digest("hex");
+
+      // Create entry for faceVerificationData
+      const verificationEntry = {
+        uploadedImage: secureUrl,
+        uploadedAt: new Date(),
+        hash,
+        // These can be filled later if you want:
+        analysisResult: "",
+        comparedToPrevious: "",
+      };
+
+      // Save to user document
+      await User.findByIdAndUpdate(userId, {
+        $push: { faceVerificationData: verificationEntry },
+      });
+
+      res.json({
+        status: "ok",
+        message: "Face verification image uploaded & saved",
+        hash,
+      });
+    } catch (err) {
+      console.error("Face verification upload failed:", err);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  }
+);
 
 module.exports = router;

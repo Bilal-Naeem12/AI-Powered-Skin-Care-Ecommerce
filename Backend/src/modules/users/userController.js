@@ -476,3 +476,36 @@ exports.completeWalkthrough = async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 };
+
+
+
+exports.getLatestFaceVerificationImage = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).select("faceVerificationData");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const data = user.faceVerificationData;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "No face verification data found." });
+    }
+
+    // Get latest by uploadedAt
+    const latest = data.sort((a, b) => b.uploadedAt - a.uploadedAt)[0];
+
+    if (!latest.uploadedImage) {
+      return res.status(404).json({ message: "No uploaded image found." });
+    }
+
+    res.status(200).json({
+      secureUrl: latest.uploadedImage,
+      hash: latest.hash,
+    });
+  } catch (err) {
+    console.error("getLatestFaceVerificationImage error:", err);
+    res.status(500).json({ message: "Server error." });
+  }
+};
