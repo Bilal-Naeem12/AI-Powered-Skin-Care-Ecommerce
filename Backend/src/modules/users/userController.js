@@ -432,26 +432,40 @@ exports.logoutUser = (req, res) => {
 
 exports.completeWalkthrough = async (req, res) => {
   try {
-    const userId = req.params._id;
-    const { walkThroughCompleted, profileImage } = req.body;
+    const userId = req.params.id; // ✅ use `id` not `_id` in the route param
 
+    const { walkThroughCompleted, profileImage, allergenPreferences } = req.body;
+
+    // ✅ Validate walkThroughCompleted
     if (typeof walkThroughCompleted !== "boolean") {
-      return res.status(400).json({ message: "walkThroughCompleted must be boolean." });
+      return res
+        .status(400)
+        .json({ message: "walkThroughCompleted must be boolean." });
     }
 
+    // ✅ Build the update fields dynamically
     const updateFields = {
-      walkThroughCompleted: walkThroughCompleted,
+      walkThroughCompleted,
     };
 
     if (profileImage && typeof profileImage === "string") {
       updateFields.profileImage = profileImage;
     }
 
+    if (Array.isArray(allergenPreferences)) {
+      updateFields.allergenPreferences = allergenPreferences;
+    }
+
+    // ✅ Do the update and return the new user without sensitive fields
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateFields },
       { new: true }
     ).select("-password -refreshToken");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
 
     res.status(200).json({
       message: "Walkthrough status updated successfully.",

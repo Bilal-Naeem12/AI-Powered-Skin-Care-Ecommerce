@@ -752,3 +752,40 @@ exports.getProductsByCategoryId = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
+exports.getAllUniqueIngredients = async (req, res) => {
+  try {
+    const rawIngredients = await Product.distinct("ingredients", { isDeleted: false });
+
+    // Clean up: remove empty strings, normalize, deduplicate
+    const normalizedSet = new Set();
+
+    rawIngredients.filter(Boolean).forEach((ing) => {
+      if (typeof ing !== "string") return;
+
+      // Remove % and numbers at the start
+      let cleaned = ing.trim().replace(/^[0-9.\s%]+/, "").trim();
+
+      // Extra: Capitalize first letter, if needed
+      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+
+      normalizedSet.add(cleaned);
+    });
+
+    const uniqueIngredients = Array.from(normalizedSet);
+
+    res.status(200).json({
+      success: true,
+      count: uniqueIngredients.length,
+      data: uniqueIngredients,
+    });
+  } catch (err) {
+    console.error("Error fetching ingredients:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching unique ingredients",
+    });
+  }
+};

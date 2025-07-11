@@ -8,9 +8,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import UniversalCapture from "./UniversalCapture";
 import ProfilePicUploader from "./ProfilePicUploader";
-
-const steps = ["Welcome", "Face Scan", "Profile Picture"];
-
+import IngredientSelect from "../comboboxes/IngredientSelect";
+import { useForm } from "react-hook-form";
+import { User } from "@/types/User";
+const steps = ["Welcome", "Face Scan", "Allergen Preferences", "Profile Picture"];
 export default function OnboardingModal() {
   const { user, isFirstLogin, setUser } = useUserStore();
   const [step, setStep] = useState(0);
@@ -18,7 +19,10 @@ export default function OnboardingModal() {
   const scannerRef = useRef<FaceScannerHandle>(null);
 const [profilePic, setProfilePic] = useState<string>(user?.profileImage??"");  
 const [usedUploader, setUsedUploader] = useState(false);
-
+const [allergens, setAllergens] = useState<string[]>(user?.allergenPreferences ?? []);
+const allergenForm = useForm<{ allergens: string[] }>({
+  defaultValues: { allergens: allergens },
+});
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,15 +53,21 @@ const [usedUploader, setUsedUploader] = useState(false);
  if (user?.walkThroughCompleted) return null;
 const handleFinishOnboarding = async () => {
   try {
-    await axios.patch(
-      `${import.meta.env.VITE_API_BACKEND_URL}/users/${user?._id}/walkthrough`,
-      {
-        walkThroughCompleted: true,
-        profileImage: profilePic, // ✅ Pass the final pic!
-      },
-      { withCredentials: true }
-    );
-    setUser({ ...user!, walkThroughCompleted: true, profileImage: profilePic });
+   const response = await axios.patch<{user:User}>(
+  `${import.meta.env.VITE_API_BACKEND_URL}/users/${user?._id}/walkthrough`,
+  {
+    walkThroughCompleted: true,
+    profileImage: profilePic,
+    allergenPreferences: allergens,
+  },
+  { withCredentials: true }
+);
+
+// ✅ Grab the updated user from response.data.user
+const updatedUser = response.data.user;
+
+// ✅ Now update your local user state properly
+setUser(updatedUser);
     localStorage.removeItem("walkThroughInProgress");
     toast.success("Onboarding complete!");
   } catch (err) {
@@ -82,7 +92,7 @@ const handleFinishOnboarding = async () => {
         <motion.div
           key={step}
           initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}  
           exit={{ opacity: 0, y: -50 }}
           transition={{ duration: 0.4 }}
           className="bg-white rounded-2xl shadow-2xl w-full max-w-lg md:max-w-2xl p-6 md:p-10 relative"
@@ -135,11 +145,40 @@ const handleFinishOnboarding = async () => {
     </div>
   </div>
 )}
+{step === 2 && (
+  <div className="flex flex-col gap-6 text-center items-center">
+    <h2 className="text-2xl md:text-3xl font-bold">
+      Select Your Allergen Preferences
+    </h2>
+    <p className="text-gray-600 max-w-md">
+      Choose any ingredients you’d like to avoid. This helps us personalize your recommendations.
+    </p>
 
+    <div className="w-full max-w-lg">
+     <IngredientSelect
+  control={allergenForm.control}
+  name="allergens"
+  label="Allergens"
+  multiple
+/>
+    </div>
+
+ <button
+  onClick={() => {
+    const selected = allergenForm.getValues("allergens");
+    setAllergens(selected);
+    nextStep();
+  }}
+  className="bg-black text-white px-8 py-3 rounded-full font-semibold mt-4 hover:bg-gray-900 transition"
+>
+  Continue
+</button>
+  </div>
+)}
           {/* ──────────────────────────────
               3️⃣ PROFILE PICTURE STEP
           ────────────────────────────── */}
-         {step === 2 && (
+         {step === 3 && (
   <div className="flex flex-col items-center gap-4 text-center">
     <h2 className="text-2xl md:text-3xl font-bold">Add a Profile Picture</h2>
     <p className="text-gray-600 max-w-md">
