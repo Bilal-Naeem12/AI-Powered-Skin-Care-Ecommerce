@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import {toast} from "react-toastify";
 import imageCompression from "browser-image-compression";
-import pfp from "@/assets/avatar-default.png"
+import pfp from "@/assets/default.png"
 const CLOUDINARY_UPLOAD_PRESET = "my_unsigned";
 const CLOUDINARY_CLOUD_NAME = "dkimm1q5r";
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;

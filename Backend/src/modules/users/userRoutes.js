@@ -15,7 +15,8 @@ const {
   adminSoftDeleteUser,
   restoreSoftDeletedUser,
   checkRefreshTokenStatus,
-  updateUserConsent
+  updateUserConsent,
+  completeWalkthrough
 } = require("./userController");
 
 const { authMiddleware } = require("../../middleware/authMiddleware");
@@ -30,7 +31,7 @@ router.get("/check-refresh-token", checkRefreshTokenStatus);  // Refresh Token
 router.get("/verify-email", verifyEmail);  // Email Verification
 router.post("/login", validateLogin, loginUser);  // Login
 router.post("/refresh-token", refreshToken);  // Refresh Token
-
+router.patch("/:id/walkthrough", authMiddleware, completeWalkthrough);
 // **🔹 Password Reset Routes**
 router.post("/request-password-reset", requestPasswordReset);  // Request Password Reset
 router.post("/reset-password", validatePasswordReset, resetPassword);  // Reset Password

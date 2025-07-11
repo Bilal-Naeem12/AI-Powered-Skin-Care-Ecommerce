@@ -82,6 +82,12 @@ exports.loginUser = async (req, res) => {
 
         const accessToken = user.generateAuthToken();
         const refreshToken = user.generateRefreshToken();
+  let isFirstLogin = false;
+
+    if (!user.firstLoginAt) {
+      user.firstLoginAt = new Date();
+      isFirstLogin = true;
+    }
 
         user.refreshToken = refreshToken;
         await user.save();
@@ -95,15 +101,19 @@ exports.loginUser = async (req, res) => {
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
   res.cookie('refreshToken', refreshToken, {
  ...commonOptions,
-    maxAge: 100*60*1000, // 7 days
+   maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   // Convert to object and exclude password and refreshToken
   const safeUser = user.toObject();
   delete safeUser.password;
   delete safeUser.refreshToken;
-
-  res.status(200).json({user:safeUser,message:`Login successful! Welcome ${safeUser.first_name}`, accessToken});
+ res.status(200).json({
+      user: safeUser,
+      isFirstLogin, // ✅ NEW FIELD
+      message: `Login successful! Welcome ${safeUser.first_name}`,
+      accessToken,
+    });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -416,5 +426,39 @@ exports.logoutUser = (req, res) => {
   } catch (err) {
     console.error("Consent update error:", err);
     res.status(500).json({ error: "Could not update consent" });
+  }
+};
+
+
+exports.completeWalkthrough = async (req, res) => {
+  try {
+    const userId = req.params._id;
+    const { walkThroughCompleted, profileImage } = req.body;
+
+    if (typeof walkThroughCompleted !== "boolean") {
+      return res.status(400).json({ message: "walkThroughCompleted must be boolean." });
+    }
+
+    const updateFields = {
+      walkThroughCompleted: walkThroughCompleted,
+    };
+
+    if (profileImage && typeof profileImage === "string") {
+      updateFields.profileImage = profileImage;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    res.status(200).json({
+      message: "Walkthrough status updated successfully.",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error("Walkthrough update error:", err);
+    res.status(500).json({ message: "Server error." });
   }
 };

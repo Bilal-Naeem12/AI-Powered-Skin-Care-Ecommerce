@@ -192,7 +192,7 @@ const afterUrl = await uploadImage(afterFile);
 
     toast.success("Skin history saved ✅");
   } catch (e: any) {
-    const msg = e.response?.data?.detail || e.message || "Unknown error";
+    const msg = e.response?.data?.details || e.message || "Unknown error";
     set({ error: msg });
     toast.error("Analysis failed: " + msg);
   } finally {

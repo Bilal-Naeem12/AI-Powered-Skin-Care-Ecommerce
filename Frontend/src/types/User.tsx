@@ -33,6 +33,7 @@ export interface SkinAnalysisHistory {
     first_name: string;
     last_name: string;
     email: string;
+    walkThroughCompleted:boolean;
     password: string;
     phone: string;
     date_of_birth: Date;

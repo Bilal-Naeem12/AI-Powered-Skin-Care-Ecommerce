@@ -46,38 +46,39 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Products", path: "/admin/products" },
       { name: "Categories", path: "/admin/products/categories" },
-      { name: "Brands", path: "/admin/brands" },
+      // { name: "Brands", path: "/admin/brands" },
     ],
   },
-  {
-    icon: <ListIcon />,
-    name: "Admin Tools",
-    subItems: [
-      { name: "Admin Management", path: "/admin/admins" },
-      { name: "Audit Logs", path: "/admin/audit-logs" },
-    ],
-  },
+  // {
+  //   icon: <ListIcon />,
+  //   name: "Admin Tools",
+  //   subItems: [
+  //     { name: "Admin Management", path: "/admin/admins" },
+  //     { name: "Audit Logs", path: "/admin/audit-logs" },
+  //   ],
+  // },
   {
     icon: <PageIcon />,
     name: "Orders & Payments",
     subItems: [
       { name: "Orders", path: "/admin/orders" },
-      { name: "Payments", path: "/admin/payments" },
+      // { name: "Payments", path: "/admin/payments" },
       { name: "Order Tracking", path: "/admin/order-tracking" },
       { name: "Return Requests", path: "/admin/return-requests" },
-      { name: "Transactions", path: "/admin/transactions" },
+      // { name: "Transactions", path: "/admin/transactions" },
     ],
-  },  {
-    icon: <BoxCubeIcon />,
-    name: "Skin Analysis",
-    subItems: [
-      { name: "Skin Analysis", path: "/admin/skin-analysis" },
-      { name: "Skin Types", path: "/admin/skin-types" },
-      { name: "Recommendations", path: "/admin/recommendations" },
-      { name: "Allergen Settings", path: "/admin/allergens" },
-      { name: "Progress Tracking", path: "/admin/progress-tracking" },
-    ],
-  },
+  },  
+  // {
+  //   icon: <BoxCubeIcon />,
+  //   name: "Skin Analysis",
+  //   subItems: [
+  //     { name: "Skin Analysis", path: "/admin/skin-analysis" },
+  //     { name: "Skin Types", path: "/admin/skin-types" },
+  //     { name: "Recommendations", path: "/admin/recommendations" },
+  //     { name: "Allergen Settings", path: "/admin/allergens" },
+  //     { name: "Progress Tracking", path: "/admin/progress-tracking" },
+  //   ],
+  // },
  
 ];
 

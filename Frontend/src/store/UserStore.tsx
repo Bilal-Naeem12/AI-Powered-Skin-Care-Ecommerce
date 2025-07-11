@@ -8,8 +8,9 @@ import useNotificationStore from "./NotificationStore"; // ✅ import the store
 interface UserStore {
   user: User | null;           // Logged in user object
   isLoggedIn: boolean;         // Whether user is logged in
-  isAdmin: boolean;            // Whether user is admin
-  setUser: (user: User) => void;
+  isAdmin: boolean;       
+    isFirstLogin: boolean;      // Whether user is admin
+   setUser: (user: User, isFirstLogin?: boolean) => void; 
   logout: (showtoast?: boolean) => void;
   checkLogin: () => void;
 }
@@ -20,10 +21,11 @@ const useUserStore = create<UserStore>()(
     isLoggedIn: false,
     isAdmin: false,
 
-    setUser: (user: User) => {
+  setUser: (user: User, isFirstLogin = false) => {
       const isAdmin = user.role === "admin";
-      set({ user, isLoggedIn: true, isAdmin });
-      localStorage.setItem("user", JSON.stringify(user)); // Save user in localStorage
+      set({ user, isLoggedIn: true, isAdmin, isFirstLogin });
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("isFirstLogin", JSON.stringify(isFirstLogin));
     },
 
     logout: (showtoast = true) => {
