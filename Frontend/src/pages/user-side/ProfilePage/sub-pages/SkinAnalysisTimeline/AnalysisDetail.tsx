@@ -131,34 +131,36 @@ const acneSeverityLabel = severityLabelMap[acne_severity.label] || acne_severity
   <div className="lg:w-1/2 ">   {/* heading */}
      
 
-      {/* key stat cards */}
-      <Grid container rowSpacing={2} sx={{ mb: { xs: 3, sm: 4 } }}>
-        {[
-          { title: "Skin Type", data: skin_type, color: "primary.main" },
-          { title: "Acne Severity", data: acne_severity, color: "error.main" },
-        ].map(({ title, data, color }) => {
-             const displayLabel =
+   <Grid container spacing={2} sx={{ mb: { xs: 3, sm: 4 } }}>
+  {[
+    { title: "Skin Type", data: skin_type, color: "primary.main" },
+    { title: "Acne Severity", data: acne_severity, color: "error.main" },
+  ].map(({ title, data, color }) => {
+    const displayLabel =
       title === "Acne Severity"
         ? severityLabelMap[data.label] || data.label
         : data.label;
 
-         return <Grid  md={6} spacing={5} key={title}>
-            <Card elevation={2} sx={{ height: "100%" }}>
-              <CardContent
-                sx={{ textAlign: "center", p: { xs: 1.5, sm: 2 } }}
-              >
-                <Typography variant="caption" color="text.secondary">
-                  {title}
-                </Typography>
-                <Typography variant="h6" className=" capitalize">{displayLabel}</Typography>
-                <Typography variant="body2" sx={{ color }}>
-                  {Math.round(data.score * 100)}%
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-})}
+    return (
+      <Grid item xs={12} sm={6} key={title}>
+        <Card elevation={2} sx={{ height: "100%" }}>
+          <CardContent sx={{ textAlign: "center", p: { xs: 1.5, sm: 2 } }}>
+            <Typography variant="caption" color="text.secondary">
+              {title}
+            </Typography>
+            <Typography variant="h6" className="capitalize">
+              {displayLabel}
+            </Typography>
+            <Typography variant="body2" sx={{ color }}>
+              {Math.round(data.score * 100)}%
+            </Typography>
+          </CardContent>
+        </Card>
       </Grid>
+    );
+  })}
+</Grid>
+
 <Box
 
   sx={{

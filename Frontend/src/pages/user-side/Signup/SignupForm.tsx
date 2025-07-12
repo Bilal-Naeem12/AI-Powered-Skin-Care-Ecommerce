@@ -168,7 +168,7 @@ const SignupForm: React.FC = () => {
             </Box>
 
             {/* Google Signup Button */}
-            <Box className="mb-4">
+            {/* <Box className="mb-4">
               <Button
                 type="button"
                 fullWidth
@@ -186,7 +186,7 @@ const SignupForm: React.FC = () => {
               >
                 Sign up with Google
               </Button>
-            </Box>
+            </Box> */}
 
             {/* Already have an account */}
             <Typography

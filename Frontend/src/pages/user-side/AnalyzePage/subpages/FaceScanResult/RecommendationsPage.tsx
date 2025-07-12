@@ -17,7 +17,9 @@ import {
 } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Info, Tag, AlertCircle, XCircle } from "lucide-react";
+import { Info, Tag, AlertCircle, XCircle, ShoppingCartIcon } from "lucide-react";
+import useCartStore from "@/store/CartStore";
+import { toast } from "react-toastify";
 
 const RecommendationsPage: React.FC = () => {
   const result = useSkinAnalysisStore((state) => state.result);
@@ -31,7 +33,32 @@ const RecommendationsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showMore, setShowMore] = useState<Record<string, boolean>>({});
 
-  
+ const handleAddAllToCart = () => {
+  const cartStore = useCartStore.getState();
+
+  if (!storedData || !storedData.routine) return;
+
+  const allProducts = Object.values(storedData.routine)
+    .flatMap((step) => step.products);
+
+  const addedIds = new Set();
+
+  allProducts.forEach((product) => {
+    // prevent duplicate addition during single session
+    if (!addedIds.has(product._id) && !cartStore.isProductInCart(product._id)) {
+      cartStore.addProductToCart(product, 1);
+      addedIds.add(product._id);
+    }
+  });
+
+  if (addedIds.size > 0) {
+  } else {
+    toast.info("All recommended products are already in your cart.", {
+      position: "bottom-center",
+    });
+  }
+};
+
   const beautifyProblem = (problem: string) =>
     problem === "Dark Circles" ? "Puffy Eyes" : problem;
 
@@ -89,6 +116,7 @@ const RecommendationsPage: React.FC = () => {
           </span>
         </div>
       </div>
+
 
       <div className="space-y-5">
         {Object.entries(storedData.routine).map(([stepKey, step], index) => {
@@ -160,6 +188,26 @@ const RecommendationsPage: React.FC = () => {
           );
         })}
       </div>
+      <div className="flex justify-end mt-8">
+  <MuiButton
+    variant="contained"
+    size="large"
+    sx={{
+      backgroundColor: "#FF69B4",
+      color: "#fff",
+      textTransform: "none",
+      px: 4,
+      py: 1.5,
+      "&:hover": {
+        backgroundColor: "#e0559f",
+      },
+    }}
+    onClick={() => handleAddAllToCart()}
+  >
+    <ShoppingCartIcon className="mr-2" />
+    Add All to Cart
+  </MuiButton>
+</div>
     </div>
   );
 };
