@@ -25,6 +25,8 @@ const skinHistoryRoutes = require("../modules/skinAnalysisHistory/skinAnalysisHi
 const recommendationProductRoutes = require("../modules/recommendationProduct/recommendationProductRoutes");
 const categoryRoutes = require("../modules/category/categoryRoutes")
 const refundRequestRoutes = require("../modules/refundRequest/refundRequestRoutes")
+const contactRoutes = require("../modules/contactMessages/contactMessagesRoutes")
+
 const router = express.Router();
 
 // **Main Router** - Combine all module routes under /api/{moduleName}
@@ -50,7 +52,7 @@ router.use("/shipping", shippingRoutes);
 router.use("/system-config", systemConfigRoutes);
 router.use("/users", userRoutes);
 router.use("/scan-session", scanSessionRoutes);
-
+router.use("/contact", contactRoutes);
 router.use("/skin-history",skinHistoryRoutes );
 router.use("/recommendations",recommendationProductRoutes );
 router.use("/refund-requests",refundRequestRoutes);

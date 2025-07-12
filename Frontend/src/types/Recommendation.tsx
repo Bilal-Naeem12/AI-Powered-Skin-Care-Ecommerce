@@ -9,15 +9,14 @@ export interface RoutineStep {
 }
 
 export interface Routine {
-  step1?: RoutineStep;
-  step2?: RoutineStep;
-  step3?: RoutineStep;
-  step4?: RoutineStep;
+  [stepKey: string]: RoutineStep ;
 }
+
 
 export interface RecommendationResponse {
   success: boolean;
   skinType: string;
   problemsDetected: string[];
   routine: Routine;
+    exploreMore?: Product[];
 }

@@ -2,18 +2,42 @@ import React from "react";
 import Button from "./Button";
 import useCartStore from "@/store/CartStore";
 import { RecommendedProduct, RoutineStep } from "@/types/Recommendation";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProductCardProps {
   product: RecommendedProduct;
+  isAdded: boolean;
+  onAdd: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, isAdded, onAdd }) => {
   const { addProductToCart } = useCartStore();
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    if (!isAdded) navigate(`/product/${product._id}`);
+  };
 
   return (
-    <Link to={`/product/${product._id}`}>
-    <div className="p-4 border rounded-xl shadow-sm flex gap-4 hover:shadow-md transition">
+    <motion.div
+      layout
+      initial={{ opacity: 0.5, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.3 }}
+      onClick={handleCardClick}
+      className={`relative p-4 border rounded-xl shadow-sm flex gap-4 transition cursor-pointer ${
+        isAdded ? "opacity-60 pointer-events-none" : "hover:shadow-md"
+      }`}
+    >
+      {isAdded && (
+        <div className="absolute -top-2 -right-12 transform rotate-45 bg-black text-white text-xs px-8 py-1 font-semibold z-10 shadow-md">
+          Added to Cart
+        </div>
+      )}
+
       <img
         src={product.images[0]}
         alt={product.name}
@@ -26,13 +50,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {import.meta.env.VITE_API_CURRENCY_Symbol} {product.price.toFixed(2)}
         </div>
         <p className="text-xs text-primary uppercase mt-1">{product.category.name}</p>
-        <Button variant="black" className="mt-3 px-3 py-1 text-sm" onClick={() => addProductToCart(product)}>
-          Add to Cart
+        <Button
+          variant="black"
+          className="mt-3 px-3 py-1 text-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            addProductToCart(product);
+            onAdd();
+          }}
+          disabled={isAdded}
+        >
+          {isAdded ? "Added" : "Add to Cart"}
         </Button>
       </div>
-    </div>
-    </Link>
-
+    </motion.div>
   );
 };
 
@@ -41,15 +72,28 @@ interface RoutineSectionProps {
   step: RoutineStep;
 }
 
-const RoutineSection: React.FC<RoutineSectionProps> = ({ stepKey, step }) => (
-  <div className="mb-8">
-    {/* <h3 className="text-xl font-bold text-gray-800 mb-4">{stepKey.toUpperCase()}: {step.title}</h3> */}
-    <div className="space-y-4">
-      {step.products.map((product) => (
-        <ProductCard key={product._id} product={product} />
-      ))}
+const RoutineSection: React.FC<RoutineSectionProps> = ({ stepKey, step }) => {
+  const { isProductInCart } = useCartStore();
+
+  return (
+    <div className="mb-8">
+      <AnimatePresence>
+        {step.products.map((product) => {
+          const alreadyInCart = isProductInCart(product._id);
+          return (
+            <ProductCard
+              key={product._id}
+              product={product}
+              isAdded={alreadyInCart}
+              onAdd={() => {
+                // No need to manually track added IDs, Zustand store handles state globally.
+              }}
+            />
+          );
+        })}
+      </AnimatePresence>
     </div>
-  </div>
-);
+  );
+};
 
 export default RoutineSection;

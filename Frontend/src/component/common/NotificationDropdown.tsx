@@ -17,12 +17,9 @@ export default function NotificationDropdown() {
    const { notifications, setNotifications } = useNotificationStore();
   const navigate = useNavigate();
  const kindAvatars: Partial<Record<NotificationKind, string>> = {
-  ANALYSIS_RESULT: "/assets/icons/ANALYSIS_RESULT.png",
-  ORDER_STATUS: "/assets/icons/ORDER_STATUS.png",
   MANAGEMENT_ORDER_PLACED: "/assets/icons/ORDER_PLACED.png",
-  PROMO: "/assets/icons/PROMO.png",
-  ACCOUNT_SUSPENDED: "/assets/icons/ACCOUNT_SUSPENDED.png",
   MANAGEMENT_REFUND_REQUEST:"/assets/icons/MANAGEMENT_REFUND_REQUEST.png",
+    CONTACT_MESSAGE:"/assets/icons/CONTACT_MESSAGE.png",
 };
   // Fetch only MANAGEMENT_ORDER_PLACED notifications
   const fetchNotifications = async () => {
@@ -31,7 +28,9 @@ export default function NotificationDropdown() {
         `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
         { withCredentials: true }
       );
-      const filtered = res.data.filter(n => n.kind === "MANAGEMENT_ORDER_PLACED");
+       const allowedKinds = ["MANAGEMENT_ORDER_PLACED", "MANAGEMENT_REFUND_REQUEST", "CONTACT_MESSAGE"];
+
+const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
       setNotifications(filtered.slice(0, 30));
     } catch (error) {
       console.error("Failed to fetch notifications:", error);

@@ -1,11 +1,27 @@
 import React from "react";
 import Breadcrumb from "../../../component/UI/Breadcrumb";
 import MainLayout from "../../../component/Layout/MainLayout";
+import { motion } from "framer-motion";
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const fadeInLeft = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const fadeInRight = {
+  hidden: { opacity: 0, x: 40 },
+  visible: { opacity: 1, x: 0 },
+};
 
 const AboutUsPage = () => {
   return (
     <MainLayout>
-      <div className="p-4 sm:p-10">
+      <div className="px-4 sm:px-10 py-6 sm:py-12 max-w-7xl mx-auto">
         {/* Breadcrumb */}
         <Breadcrumb
           paths={[
@@ -15,93 +31,131 @@ const AboutUsPage = () => {
         />
 
         {/* About Us Section */}
-        <div className=" grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-20 mt-4">
-         
+        <motion.section
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 sm:gap-16 mt-8"
+        >
           <div className="space-y-5">
-          <h1 className="text-3xl font-bold ">About Us</h1>
-            <p className="text-gray-700 text-lg ">
-              At Skin Care Pro, we combine AI technology with skincare expertise
-              to deliver personalized solutions. Our platform analyzes your
-              skin, recommends tailored routines, and ensures allergen-safe
-              products—all in one seamless experience. Empowering your skincare
-              journey, we make healthier, glowing skin accessible for everyone.
+            <h1 className="text-4xl font-bold text-gray-900">About Us</h1>
+            <p className="text-gray-700 text-base leading-relaxed">
+              At <strong>Skin Care Pro</strong>, we combine AI technology with expert dermatological insight to deliver
+              personalized skincare solutions. Our platform analyzes your skin,
+              recommends tailored routines, and ensures allergen-safe products —
+              all in one seamless experience.
             </p>
-            </div> 
-    <div className="  h-full">       <img  
-            
+            <p className="text-gray-700 text-base leading-relaxed">
+              Empowering your skincare journey, we make healthier, glowing skin
+              accessible to everyone—backed by science, supported by AI.
+            </p>
+          </div>
+          <motion.div
+            variants={fadeInRight}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <img
               src="/assets/about-us-page.png"
               alt="AI Skincare Analysis"
-              className="w-full md:w-4/6 rounded-lg mx-auto"
+              className="w-full rounded-lg shadow-md"
             />
-         
-          </div>
-        </div>
+          </motion.div>
+        </motion.section>
 
-        {/* Skincare Service Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 rounded-lg">
-        <div className="  h-full">       <img  
-            
-            src="/assets/about-us-page2.png"
-            alt="AI Skincare Analysis"
-            className="w-full md:w-4/6 rounded-lg "
-          />
-       
-        </div>
-     <div className="">     <h2 className="text-2xl font-semibold">We’re your personal skincare service</h2>
-          <p className="text-gray-700 mt-2 text-xl">
-            Get paired with one of our Licensed Dermatology Providers for a
-            personalized treatment plan that’s based on your skin’s unique
-            needs—whether that’s acne, dark spots, rosacea, or early signs of
-            aging.
-          </p>
-          <p className="text-gray-600 text-sm mt-1">*Subject to consultation</p>
-          </div>  </div>
-
-        {/* Proven Results Section */}
-        <div className="my-12">
-          <h2 className="text-2xl font-semibold">Proven Results</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-            <div>
-              <img
-              src="/assets/about-us-page6.png"
-                alt="Before and After 6 Months"
-                className="w-full sm:h-[400px] rounded-lg"
-              />
-              <h3 className="mt-2 font-semibold">After 6 Months</h3>
-              <p className="text-gray-700">
-                Get paired with one of our Licensed Dermatology Providers for a
-                personalized treatment plan that’s based on your skin’s unique
-                needs.
-              </p>
-            </div>
-            <div>
-              <img
-               src="/assets/about-us-page3.png"
-                alt="Before and After 9 Months"
-                className="w-full sm:h-[400px] rounded-lg"
-              />
-              <h3 className="mt-2 font-semibold">After 9 Months</h3>
-              <p className="text-gray-700">
-                Get paired with one of our Licensed Dermatology Providers for a
-                personalized treatment plan that’s based on your skin’s unique
-                needs.
-              </p>
-            </div>
-            <div>
-              <img
-               src="/assets/about-us-page5.png"
-                alt="Before and After 9 Months"
-                className="w-full sm:h-[400px]  rounded-lg"
-              />
-              <h3 className="mt-2 font-semibold">After 9 Months</h3>
-              <p className="text-gray-700">
-                Get paired with one of our Licensed Dermatology Providers for a
-                personalized treatment plan that’s based on your skin’s unique
-                needs.
-              </p>
-            </div>
+        {/* Personal Skincare Service */}
+        <motion.section
+          className="mt-20 grid grid-cols-1 md:grid-cols-2 items-center gap-10 sm:gap-16"
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <motion.div
+            variants={fadeInLeft}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <img
+              src="/assets/about-us-page2.png"
+              alt="Personalized Treatment"
+              className="w-full rounded-lg shadow-md"
+            />
+          </motion.div>
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+              We’re Your Personal Skincare Service
+            </h2>
+            <p className="text-gray-700 mt-4 text-base leading-relaxed">
+              Get paired with one of our Licensed Dermatology Providers for a
+              customized treatment plan tailored to your skin’s unique needs—
+              whether it’s acne, dark spots, rosacea, or early signs of aging.
+            </p>
+            <p className="text-gray-500 text-sm mt-2 italic">
+              *Subject to dermatology consultation.
+            </p>
           </div>
-        </div>
+        </motion.section>
+
+        {/* Proven Results */}
+        <motion.section
+          className="mt-20"
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 text-center mb-10">
+            Proven Results
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                img: "/assets/about-us-page6.png",
+                title: "After 6 Months",
+              },
+              {
+                img: "/assets/about-us-page3.png",
+                title: "After 9 Months",
+              },
+              {
+                img: "/assets/about-us-page5.png",
+                title: "After 9 Months",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+              >
+                <img
+                  src={item.img}
+                  alt={item.title}
+                  className="w-full h-64 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-medium text-gray-800">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                    See visible transformation with our guided routine and
+                    dermatology support designed just for your skin’s evolving
+                    needs.
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
       </div>
     </MainLayout>
   );

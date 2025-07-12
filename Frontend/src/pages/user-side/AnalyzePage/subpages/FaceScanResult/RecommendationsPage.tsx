@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
-import usePostAuthData from "@/hooks/usePostAuthData";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import useSkinAnalysisStore from "@/store/SkinAnalysis";
+import useRecommendationStore from "@/store/RecommendationStore";
 import { RecommendationResponse, RoutineStep } from "@/types/Recommendation";
 import RoutineSection from "@/component/UI/RecommendedProduct";
 
@@ -10,95 +11,154 @@ import {
   AccordionDetails,
   Typography,
   Box,
-  CircularProgress,
+  Collapse,
+  Button as MuiButton,
+  Skeleton,
 } from "@mui/material";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import InfoIcon from "@mui/icons-material/Info";
-import FaceIcon from "@mui/icons-material/Face";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { CrossIcon } from "lucide-react";
-import useUserStore from "@/store/UserStore";
+import { Info, Tag, AlertCircle, XCircle } from "lucide-react";
 
 const RecommendationsPage: React.FC = () => {
   const result = useSkinAnalysisStore((state) => state.result);
+  const {
+    data: storedData,
+    setData: storeData,
+    clearData,
+  } = useRecommendationStore();
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showMore, setShowMore] = useState<Record<string, boolean>>({});
 
-  const { data, loading, error, postData } = usePostAuthData<
-    RecommendationResponse,
-    any
-  >();
-
-
- 
-  useEffect(() => {
-
-
-
-    if (result) {
-      const minimized = {
-        classifications: result.classifications,
-        detections: {
-          acne: result.detections.acne.objects?.at(0),
-          puffy_eyes: result.detections.puffy_eyes.objects?.at(0),
-        },
-      };
-      postData(`${import.meta.env.VITE_API_BACKEND_URL}/products/recommend`, minimized);
-
-
-
-    }
-  }, [result]);
-
-
-
-  if (!result) return <p className="text-center py-10 text-gray-600">🔍 Run skin analysis first.</p>;
-  if (loading) return <div className="w-max m-auto"><CircularProgress/></div>;
-  if (error) return <p className="text-center text-red-500 py-10"><CrossIcon/> {error}</p>;
-  if (!data || !data.success) return <p className="text-center py-10 text-gray-600">No data returned.</p>;
-
+  
   const beautifyProblem = (problem: string) =>
     problem === "Dark Circles" ? "Puffy Eyes" : problem;
 
-  return (
-    <div className="max-w-4xl mx-auto px-2 sm:px-4 py-10">
-      <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
-        Your Personalized Products
-      </h2>
+  if (!result)
+    return (
+      <p className="text-center py-10 text-gray-600 flex items-center justify-center gap-2">
+        <AlertCircle className="w-5 h-5 text-gray-500" /> Run skin analysis first.
+      </p>
+    );
 
-      <div className="bg-gray-50 rounded-md shadow-sm px-4 py-4 mb-8 border border-gray-200">
-        <div className="flex items-center gap-2 mb-2 text-gray-800">
-          <InfoIcon fontSize="small" />
-          <span className="text-md font-medium">
-            Skin Type: <strong>{data.skinType}</strong>
+  if (loading)
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton variant="rectangular" height={50} />
+            <Skeleton variant="rectangular" height={160} />
+          </div>
+        ))}
+      </div>
+    );
+
+  if (error)
+    return (
+      <p className="text-center text-red-500 py-10 flex items-center justify-center gap-2">
+        <XCircle className="w-4 h-4" /> {error}
+      </p>
+    );
+
+  if (!storedData || !storedData.success)
+    return (
+      <p className="text-center py-10 text-gray-600 flex items-center justify-center gap-2">
+        <AlertCircle className="w-5 h-5 text-gray-500" /> No recommendation data returned.
+      </p>
+    );
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">Your Personalized Routine</h2>
+
+      <div className="bg-white rounded-md shadow px-5 py-4 mb-6 border border-gray-200">
+        <div className="flex items-center gap-2 text-gray-800 mb-2">
+          <Info className="w-4 h-4" />
+          <span className="text-md">
+            Skin Type: <strong className="text-pink-600">{storedData.skinType}</strong>
           </span>
         </div>
         <div className="flex items-center gap-2 text-gray-800">
-          <LocalOfferIcon fontSize="small" />
-          <span className="text-md font-medium">
+          <Tag className="w-4 h-4" />
+          <span className="text-md">
             Concerns:{" "}
-            <strong>{data.problemsDetected.map(beautifyProblem).join(", ")}</strong>
+            <strong className="text-pink-600">
+              {storedData.problemsDetected.map(beautifyProblem).join(", ")}
+            </strong>
           </span>
         </div>
       </div>
 
-      {/* Collapsible routine steps with scrollable panels */}
-      <div className="space-y-4">
-        {Object.entries(data.routine).map(([stepKey, step], index) =>
-          step ? (
+      <div className="space-y-5">
+        {Object.entries(storedData.routine).map(([stepKey, step], index) => {
+          const typedStep: RoutineStep = step;
+
+          return typedStep && typedStep.products.length > 0 ? (
             <Accordion key={stepKey} defaultExpanded={index === 0}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="subtitle1" fontWeight="bold" className="text-lg text-gray-900">
-                  {`STEP ${index + 1}: ${step.title}`}
+                <Typography variant="h6" className="text-gray-800 font-semibold">
+                  STEP {index + 1}: {typedStep.title}
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Box sx={{ maxHeight: 400, overflowY: "auto", pr: 1 }}>
-                  <RoutineSection stepKey={stepKey} step={step} />
+                <Box sx={{ maxHeight: "auto", pr: 1 }}>
+                  <RoutineSection
+                    stepKey={stepKey}
+                    step={{ ...typedStep, products: [typedStep.products[0]] }}
+                  />
+
+                  {typedStep.products.length > 1 && (
+                    <>
+                      <Collapse in={showMore[stepKey]}>
+                        <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                          {typedStep.products.slice(1).map((product) => (
+                            <RoutineSection
+                              key={product._id}
+                              stepKey={stepKey}
+                              step={{ ...typedStep, products: [product] }}
+                            />
+                          ))}
+                        </div>
+                      </Collapse>
+                      <MuiButton
+                        onClick={() =>
+                          setShowMore((prev) => ({
+                            ...prev,
+                            [stepKey]: !prev[stepKey],
+                          }))
+                        }
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          mt: 2,
+                          borderColor: "#FF69B4",
+                          color: "#FF69B4",
+                          textTransform: "none",
+                        }}
+                      >
+                        {showMore[stepKey] ? "Hide Alternatives" : "Show More Options"}
+                      </MuiButton>
+                    </>
+                  )}
                 </Box>
               </AccordionDetails>
             </Accordion>
-          ) : null
-        )}
+          ) : (
+            <Accordion key={stepKey} disabled>
+              <AccordionSummary>
+                <Typography variant="h6" className="text-gray-400">
+                  STEP {index + 1}: {typedStep?.title}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography className="text-sm text-gray-500 italic flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" /> No suitable product found for this step.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
       </div>
     </div>
   );

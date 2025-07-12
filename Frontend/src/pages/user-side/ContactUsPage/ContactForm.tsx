@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"; // Import Zod
 import Button from "../../../component/UI/Button"; // Button component
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Define Zod schema for validation
 const contactFormSchema = z.object({
@@ -22,18 +24,31 @@ type ContactFormData = z.infer<typeof contactFormSchema>; // Type inference from
 const ContactForm: React.FC = () => {
   // Setup react-hook-form with Zod schema
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema), // Use Zod resolver for validation
-  });
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors },
+} = useForm<ContactFormData>({
+  resolver: zodResolver(contactFormSchema),
+});
 
-  const onSubmit = (data: ContactFormData) => {
-    console.log("Form Data:", data);
-    // Add logic to handle form submission (e.g., send data to API)
-  };
 
+
+  const onSubmit = async (data: ContactFormData) => {
+  try {
+    const response = await axios.post<{message:string}>(
+      `${import.meta.env.VITE_API_BACKEND_URL}/contact`,
+      data,
+      { withCredentials: true } // if your backend uses cookies/auth
+    );
+
+    toast.success(response.data.message || "Message sent successfully!");
+    reset()
+  } catch (err: any) {
+    console.error("❌ Contact form error:", err);
+    toast.error(err.response?.data?.message || "Failed to send message.");
+  }
+};
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

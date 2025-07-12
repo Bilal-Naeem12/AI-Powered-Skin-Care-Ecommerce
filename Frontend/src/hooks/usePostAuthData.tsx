@@ -45,7 +45,7 @@ const usePostAuthData = <T, R>() => {
       } else {
         console.error("🔴 Request failed:", err);
         setError("Failed to fetch recommendation.");
-        toast.error("Something went wrong while fetching data.");
+      toast.error(  err.response?.data?.message ||"Something went wrong while fetching data.");
       }
     } finally {
       setLoading(false);

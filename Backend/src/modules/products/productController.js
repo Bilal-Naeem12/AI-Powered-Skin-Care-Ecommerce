@@ -448,30 +448,30 @@ exports.uploadImages =    async (req, res) => {
 exports.recommendProducts = async (req, res) => {
   try {
     const { detections, classifications } = req.body;
-  
-    const userId = req.user.id; // requires authMiddleware
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
+    // Format skin type
     const rawSkinType = classifications?.skin_type?.label || "";
-const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
+    const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
+
+    // Skin problems
     const acneDetected = detections?.acne?.bbox?.length > 0;
     const puffyEyesDetected = detections?.puffy_eyes?.bbox?.length > 0;
     const skinProblemTags = [];
-
     if (acneDetected) skinProblemTags.push("Acne");
     if (puffyEyesDetected) skinProblemTags.push("Dark Circles");
-    console.log(skinProblemTags)
+
+    // Allergen filtering
     const excludedIngredients = user.allergenPreferences || [];
-    console.log(excludedIngredients)
+    const allergenRegexes = excludedIngredients.map((a) => new RegExp(a, "i"));
+
+    // Product filters
     const filters = {
       isDeleted: false,
       isAvailable: true,
-  
       $or: [
-        // 1. Products explicitly matching the skin problem
         { skinProblem: { $in: skinProblemTags } },
-    
-        // 2. Products matching skin type BUT with no specific skinProblem set
         {
           $and: [
             { aiSkinSuitability: { $in: [skinType] } },
@@ -480,60 +480,82 @@ const skinType = rawSkinType.charAt(0).toUpperCase() + rawSkinType.slice(1);
         }
       ]
     };
-    // Get all matching products
+
     const potentialProducts = await Product.find(filters);
 
+    // Remove allergens
+    const allProducts = potentialProducts.filter(product =>
+      !product.ingredients?.some(ingredient =>
+        allergenRegexes.some(regex => regex.test(ingredient))
+      )
+    );
 
+    // Score function (can be refined later)
+    function scoreProduct(product) {
+      let score = 0;
+      if (product.aiSkinSuitability?.includes(skinType)) score += 3;
+      if (product.skinProblem?.some(p => skinProblemTags.includes(p))) score += 2;
+      if (product.stock > 0) score += 1;
+      return score;
+    }
 
+    // Pick best per category
+    const usedProductIds = new Set();
 
-   
-const allergenRegexes = excludedIngredients.map((allergen) =>
-  new RegExp(allergen, "i") // i = case-insensitive
-);
+    function selectTopProduct(categoryName) {
+      const matching = allProducts.filter(p =>
+        (p.category?.name === categoryName || p.category?.name?.name === categoryName)
+      );
 
-const allProducts = potentialProducts.filter((product) =>
-  !product.ingredients?.some((ing) =>
-    allergenRegexes.some((regex) => regex.test(ing))
-  )
-);
+      const sorted = matching.sort((a, b) => scoreProduct(b) - scoreProduct(a));
+      const top = sorted[0];
+      if (top) usedProductIds.add(String(top._id));
+      return top ? [top] : [];
+    }
 
-    // Organize by routine step
+    // Routine steps
     const routine = {
       step1: {
         title: "Cleanse Your Skin",
         category: "Cleanser",
-        products: allProducts.filter(p => p.category.name.name === "Cleanser"),
+        products: selectTopProduct("Cleanser"),
       },
       step2: {
         title: "Apply Treatment Gel",
         category: "Gel",
-        products: allProducts.filter(p => p.category.name === "Gel"),
+        products: selectTopProduct("Gel"),
       },
       step3: {
         title: "Use a Targeted Serum",
         category: "Serum",
-        products: allProducts.filter(p => p.category.name === "Serum"),
+        products: selectTopProduct("Serum"),
       },
       step4: {
         title: "Seal with Cream",
         category: "Cream",
-        products: allProducts.filter(p => p.category.name === "Cream"),
+        products: selectTopProduct("Cream"),
       },
     };
-    
+
+    // Explore more section: products not already used
+    const exploreMore = allProducts
+      .filter(p => !usedProductIds.has(String(p._id)))
+      .sort((a, b) => scoreProduct(b) - scoreProduct(a))
+      .slice(0, 10); // up to 10 more suggestions
 
     res.json({
       success: true,
       skinType,
       problemsDetected: skinProblemTags,
       routine,
+      exploreMore,
     });
+
   } catch (err) {
     console.error("🔴 Recommendation error:", err);
     res.status(500).json({ success: false, message: "Recommendation failed" });
   }
 };
-
 
 
 exports.uploadReviewImages = async (req, res) => {

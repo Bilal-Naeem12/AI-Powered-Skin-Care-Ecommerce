@@ -10,6 +10,7 @@ import type {
 import { RecommendationResponse } from "@/types/Recommendation";
 import { RecommendationStepInfo } from "@/types/SkinHistoryEntry";
 import { verifyAndCropFace } from "@/utils/verifyAndCropFace";
+import useRecommendationStore from "./RecommendationStore";
 
 interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
@@ -27,6 +28,7 @@ interface SkinAnalysisState {
 
   checkAnalysis: () => void;
 }
+const { setData: storeRecommendationData } = useRecommendationStore.getState(); // ✅ direct store usage
 
 const uploadImage = async (input: File | string): Promise<string> => {
   const formData = new FormData();
@@ -174,7 +176,9 @@ const afterUrl = await uploadImage(afterFile);
       minimized,
       { withCredentials: true }
     );
-
+if (recResp?.data?.success) {
+  storeRecommendationData(recResp.data); // ✅ store it right after fetching
+}
    const recProductsWithSteps = Object.entries(recResp.data.routine)
   .flatMap(([stepKey, step]) =>
     step?.products.map((p) => ({
