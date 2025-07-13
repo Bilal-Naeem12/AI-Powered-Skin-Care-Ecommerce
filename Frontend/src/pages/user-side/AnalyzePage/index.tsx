@@ -8,11 +8,16 @@ import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import LockIcon from "@mui/icons-material/Lock";
 import useUserStore from "@/store/UserStore";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import useFaceScanStore from "@/store/FaceScanStore";
 
 const AnalyzePage: React.FC = () => {
   const { result } = useSkinAnalysisStore();
 const { isLoggedIn } = useUserStore();  
 const navigate = useNavigate();
+const triggerFaceScan = () => {
+  const { setEntryModal } = useFaceScanStore.getState();
+  setEntryModal(true);
+};
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 space-y-6">
@@ -39,9 +44,10 @@ const navigate = useNavigate();
   {/* Skin Analysis Card */}
   <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition group">
     <Link
-      to={isLoggedIn ? "/ai-tools-page/skin-analysis" : "#"}
+      to={(isLoggedIn&& result?.scanned_image) ? "/ai-tools-page/skin-analysis" : "/"}
       onClick={(e) => {
         if (!isLoggedIn) e.preventDefault();
+      if (!result?.scanned_image)  triggerFaceScan()
       }}
       className="flex flex-col h-full"
     >

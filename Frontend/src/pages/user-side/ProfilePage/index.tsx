@@ -10,6 +10,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ProductReviewPage from './sub-pages/OrdersComponent/sub-pages/LeaveReview/ProductReviewPage';
 import OrderDetailPage from './sub-pages/OrdersComponent/sub-pages/OrderDetail';
 import AnalysisDetail from './sub-pages/SkinAnalysisTimeline/AnalysisDetail';
+import RefundRequestDetailPage from './sub-pages/RefundComponent/RefundRequestDetailPage';
 
 const ProfilePage = () => {
  
@@ -63,6 +64,8 @@ if (error || !user) {
  <Route path="/orders/:id" element={<OrderDetailPage />} />
   <Route path="/analysis-timeline/:id" element={<AnalysisDetail />} />
   <Route path="/progress-tracking/:id" element={<AnalysisDetail />} />
+  <Route path="/refund-requests/:id" element={<RefundRequestDetailPage />} />
+
      {/* <Route path="/order/product/:id" element={<ProductReviewPage/>} /> */}
 
   {/* Default Route */}

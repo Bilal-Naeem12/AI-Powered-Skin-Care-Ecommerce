@@ -27,9 +27,12 @@ import {
     MapPin,
     Mail,
     BarChart3,
+    ActivitySquare,
+    Repeat2,
   } from "lucide-react";
 import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAnalysisTimeline";
-import ProgressTracking from "@/pages/user-side/ProfilePage/sub-pages/ProgressTracking";
+import ProgressTracking from "@/pages/user-side/ProfilePage/sub-pages/ProgressTrackingComponent";
+import RefundRequestsPage from "@/pages/user-side/ProfilePage/sub-pages/RefundComponent";
   
  
   
@@ -90,8 +93,15 @@ import ProgressTracking from "@/pages/user-side/ProfilePage/sub-pages/ProgressTr
              {
           name: "Progress Tracking",
           path: "/profile-page/progress-tracking", // Path for Skin Routine
-          icon: BarChart3, // Use a relevant icon for skin routine
+          icon: ActivitySquare, // Use a relevant icon for skin routine
           component: ProgressTracking, // Define SkinRoutineComponent
+        },
+
+            {
+          name: "Refund Requests",
+          path: "/profile-page/refund-requests", // Path for Skin Routine
+          icon: Repeat2, // Use a relevant icon for skin routine
+          component: RefundRequestsPage, // Define SkinRoutineComponent
         },
         //     {
         //   name: "My Skin Routine",

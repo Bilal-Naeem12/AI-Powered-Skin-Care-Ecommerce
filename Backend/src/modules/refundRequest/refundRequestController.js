@@ -147,3 +147,39 @@ exports.getAllRefundRequests = async (req, res, next) => {
     next(err);
   }
 };
+
+
+exports.getUserRefundRequests = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const refundRequests = await RefundRequest.find({ userId })
+      .populate("orderId", "orderNumber totalAmount placedAt statusHistory")
+      .populate("reviewedBy", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json(refundRequests);
+  } catch (err) {
+    console.error("❌ Error fetching user's refund requests:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// controllers/refundRequestController.js
+exports.getRefundRequestById = async (req, res) => {
+  try {
+    const request = await RefundRequest.findById(req.params.id)
+      .populate("orderId") // ✅ Populates full order object
+      .lean();
+
+    if (!request || request.userId.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ message: "Refund request not found" });
+    }
+
+    res.json(request);
+  } catch (err) {
+    console.error("Error fetching refund request:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

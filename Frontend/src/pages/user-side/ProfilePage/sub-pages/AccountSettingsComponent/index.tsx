@@ -25,6 +25,7 @@ import ProfilePicUploader from "@/component/UI/ProfilePicUploader";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import IngredientSelect from "@/component/comboboxes/IngredientSelect";
 
 interface ApiResponse {
   user: User;
@@ -456,26 +457,12 @@ const allergenPrefs     = watch("allergenPreferences");
 </Grid>
 
 <Grid item xs={12}>
-  <TextField
-    label="Add allergen preference & press Enter"
-    fullWidth
-    value={allergenInput}
-    onChange={(e) => setAllergenInput(e.target.value)}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleAddChip("allergenPreferences", allergenInput);
-      }
-    }}
+  <IngredientSelect
+    control={control}
+    name="allergenPreferences"
+    label="Allergen Preferences"
+    multiple={true}
   />
-  {(allergenPrefs ?? []).map((c, i) => (
-    <Chip
-      key={i}
-      label={c}
-      sx={{ m: 0.5 }}
-      onDelete={() => handleDeleteChip("allergenPreferences", i)}
-    />
-  ))}
 </Grid>
 
 

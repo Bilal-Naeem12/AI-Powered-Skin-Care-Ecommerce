@@ -3,7 +3,8 @@ const {
   createRefundRequest,
   reviewRefundRequest,
   getAllRefundRequests,
-  uploadRefundProofImages,
+  uploadRefundProofImages,getRefundRequestById,
+  getUserRefundRequests
 } = require("./refundRequestController");
 const { authMiddleware } = require("../../middleware/authMiddleware");
 const { roleMiddleware } = require("../../middleware/roleMiddleware");
@@ -12,6 +13,9 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
+
+
+router.get("/user", authMiddleware, getUserRefundRequests);
 
 /* Customer: Upload refund proof images */
 router.post("/:id/images", authMiddleware, upload.array("images", 5), uploadRefundProofImages);
@@ -24,5 +28,7 @@ router.put("/:id/review", authMiddleware, roleMiddleware("admin"), reviewRefundR
 
 /* Admin: Get all refund requests */
 router.get("/", authMiddleware, roleMiddleware("admin"), getAllRefundRequests);
+// Get a specific refund request by ID (for logged-in user)
+router.get('/:id', authMiddleware, getRefundRequestById);
 
 module.exports = router;
