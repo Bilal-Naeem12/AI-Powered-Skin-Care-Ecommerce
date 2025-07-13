@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Breadcrumb from "@/component/UI/Breadcrumb";
 import MainLayout from "@/component/Layout/MainLayout";
 import useInpaintingStore from "@/store/InpaintingStore";
@@ -8,30 +8,44 @@ import {
   ReactCompareSliderImage,
   ReactCompareSliderHandle,
 } from "react-compare-slider";
-import { GripHorizontal } from "lucide-react";
+import { GripHorizontal, UploadCloud } from "lucide-react";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import useSkinAnalysisStore from "@/store/SkinAnalysis";
 
 const InpaintingPage: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [showModal, setShowModal] = useState(false);
   const { inpaint, result, loading, clear } = useInpaintingStore();
   const inputRef = useRef<HTMLInputElement | null>(null);
+const { originalImage } = useSkinAnalysisStore();
 
-  const handleFileSelect = (f: File) => {
-    setFile(f);
-    clear();
+  const handleFileSelect = (f: File, showPreview = true) => {
+  setFile(f);
+  clear();
+  if (showPreview) {
     setShowModal(true);
-  };
+  } else {
+    inpaint(f);
+  }
+};
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) handleFileSelect(f);
+   if (f) {
+  const fromSkinAnalysis = originalImage && f === originalImage;
+  handleFileSelect(f, !fromSkinAnalysis); // pass false if auto
+}
+
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0];
-    if (f) handleFileSelect(f);
+   if (f) {
+  const fromSkinAnalysis = originalImage && f === originalImage;
+  handleFileSelect(f, !fromSkinAnalysis); // pass false if auto
+}
+
   };
 
   const resetAll = () => {
@@ -41,6 +55,15 @@ const InpaintingPage: React.FC = () => {
     inputRef.current.value = ""; // ✅ clear native input value
   }
   };
+
+  useEffect(() => {
+  if (originalImage) {
+    setFile(originalImage);
+    clear();
+       inpaint(originalImage); 
+  }
+}, [originalImage]);
+
 
   const scanned_image_before = file ? URL.createObjectURL(file) : null;
   const scanned_image_after = result?.inpainted_image
@@ -140,11 +163,14 @@ const InpaintingPage: React.FC = () => {
               className="hidden"
             />
 
-            {!scanned_image_before && (
-              <p className="text-gray-400 text-lg text-center">
-                Upload an image to get started!
-              </p>
-            )}
+            {!scanned_image_before && (<>
+           <UploadCloud className="w-12 h-12 text-gray-400 mb-4" />
+
+  {/* Message */}
+  <p className="text-gray-400 text-lg text-center">
+    Drag & drop or click to upload an image
+  </p>
+            </>)}
 
             {scanned_image_before && !showCompareSlider && (
               <Box className="w-full h-full relative">

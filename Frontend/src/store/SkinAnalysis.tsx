@@ -14,6 +14,9 @@ import useRecommendationStore from "./RecommendationStore";
 
 interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
+  originalImage: File | null;
+setOriginalImage: (file: File) => void;
+
   loading: boolean;
   error: string | null;
     isProgressTracking: boolean;
@@ -96,6 +99,8 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         loading: false,
         error: null,
         isProgressTracking:false,
+        setOriginalImage: (file) => set({ originalImage: file }),
+        originalImage:null,
         setProgressTracking: (value) => set({ isProgressTracking: value }),
         analyzeSkin: async (formData: FormData, originalImage: File|string, userId: string|undefined) => {
   set({ loading: true, error: null });
@@ -143,6 +148,7 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
 
     // ✅ 4️⃣ Upload cropped face to Cloudinary
     const beforeUrl = await uploadImage(verifiedFile);
+set({ originalImage: originalImage instanceof File ? originalImage : null });
 
     // 2. Send to FastAPI for analysis
     const resp = await axios.post<SkinAnalysisResult>(

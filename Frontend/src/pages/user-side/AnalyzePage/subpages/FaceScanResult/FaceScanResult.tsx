@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import { Classification, Classifications, Detections } from "@/types/SkinAnalysisResult";
+import {  useNavigate } from "react-router-dom";
 const severityLabelMap: Record<string, string> = {
   "level -1": "Clear",
   "level 0": "Mild",
@@ -15,7 +16,7 @@ const severityLabelMap: Record<string, string> = {
 const FaceScanResult: React.FC = () => {
   const { result } = useSkinAnalysisStore();
   const [showScores, setShowScores] = useState(false);
-
+const navigate = useNavigate()
   if (!result) {
     return (
       <div className="p-6 text-center text-gray-500">
@@ -27,17 +28,42 @@ const FaceScanResult: React.FC = () => {
   const { detections, classifications, scanned_image } = result;
 
   return (
-    <div className="space-y-6 px-6 pb-6 bg-white rounded-xl shadow-lg">
+    <div className="space-y-6 px-6 pt-2 pb-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-2xl font-extrabold text-gray-800 text-start">
         Face Scan Results
       </h2>
 
-      {/* Annotated Image */}
-      <img
-  src={`data:image/jpeg;base64,${scanned_image}`}
-  alt="Annotated result"
-  className="w-fit h-auto object-contain rounded-md border"
-/>
+    <div className="relative">
+  {/* Image */}
+  <img
+    src={`data:image/jpeg;base64,${scanned_image}`}
+    alt="Annotated result"
+    className="w-fit h-auto object-contain rounded-md border"
+  />
+
+  {/* Sticky AI Button */}
+ {detections.acne.objects.length>0  && <div className="absolute top-4 right-4 z-10">
+    <div className="sticky top-20">
+      <button
+        onClick={() => navigate("/ai-tools-page/inpainting")}
+        className="group relative flex items-center h-14 w-14 rounded-full transition-all duration-300 shadow-lg overflow-hidden hover:w-40"
+        style={{
+          backgroundImage: "linear-gradient(to right, #a855f7, #ec4899, #3b82f6)",
+        }}
+      >
+        {/* Icon Container */}
+        <div className="flex items-center justify-center w-12 h-12 bg-white rounded-full z-10 transition-transform duration-300 group-hover:translate-x-1">
+          <span className="text-yellow-500 text-xl">✨</span>
+        </div>
+
+        {/* Sliding Text */}
+        <span className="absolute left-14 opacity-0 whitespace-nowrap text-white font-medium transition-all duration-300 group-hover:opacity-100 group-hover:left-16">
+          See a Magic
+        </span>
+      </button>
+    </div>
+  </div>}
+</div>
 
       {/* Detections */}
       <h3 className="text-xl font-semibold text-gray-800">Detections</h3>

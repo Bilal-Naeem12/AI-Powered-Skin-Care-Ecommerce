@@ -83,7 +83,7 @@ const triggerFaceScan = () => {
   </div>
 
   {/* Inpainting Card */}
-  <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition group">
+  <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition duration-[2000]  group">
     <Link
       to={isLoggedIn ? "/ai-tools-page/inpainting" : "#"}
       onClick={(e) => {
@@ -96,7 +96,7 @@ const triggerFaceScan = () => {
   <img
     src="/assets/inpainting_before.jpg"
     alt="Inpainting Before"
-    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000] group-hover:opacity-0"
   />
 
   {/* WHITE FLASH overlay */}
@@ -108,7 +108,7 @@ const triggerFaceScan = () => {
   <img
     src="/assets/inpainting_after.jpg"
     alt="Inpainting After"
-    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 group-hover:opacity-100"
   />
 </div>
 
