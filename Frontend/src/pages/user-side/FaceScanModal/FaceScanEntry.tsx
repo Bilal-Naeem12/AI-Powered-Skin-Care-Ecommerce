@@ -40,9 +40,7 @@ const [mode, setMode] = useState<Mode | null>(null);
 const [askModeOpen, setAskModeOpen] = useState(false);
 const [nextAction, setNextAction] = useState<() => void>(() => {});
 const [captureRequired, setCaptureRequired] = useState(false);
-const triggerFilePicker = () => {
-  fileInputRef.current?.click(); // runs after user confirms in modal
-};
+
 
 const { setProgressTracking } = useSkinAnalysisStore();
 
@@ -54,7 +52,9 @@ const handleChoice = (next: () => void) => {
 };
 
 
-
+const triggerFilePicker = () => {
+  fileInputRef.current?.click(); // runs after user confirms in modal
+};
   const { openModal: openLiveModal, showLoading, hideLoading, setDetectedImage, setEntryModal } =
     useFaceScanStore();
   const { result, analyzeSkin, clearResult } = useSkinAnalysisStore();
@@ -200,7 +200,7 @@ const handleChoice = (next: () => void) => {
     {/* Upload */}
     <div
       className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-pink-50 cursor-pointer transition"
-     onClick={() => handleChoice(triggerFilePicker)}
+     onClick={() => handleChoice(()=>triggerFilePicker())}
 
     >
       <CloudUploadIcon className="text-[#FF69B4]" />
@@ -409,7 +409,7 @@ onClick={() => handleChoice(handleScanWithPhone)}
     onVerified={() => {
       setProgressTracking(true);
       setFaceVerifyOpen(false);
-      nextAction();
+      nextAction?.();
     }}
      onCancel={() => {
     // ❌ user canceled
