@@ -16,6 +16,7 @@ import { User } from "@/types/User";
 import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import FaceVerificationModal from "./FaceVerificationModal";
 import UniversalCapture from "@/component/UI/UniversalCapture";
+import { handleUploadFaceVerification } from "@/component/UI/OnboardingModal";
 
 type Step = "choice" | "preview" | "uploading" | "qr";
 
@@ -32,6 +33,8 @@ const FaceScanEntry: React.FC<{ closeAll: () => void }> = ({ closeAll }) => {
   const [onConsentProceed, setOnConsentProceed] = useState<() => void>(() => {});
   const [faceVerifyOpen, setFaceVerifyOpen] = useState(false);
 type Mode = "general" | "progress";
+const [capturedImage, setCapturedImage] = useState<string | null>(null);
+const [isUploading, setIsUploading] = useState(false);
 
 const [mode, setMode] = useState<Mode | null>(null);
 const [askModeOpen, setAskModeOpen] = useState(false);
@@ -365,22 +368,38 @@ onClick={() => handleChoice(handleScanWithPhone)}
 
 
 {captureRequired && (
-  <div className="fixed bg-white rounded p-2">
-  <UniversalCapture
-    onCapture={async (dataUrl) => {
-      // Save to backend
-      await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/users/${userId}/face-verification`, {
-        image: dataUrl,
-      }, { withCredentials: true });
+ <div className="fixed bg-white rounded p-2">
+  <div className="relative">
+    <UniversalCapture
+      onCapture={(dataUrl) => {
+        setCapturedImage(dataUrl);
+      }}
+      onContinue={async () => {
+        if (!capturedImage) return;
 
-      setCaptureRequired(false);
-      setFaceVerifyOpen(true); // 🔁 Retry verification
-    }}
-    onContinue={() => {}} // handled after onCapture
-    title="Capture Your Face"
-    description="We'll use this image to verify your identity and track your skincare progress. Please ensure it's a clear image of your face."
-  />
+        setIsUploading(true); // ✅ Show loader
+        try {
+          await handleUploadFaceVerification(capturedImage);
+          setCaptureRequired(false);
+          setFaceVerifyOpen(true);
+        } catch (err) {
+          console.error("❌ Upload failed", err);
+        } finally {
+          setIsUploading(false); // ✅ Hide loader
+        }
+      }}
+      title="Capture Your Face"
+      description="We'll use this image to verify your identity and track your skincare progress. Please ensure it's a clear image of your face."
+    />
+
+    {isUploading && (
+      <div className="absolute inset-0 z-20 bg-white/80 flex items-center justify-center rounded">
+        <div className="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )}
   </div>
+</div>
+
 )}
 
 {faceVerifyOpen && (

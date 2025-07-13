@@ -16,10 +16,11 @@ interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
   originalImage: File | null;
 setOriginalImage: (file: File) => void;
-
+ triggerInpaintId: string | null;
   loading: boolean;
   error: string | null;
     isProgressTracking: boolean;
+    triggerInpaint:() => void;
      setProgressTracking: (value: boolean) => void;
   analyzeSkin: (formData: FormData, originalImage: File|string, userId: string | undefined) => Promise<void>;
 
@@ -98,9 +99,12 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         result: null,
         loading: false,
         error: null,
+        triggerInpaintId:null,
         isProgressTracking:false,
         setOriginalImage: (file) => set({ originalImage: file }),
         originalImage:null,
+
+        triggerInpaint: () => set({ triggerInpaintId: `${Date.now()}` }),
         setProgressTracking: (value) => set({ isProgressTracking: value }),
         analyzeSkin: async (formData: FormData, originalImage: File|string, userId: string|undefined) => {
   set({ loading: true, error: null });

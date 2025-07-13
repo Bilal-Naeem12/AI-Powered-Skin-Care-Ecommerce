@@ -17,7 +17,8 @@ const InpaintingPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const { inpaint, result, loading, clear } = useInpaintingStore();
   const inputRef = useRef<HTMLInputElement | null>(null);
-const { originalImage } = useSkinAnalysisStore();
+const { originalImage ,triggerInpaintId} = useSkinAnalysisStore();
+const hasInpaintedOriginal = useRef(false);
 
   const handleFileSelect = (f: File, showPreview = true) => {
   setFile(f);
@@ -32,8 +33,8 @@ const { originalImage } = useSkinAnalysisStore();
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
    if (f) {
-  const fromSkinAnalysis = originalImage && f === originalImage;
-  handleFileSelect(f, !fromSkinAnalysis); // pass false if auto
+ handleFileSelect(f, true); // ✅ always show preview when uploading manually
+
 }
 
   };
@@ -42,28 +43,28 @@ const { originalImage } = useSkinAnalysisStore();
     e.preventDefault();
     const f = e.dataTransfer.files?.[0];
    if (f) {
-  const fromSkinAnalysis = originalImage && f === originalImage;
-  handleFileSelect(f, !fromSkinAnalysis); // pass false if auto
+  handleFileSelect(f, true); // ✅ always show preview when uploading manually
+
 }
 
   };
 
   const resetAll = () => {
-    setFile(null);
+      setFile(null);     
     clear();
+      hasInpaintedOriginal.current = false;
       if (inputRef.current) {
     inputRef.current.value = ""; // ✅ clear native input value
   }
   };
 
-  useEffect(() => {
-  if (originalImage) {
+useEffect(() => {
+  if (originalImage && triggerInpaintId) {
     setFile(originalImage);
     clear();
-       inpaint(originalImage); 
+    inpaint(originalImage);
   }
-}, [originalImage]);
-
+}, [triggerInpaintId]);
 
   const scanned_image_before = file ? URL.createObjectURL(file) : null;
   const scanned_image_after = result?.inpainted_image

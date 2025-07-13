@@ -14,8 +14,9 @@ const severityLabelMap: Record<string, string> = {
 
 
 const FaceScanResult: React.FC = () => {
-  const { result } = useSkinAnalysisStore();
+  const { result,triggerInpaint } = useSkinAnalysisStore();
   const [showScores, setShowScores] = useState(false);
+
 const navigate = useNavigate()
   if (!result) {
     return (
@@ -45,7 +46,7 @@ const navigate = useNavigate()
  {detections.acne.objects.length>0  && <div className="absolute top-4 right-4 z-10">
     <div className="sticky top-20">
       <button
-        onClick={() => navigate("/ai-tools-page/inpainting")}
+        onClick={() => {navigate("/ai-tools-page/inpainting"); triggerInpaint(); }}
         className="group relative flex items-center h-14 w-14 rounded-full transition-all duration-300 shadow-lg overflow-hidden hover:w-40"
         style={{
           backgroundImage: "linear-gradient(to right, #a855f7, #ec4899, #3b82f6)",
