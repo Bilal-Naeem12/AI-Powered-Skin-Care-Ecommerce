@@ -86,8 +86,12 @@ const allergenForm = useForm<{ allergens: string[] }>({
 const handleFinishOnboarding = async () => {
   try {
 
-       await handleUploadFaceVerification(faceImage??"");
+    if (!faceImage || !faceImage.startsWith("data:image/")) {
+  console.error("⚠️ Invalid or empty base64 image");
+  return;
+}
 
+await handleUploadFaceVerification(faceImage);
    const response = await axios.patch<{user:User}>(
   `${import.meta.env.VITE_API_BACKEND_URL}/users/${user?._id}/walkthrough`,
   {

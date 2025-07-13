@@ -81,7 +81,7 @@ exports.getHistoryByUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid userId" });
 
     /* ---------- build query ---------- */
-    const query = { userId };
+    const query = { userId,isProgressTracking: false };
 
     // If a date is supplied, match entries whose analysedAt falls on that day
     if (date) {

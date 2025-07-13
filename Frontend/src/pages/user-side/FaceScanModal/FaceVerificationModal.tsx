@@ -131,7 +131,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
                 // setStatus(`Distance: ${dist.toFixed(4)}`);
               }
             } else {
-              setStatus('No face detected');
+              setStatus('No Matched');
             }
           }
           rafIdRef.current = requestAnimationFrame(verifyLoop);
