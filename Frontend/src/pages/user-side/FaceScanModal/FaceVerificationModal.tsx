@@ -61,7 +61,9 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
         if (!isActive) return;
 
         setStatus('Fetching reference image...');
-        const resp = await axios.get<{ secureUrl: string }>(
+      
+      
+      const resp = await axios.get<{ secureUrl: string }>(
           `${import.meta.env.VITE_API_BACKEND_URL}/users/${userId}/face-verification`,
           { withCredentials: true }
         );
@@ -72,12 +74,16 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
           return;
         }
 
+
         setStatus('Processing reference image...');
         const img = await faceapi.fetchImage(secureUrl);
         const refDetection = await faceapi
           .detectSingleFace(img)
           .withFaceLandmarks()
           .withFaceDescriptor();
+
+
+
         if (!refDetection) {
           setStatus('Unable to detect face in reference image');
           return;
@@ -138,10 +144,17 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
         };
 
         verifyLoop();
-      } catch (err) {
-        console.error('[runVerification] error:', err);
-        if (isActive) setStatus('Error during verification');
-      }
+      } catch (err: any) {
+  const statusCode = err?.response?.status;
+  const errorMessage =
+    err?.response?.data?.message || "Failed to fetch reference image.";
+
+  setStatus(errorMessage);
+
+  if (statusCode === 404) {
+    onRequireCapture(); // Only trigger this if it's a 404 Not Found
+  }
+}
     };
 
     runVerification();
