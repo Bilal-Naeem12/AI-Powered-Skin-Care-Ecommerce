@@ -100,9 +100,32 @@ exports.kpiCard = async (req, res) => {
 };
 
 exports.lineChart = async (req, res) => {
-  const { metric, period="Month",units = 12 } = req.query;
-  const data = await AnalyticsService.getLineChart(metric, period, units);
-  res.json(data);
+  try {
+    const { metric, period = "Month", units = 12 } = req.query;
+    // 1️⃣ get raw points
+    const points = await AnalyticsService.getLineChart(
+      metric,
+      period,
+      parseInt(units, 10)
+    );
+
+    // 2️⃣ normalize every `date` to a string
+    const formatted = points.map(({ date, value }) => ({
+      date:
+        typeof date === "string"
+          ? date
+          : date instanceof Date
+          ? date.toISOString()
+          : String(date),
+      value,
+    }));
+
+    // 3️⃣ return
+    res.json(formatted);
+  } catch (err) {
+    console.error("lineChart error:", err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 exports.leaderboard = async (req, res) => {
@@ -256,3 +279,128 @@ exports.dashboardOverview = async (req, res) => {
 /* ─────────────── Date Helper Functions ─────────────────────────── */
 /* These must match exactly the ones in analyticsModel.js for floorDate / shiftDate. */
 
+
+
+exports.getAllLineCharts = async (req, res) => {
+  try {
+    // 1. Read query params
+    const period = req.query.period || "Month";
+    const units  = parseInt(req.query.units || "12", 10);
+    // optional comma-separated override, otherwise take your default set:
+    const metrics = req.query.metrics
+      ? req.query.metrics.split(",").map((m) => m.trim())
+      : ["TotalRevenue", "TotalOrders", "TotalUsers", "TotalProducts"];
+
+    // 2. Fetch each series in parallel
+    const seriesEntries = await Promise.all(
+      metrics.map(async (metricType) => {
+        const rawPoints = await AnalyticsService.getLineChart(
+          metricType,
+          period,
+          units
+        );
+        // normalize date→string
+        const points = rawPoints.map(({ date, value }) => ({
+          date:
+            typeof date === "string"
+              ? date
+              : date instanceof Date
+              ? date.toISOString()
+              : String(date),
+          value,
+        }));
+        return [metricType, points];
+      })
+    );
+
+    // 3. Build response object
+    const payload = Object.fromEntries(seriesEntries);
+    return res.json(payload);
+  } catch (err) {
+    console.error("getAllLineCharts error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+
+async function computeKpi(metricType, period) {
+  // reuse your existing logic for week vs non-week inside fetchKPIWithChange...
+  // here is a simplified version for Month/Day/Week:
+  const now = new Date();
+  let currentValue = 0, prevValue = 0;
+
+  if (period === "Week") {
+    // get last 7 days
+    const today = floorDate(now, "Day");
+    const weekStart = shiftDate(today, "Day", -6);
+    const docs = await Analytics.find({
+      metricType,
+      period: "Day",
+      startDate: { $gte: weekStart, $lte: today },
+    }).lean();
+    // sum for current week
+    currentValue = docs.reduce((sum, d) => sum + (d.value||0), 0);
+
+    // previous week
+    const prevStart = shiftDate(weekStart, "Day", -7);
+    const prevEnd   = shiftDate(prevStart, "Day", 6);
+    const prevDocs = await Analytics.find({
+      metricType,
+      period: "Day",
+      startDate: { $gte: prevStart, $lte: prevEnd },
+    }).lean();
+    prevValue = prevDocs.reduce((sum, d) => sum + (d.value||0), 0);
+  } else {
+    // Day or Month or Year etc.
+    const currentStart = floorDate(now, period);
+    const prevStart    = floorDate(shiftDate(now, period, -1), period);
+
+    const [currDoc, prevDoc] = await Promise.all([
+      Analytics.findOne({ metricType, period, startDate: currentStart }).lean(),
+      Analytics.findOne({ metricType, period, startDate: prevStart }).lean(),
+    ]);
+    currentValue = currDoc?.value || 0;
+    prevValue    = prevDoc?.value    || 0;
+  }
+
+  const changePct = prevValue === 0
+    ? currentValue === 0 ? 0 : 100
+    : ((currentValue - prevValue) / prevValue) * 100;
+
+  return {
+    value: currentValue,
+    changePct: +changePct.toFixed(2),
+  };
+}
+
+/**
+ * GET /api/analytics/kpis?period=Day|Week|Month
+ * Returns an object: { TotalOrders: {value,changePct}, TotalRevenue: {...}, ... }
+ */
+exports.getAllKpis = async (req, res) => {
+  try {
+    const period = req.query.period || "Month";
+    // exclude any metrics that don't make sense as a single KPI
+    const keys =  [
+  /* commerce */          "TotalOrders", "TotalRevenue", "AverageOrderValue", "RefundRate",
+  /* user */              "NewUsers", "ActiveUsers", "ReturningCustomers", "CustomerChurn",
+  /* product engagement */"ProductViews", "MostPurchasedProduct", "AbandonedCarts","TotalUsers",
+  /* custom */            "Custom"
+].filter(
+      (m) => m !== "MostPurchasedProduct" && m !== "Custom"
+    );
+
+    const entries = await Promise.all(
+      keys.map(async (metric) => {
+        const kpi = await computeKpi(metric, period);
+        return [metric, kpi];
+      })
+    );
+
+    const payload = Object.fromEntries(entries);
+    return res.json(payload);
+  } catch (err) {
+    console.error("getAllKpis error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+};

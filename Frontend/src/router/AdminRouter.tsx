@@ -24,6 +24,10 @@ import AdminProfile from "@/pages/admin-side/Users/AdminProfile";
 import DeletedUsers from "@/pages/admin-side/Users/DeletedUsers";
 import ManageCategories from "@/pages/admin-side/Products/ManageCategories";
 import OrderTrackingPage from "@/pages/admin-side/Orders & Payments/OrderTracking";
+import { Leaderboard } from "@mui/icons-material";
+import LeaderboardsPage from "@/pages/admin-side/Analytics/Leaderboards";
+import LineChartsPage from "@/pages/admin-side/Analytics/LineChartsPage";
+import KpisOverviewPage from "@/pages/admin-side/Analytics/KpiOverviewPage";
 
 const AdminRouter: React.FC = () => {
 
@@ -43,7 +47,14 @@ const AdminRouter: React.FC = () => {
           <Route path="/users/deleted" element={<DeletedUsers />} />
 
  
+       <Route path="/analytics/leaderboards" element={<LeaderboardsPage />} />
 
+ // in your router setup
+<Route
+  path="/analytics/trends"
+  element={<LineChartsPage />}
+/>
+ <Route path="/analytics/product-performance" element={<KpisOverviewPage />} />
 
           <Route path="products" element={<ManageProducts />} />
           <Route path="products/categories" element={<ManageCategories />} />

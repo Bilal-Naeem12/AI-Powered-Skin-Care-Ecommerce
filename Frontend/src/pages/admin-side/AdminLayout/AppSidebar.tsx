@@ -17,6 +17,7 @@ import {
 } from "@/icons";
 import { useSidebar } from "@/context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { BarChart2 } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -30,6 +31,16 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     path: "/admin",
+  },
+  {
+    icon: <BarChart2 className="h-5 w-5" />,
+    name: "Analytics",
+    subItems: [
+      { name: "Leaderboards",            path: "/admin/analytics/leaderboards" },
+      { name: "Trends Overview",      path: "/admin/analytics/trends" },
+     { name: "Product Performance", path: "/admin/analytics/product-performance" }
+
+    ],
   },
   {
     icon: <UserCircleIcon />,
@@ -64,7 +75,7 @@ const navItems: NavItem[] = [
       { name: "Orders", path: "/admin/orders" },
       // { name: "Payments", path: "/admin/payments" },
       { name: "Order Tracking", path: "/admin/order-tracking" },
-      { name: "Return Requests", path: "/admin/return-requests" },
+      // { name: "Return Requests", path: "/admin/return-requests" },
       // { name: "Transactions", path: "/admin/transactions" },
     ],
   },  
@@ -88,22 +99,17 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Customer Experience",
     subItems: [
-      { name: "Cart", path: "/admin/cart" },
-      { name: "Wishlist", path: "/admin/wishlist" },
-      { name: "Wishlist Items", path: "/admin/wishlist-items" },
       { name: "Reviews", path: "/admin/reviews" },
-      { name: "Review Replies", path: "/admin/review-replies" },
-      { name: "Feedback", path: "/admin/feedback" },
+       { name: "Refund Requests", path: "/admin/customer-support" },
     ],
   },
   {
     icon: <PlugInIcon />,
     name: "Engagement",
     subItems: [
-      { name: "Chatbot", path: "/admin/chatbot" },
       { name: "Notifications", path: "/admin/notifications" },
-      { name: "Support Tickets", path: "/admin/support-tickets" },
-      { name: "Customer Support", path: "/admin/customer-support" },
+      { name: "Contact Replies", path: "/admin/support-tickets" },
+     
     ],
   },
   {
@@ -114,16 +120,7 @@ const othersItems: NavItem[] = [
       { name: "FAQs", path: "/admin/faqs" },
     ],
   },
-  {
-    icon: <PlugInIcon />,
-    name: "Programs & Loyalty",
-    subItems: [
-      { name: "Referral Program", path: "/admin/referrals" },
-      { name: "Loyalty Points", path: "/admin/loyalty-points" },
-      { name: "Subscription Management", path: "/admin/subscriptions" },
-    ],
-  },
-  
+
 ];
 
 const AppSidebar: React.FC = () => {

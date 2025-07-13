@@ -143,7 +143,6 @@ const categories = sorted.map((p) => {
           </p>
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
-          <ChartTab />
         </div>
       </div>
 

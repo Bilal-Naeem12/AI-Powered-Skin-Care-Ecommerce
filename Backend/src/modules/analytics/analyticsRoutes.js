@@ -7,7 +7,8 @@ const {
   kpiCard,
   lineChart,
   leaderboard,
-  dashboardOverview
+  dashboardOverview,
+    getAllLineCharts,getAllKpis
 } = require("./analyticsController");
 const Product = require("../products/productModel");
 const User = require("../users/userModel");
@@ -36,7 +37,9 @@ router.get("/leaderboard",/* authMiddleware, roleMiddleware("admin"), */ leaderb
 router.get("/dashboard", dashboardOverview);
 
 
+router.get("/lines", getAllLineCharts);
 
+router.get("/kpis", getAllKpis);
 
 
 

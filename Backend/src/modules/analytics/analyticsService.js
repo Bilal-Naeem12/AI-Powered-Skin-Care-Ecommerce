@@ -82,63 +82,69 @@ exports.getKPICard = async (metricType, period = "Day") => {
 };
 
 exports.getLineChart = async (metricType, period = "Month", units = 12) => {
-  let start = floorDate(new Date(), period);
-  start = shiftDate(start, period, -(units - 1));
-
-  // 🔑 1. If Week: use Day docs for last 7 days
+  // ── 1. Determine raw values for each period
   if (period === "Week") {
     const daysStart = shiftDate(floorDate(new Date(), "Day"), "Day", -6);
-
     const raw = await Analytics.find({
       metricType,
       period: "Day",
-      startDate: { $gte: daysStart }
-    }).sort({ startDate: 1 }).lean();
-
-    // Format: [{ date: '2025-07-07', value: 123 }]
-    return raw.map(doc => ({
-      date: doc.startDate,
-      value: doc.value
+      startDate: { $gte: daysStart },
+    })
+      .sort({ startDate: 1 })
+      .lean();
+    // map to uniform shape
+    return raw.map((doc) => ({
+      date: doc.startDate,   // Date object
+      value: doc.value || 0,
     }));
   }
 
-  // 🔑 2. If Day: get TODAY’s single doc & expand breakdown to 24h
-  if (period === "Day") {
-    const today = floorDate(new Date(), "Day");
+if (period === "Day") {
+  // get midnight today in UTC (or local, depending on floorDate)
+  const todayStart = floorDate(new Date(), "Day");
 
-    const doc = await Analytics.findOne({
-      metricType,
-      period: "Day",
-      startDate: today
-    }).lean();
+  // build 24-hour buckets with full ISO dates
+  const hours = Array.from({ length: 24 }, (_, hour) => {
+    const dt = new Date(todayStart);
+    dt.setHours(hour, 0, 0, 0);
+    return {
+      date: dt.toISOString(), // e.g. "2025-07-14T08:00:00.000Z"
+      value: 0,
+    };
+  });
 
-    // fallback empty hours
-    const hours = Array.from({ length: 24 }, (_, hour) => ({
-      date: `${hour}:00`,
-      value: 0
-    }));
+  // if you have breakdown data, add in the counts
+  const doc = await Analytics.findOne({
+    metricType,
+    period: "Day",
+    startDate: todayStart,
+  }).lean();
 
-    if (doc && doc.breakdown?.length) {
-      // Group breakdown by hour
-      for (const b of doc.breakdown) {
-        const hour = new Date(b.label).getUTCHours();
-        hours[hour].value += b.v;
-      }
+  if (doc?.breakdown) {
+    for (const b of doc.breakdown) {
+      const hr = new Date(b.label).getHours();
+      hours[hr].value += b.v;
     }
-
-    return hours;
   }
 
-  // 🔑 3. Default: Month, Quarter, Year = same as before
+  return hours; // now [{date:"2025-07-14T00:00:00.000Z",value:…},…]
+}
+
+  // Month / Quarter / Year
+  let start = floorDate(new Date(), period);
+  start = shiftDate(start, period, -(units - 1));
   const raw = await Analytics.find({
     metricType,
     period,
-    startDate: { $gte: start }
-  }).sort({ startDate: 1 }).lean();
-
-  return raw;
+    startDate: { $gte: start },
+  })
+    .sort({ startDate: 1 })
+    .lean();
+  return raw.map((doc) => ({
+    date: doc.startDate,   // Date object
+    value: doc.value || 0,
+  }));
 };
-
 exports.getLeaderboard = async (metricType, period = "Month", limit = 10) => {
   let match = { metricType, period };
 
