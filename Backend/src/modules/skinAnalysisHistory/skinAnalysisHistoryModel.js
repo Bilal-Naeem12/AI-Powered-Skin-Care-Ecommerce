@@ -43,6 +43,11 @@ scanned_image_after: {
   type: String, // optional postprocessed version (e.g., annotated by AI)
   required: false,
 },
+ isProgressTracking: {
+    type: Boolean,
+    default: false,
+    index: true,         // optional – helps if you query by it
+  },
   detections:      { type: DetectionsSchema, required: true },
   classifications: { type: ClassificationsSchema, required: true },
 

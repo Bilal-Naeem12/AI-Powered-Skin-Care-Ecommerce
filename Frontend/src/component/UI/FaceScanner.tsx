@@ -47,6 +47,7 @@ const cropCanvasRef = useRef<HTMLCanvasElement>(null);
   captureSnapshot: () => {
     const { faceInsideOval, facingCamera, lightingOk } = useFaceScanStore.getState();
     if (!faceInsideOval || !facingCamera || !lightingOk) return null;
+overlayRef.current?.getContext("2d")?.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 
     // Draw the cropped area onto the hidden crop canvas
     const cropCanvas = cropCanvasRef.current;
@@ -189,6 +190,36 @@ const cropCanvasRef = useRef<HTMLCanvasElement>(null);
       }
 
       setLightingOk(avgBrightness() > 70);
+
+ovCtx.save();                       // Save current context
+ovCtx.scale(-1, 1);                 // Flip horizontally
+ovCtx.translate(-VIDEO_WIDTH, 0);  // Shift back to align canvas
+
+// Draw oval and mesh here...
+ovCtx.beginPath();
+ovCtx.ellipse(
+  VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2,
+  OVAL_WIDTH / 2, OVAL_HEIGHT / 2,
+  0, 0, 2 * Math.PI
+);
+ovCtx.strokeStyle = "rgba(0,0,0,0.7)";
+ovCtx.lineWidth = 3;
+ovCtx.stroke();
+
+// Optional: draw dots
+if (multi && multi.length) {
+  const points = multi[0];
+  ovCtx.fillStyle = "hotpink";
+  for (const pt of points) {
+    const x = (-0.02+pt.x) * VIDEO_WIDTH;
+    const y = (-0.02+pt.y) * VIDEO_HEIGHT;
+    ovCtx.beginPath();
+    ovCtx.arc(x, y, 1.5, 0, 2 * Math.PI);
+    ovCtx.fill();
+  }
+}
+
+ovCtx.restore(); 
 
       rafId = requestAnimationFrame(processFrame);
       rafIdRef.current = rafId;

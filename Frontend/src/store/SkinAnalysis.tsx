@@ -16,7 +16,8 @@ interface SkinAnalysisState {
   result: SkinAnalysisResult | null;
   loading: boolean;
   error: string | null;
-
+    isProgressTracking: boolean;
+     setProgressTracking: (value: boolean) => void;
   analyzeSkin: (formData: FormData, originalImage: File|string, userId: string | undefined) => Promise<void>;
 
   clearResult: () => void;
@@ -63,9 +64,12 @@ const saveSkinHistory = async (
   beforeUrl: string,
   afterUrl: string,
   result: SkinAnalysisResult,
-  recProductsWithSteps: { productId: string; step: RecommendationStepInfo }[]
+
+  recProductsWithSteps: { productId: string; step: RecommendationStepInfo }[],
+  isProgressTracking:boolean,
 ) => {
   const payload = {
+    isProgressTracking :isProgressTracking,
     scanned_image_before: beforeUrl,
     scanned_image_after: afterUrl,
     detections: result.detections,
@@ -91,7 +95,8 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         result: null,
         loading: false,
         error: null,
-
+        isProgressTracking:false,
+        setProgressTracking: (value) => set({ isProgressTracking: value }),
         analyzeSkin: async (formData: FormData, originalImage: File|string, userId: string|undefined) => {
   set({ loading: true, error: null });
 
@@ -190,9 +195,10 @@ if (recResp?.data?.success) {
       },
     })) ?? []
   );
+  const { isProgressTracking } = get();
 
     // 5. Save full history
-    await saveSkinHistory(userId ?? "", beforeUrl, afterUrl, result, recProductsWithSteps);
+    await saveSkinHistory(userId ?? "", beforeUrl, afterUrl, result, recProductsWithSteps,isProgressTracking);
 
     toast.success("Skin history saved ✅");
   } catch (e: any) {

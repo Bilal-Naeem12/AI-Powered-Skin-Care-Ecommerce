@@ -29,6 +29,7 @@ import {
     BarChart3,
   } from "lucide-react";
 import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAnalysisTimeline";
+import ProgressTracking from "@/pages/user-side/ProfilePage/sub-pages/ProgressTracking";
   
  
   
@@ -81,10 +82,16 @@ import SkinAnalysisTimeline from "@/pages/user-side/ProfilePage/sub-pages/SkinAn
         //   component: ProfileComponent,
         // },
         {
-          name: "Skin Analysis Timeline",
+          name: "Skin Analysis History",
           path: "/profile-page/analysis-timeline", // Path for Skin Routine
           icon: BarChart3, // Use a relevant icon for skin routine
           component: SkinAnalysisTimeline, // Define SkinRoutineComponent
+        },
+             {
+          name: "Progress Tracking",
+          path: "/profile-page/progress-tracking", // Path for Skin Routine
+          icon: BarChart3, // Use a relevant icon for skin routine
+          component: ProgressTracking, // Define SkinRoutineComponent
         },
         //     {
         //   name: "My Skin Routine",

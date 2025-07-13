@@ -15,6 +15,7 @@ import ConsentForm from "@/component/UI/ConsentForm";
 import { User } from "@/types/User";
 import useSkinAnalysisStore from "@/store/SkinAnalysis";
 import FaceVerificationModal from "./FaceVerificationModal";
+import UniversalCapture from "@/component/UI/UniversalCapture";
 
 type Step = "choice" | "preview" | "uploading" | "qr";
 
@@ -35,10 +36,12 @@ type Mode = "general" | "progress";
 const [mode, setMode] = useState<Mode | null>(null);
 const [askModeOpen, setAskModeOpen] = useState(false);
 const [nextAction, setNextAction] = useState<() => void>(() => {});
+const [captureRequired, setCaptureRequired] = useState(false);
+const triggerFilePicker = () => {
+  fileInputRef.current?.click(); // runs after user confirms in modal
+};
 
-
-
-
+const { setProgressTracking } = useSkinAnalysisStore();
 
 const handleChoice = (next: () => void) => {
   // Save what the user wants to do
@@ -67,6 +70,7 @@ const handleChoice = (next: () => void) => {
   const confirmMode = (selected: Mode) => {
   setMode(selected);
   setAskModeOpen(false);
+  setProgressTracking(false);
 
   // ✅ Now do normal consent check flow:
   if (user?.consent?.termsAccepted && user?.consent?.faceScanConsent) {
@@ -127,7 +131,7 @@ const handleChoice = (next: () => void) => {
 
   const handleScanWithPhone = async () => {
     try {
-      const resp = await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session`);
+      const resp = await axios.post<{sessionId:string}>(`${import.meta.env.VITE_API_BACKEND_URL}/scan-session`);
       const id = resp.data.sessionId as string;
       setSessionId(id);
       const localIP = window.location.origin;
@@ -192,7 +196,7 @@ const handleChoice = (next: () => void) => {
     {/* Upload */}
     <div
       className="flex flex-col items-center justify-center border border-gray-200 rounded-xl p-4 w-24 h-24 shadow-sm hover:bg-pink-50 cursor-pointer transition"
-     onClick={() => handleChoice(() => fileInputRef.current?.click())}
+     onClick={() => handleChoice(triggerFilePicker)}
 
     >
       <CloudUploadIcon className="text-[#FF69B4]" />
@@ -360,15 +364,43 @@ onClick={() => handleChoice(handleScanWithPhone)}
 )}
 
 
+{captureRequired && (
+  <div className="fixed bg-white rounded p-2">
+  <UniversalCapture
+    onCapture={async (dataUrl) => {
+      // Save to backend
+      await axios.post(`${import.meta.env.VITE_API_BACKEND_URL}/users/${userId}/face-verification`, {
+        image: dataUrl,
+      }, { withCredentials: true });
+
+      setCaptureRequired(false);
+      setFaceVerifyOpen(true); // 🔁 Retry verification
+    }}
+    onContinue={() => {}} // handled after onCapture
+    title="Capture Your Face"
+    description="We'll use this image to verify your identity and track your skincare progress. Please ensure it's a clear image of your face."
+  />
+  </div>
+)}
 
 {faceVerifyOpen && (
   <FaceVerificationModal
     userId={userId ?? ""}
     onVerified={() => {
+      setProgressTracking(true);
       setFaceVerifyOpen(false);
-    nextAction()
+      nextAction();
     }}
-    onCancel={() => setFaceVerifyOpen(false)}
+     onCancel={() => {
+    // ❌ user canceled
+    setProgressTracking(false);
+    setFaceVerifyOpen(false);
+  }}
+    onRequireCapture={() => {
+      setProgressTracking(false);
+      setFaceVerifyOpen(false);
+      setCaptureRequired(true);
+    }}
   />
 )}
     </div>

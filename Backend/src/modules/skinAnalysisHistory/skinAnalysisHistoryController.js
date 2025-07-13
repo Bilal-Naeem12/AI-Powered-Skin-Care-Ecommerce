@@ -13,6 +13,7 @@ exports.createHistory = async (req, res) => {
     // 1) Create the SkinHistory entry (without recs yet)
     const history = await SkinHistory.create({
       userId,
+      isProgressTracking:req.body.isProgressTracking,
       scanned_image_before:   req.body.scanned_image_before,
       scanned_image_after:   req.body.scanned_image_after,
       step: req.body.step,
@@ -155,5 +156,25 @@ exports.deleteHistory = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete history record" });
+  }
+};
+
+
+
+exports.getProgressTrackingHistoryByUser = async (req, res) => {
+  const userId  =req.user._id;
+  console.log(req.user._id)
+  try {
+    const entries = await SkinHistory.find({
+      userId,
+      isProgressTracking: true,
+    })
+      .sort({ analyzedAt: -1 })
+      .populate("recommendations.productId");
+
+    res.json(entries);
+  } catch (error) {
+    console.error("Error fetching progress tracking history:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

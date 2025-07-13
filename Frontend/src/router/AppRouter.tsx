@@ -42,18 +42,26 @@ const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) 
 };
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLoggedIn } = useUserStore();
+  const { user, loading } = useUserStore();
   const location = useLocation();
 
-  if (!isLoggedIn) {
+  if (loading) {
+    return <div className="p-6 text-center text-gray-500">Checking login status...</div>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return <>{children}</>;
 };
+
 const NavigationSetup = () => {
   const navigate = useNavigate();
+  const checkLogin = useUserStore((state) => state.checkLogin);
+
   useEffect(() => {
+    checkLogin(); // ✅ this is REQUIRED
     setNavigator(navigate);
   }, [navigate]);
 

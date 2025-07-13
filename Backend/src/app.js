@@ -26,6 +26,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173",
   "http://localhost:57202",
+  "http://localhost:53008",
   'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
 

@@ -56,6 +56,7 @@
     "react-jvectormap": "^0.0.15",
     "react-router-dom": "^7.0.1",
     "react-toastify": "^11.0.5",
+    "react-vertical-timeline-component": "^3.5.3",
     "recharts": "^3.0.0",
     "socket.io-client": "^4.8.1",
     "swiper": "^11.2.6",

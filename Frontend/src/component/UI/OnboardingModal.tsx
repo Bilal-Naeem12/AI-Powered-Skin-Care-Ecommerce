@@ -12,19 +12,7 @@ import IngredientSelect from "../comboboxes/IngredientSelect";
 import { useForm } from "react-hook-form";
 import { User } from "@/types/User";
 const steps = ["Welcome", "Face Scan", "Allergen Preferences", "Profile Picture"];
-export default function OnboardingModal() {
-  const { user, isFirstLogin, setUser } = useUserStore();
-  const [step, setStep] = useState(0);
-  const [faceImage, setFaceImage] = useState<string | null>(null);
-  const scannerRef = useRef<FaceScannerHandle>(null);
-const [profilePic, setProfilePic] = useState<string>(user?.profileImage??"");  
-const [usedUploader, setUsedUploader] = useState(false);
-const [allergens, setAllergens] = useState<string[]>(user?.allergenPreferences ?? []);
-const allergenForm = useForm<{ allergens: string[] }>({
-  defaultValues: { allergens: allergens },
-});
-
-async function handleUploadFaceVerification(
+export  async function handleUploadFaceVerification(
   capturedImage: string  , // base64
 ) {
   try {
@@ -54,6 +42,19 @@ async function handleUploadFaceVerification(
     throw err;
   }
 }
+export default function OnboardingModal() {
+  const { user, isFirstLogin, setUser } = useUserStore();
+  const [step, setStep] = useState(0);
+  const [faceImage, setFaceImage] = useState<string | null>(null);
+  const scannerRef = useRef<FaceScannerHandle>(null);
+const [profilePic, setProfilePic] = useState<string>(user?.profileImage??"");  
+const [usedUploader, setUsedUploader] = useState(false);
+const [allergens, setAllergens] = useState<string[]>(user?.allergenPreferences ?? []);
+const allergenForm = useForm<{ allergens: string[] }>({
+  defaultValues: { allergens: allergens },
+});
+
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -268,3 +269,5 @@ setUser(updatedUser);
     document.body
   );
 }
+
+

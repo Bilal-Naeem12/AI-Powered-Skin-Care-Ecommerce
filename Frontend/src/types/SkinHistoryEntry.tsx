@@ -24,4 +24,5 @@ export interface SkinHistoryEntry {
   uvExposureIndex?: number | null;
   analyzedAt: string;
   recommendations: RecommendationProduct[];
+  isProgressTracking?: boolean;
 }

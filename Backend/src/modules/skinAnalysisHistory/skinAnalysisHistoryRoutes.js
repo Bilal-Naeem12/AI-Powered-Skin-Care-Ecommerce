@@ -3,7 +3,7 @@ const {
   createHistory,
   getHistoryByUser,
   getHistoryById,
-  deleteHistory,
+  deleteHistory,getProgressTrackingHistoryByUser
 } = require("./skinAnalysisHistoryController");
 const { authMiddleware } = require("../../middleware/authMiddleware");
 const { roleMiddleware } = require("../../middleware/roleMiddleware");
@@ -11,6 +11,11 @@ const { roleMiddleware } = require("../../middleware/roleMiddleware");
 const router = express.Router();
 
 // create & read history
+router.get(
+  "/user/progress",
+  authMiddleware,
+  getProgressTrackingHistoryByUser
+);
 router.post("/user/:userId", authMiddleware, createHistory);
 router.get("/user/:userId", authMiddleware, getHistoryByUser);
 router.get("/:id", authMiddleware, getHistoryById);

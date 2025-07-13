@@ -62,6 +62,7 @@ if (error || !user) {
 
  <Route path="/orders/:id" element={<OrderDetailPage />} />
   <Route path="/analysis-timeline/:id" element={<AnalysisDetail />} />
+  <Route path="/progress-tracking/:id" element={<AnalysisDetail />} />
      {/* <Route path="/order/product/:id" element={<ProductReviewPage/>} /> */}
 
   {/* Default Route */}
