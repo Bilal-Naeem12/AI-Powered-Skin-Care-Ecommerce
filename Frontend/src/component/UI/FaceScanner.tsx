@@ -18,7 +18,7 @@ export interface FaceScannerHandle {
 }
 
 // Set your real capture/display size
-const VIDEO_WIDTH = 800;
+const VIDEO_WIDTH = 950;
 const VIDEO_HEIGHT = 700;
 const OVAL_WIDTH = 400;
 const OVAL_HEIGHT = 500;

@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { FilesetResolver, FaceLandmarker } from "@mediapipe/tasks-vision";
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import * as faceapi from '@vladmandic/face-api';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface FaceVerificationModalProps {
   userId: string;
@@ -11,8 +13,6 @@ interface FaceVerificationModalProps {
 
 const VIDEO_WIDTH = 640;
 const VIDEO_HEIGHT = 480;
-const OVAL_WIDTH = 300;
-const OVAL_HEIGHT = 400;
 
 const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
   userId,
@@ -21,192 +21,138 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
   onRequireCapture,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafIdRef = useRef<number>(0);
-  const refPointsRef = useRef<any>(null);
-  const isLoopActiveRef = useRef<boolean>(false);
 
-  const [status, setStatus] = useState("Loading...");
+  const [status, setStatus] = useState<string>('Initializing...');
   const [score, setScore] = useState<number | null>(null);
+  const [threshold] = useState<number>(0.3);
+ const [showSuccess, setShowSuccess] = useState(false);
 
-  /**
-   * Centralised camera/MediaPipe teardown so we can call it both from
-   * the effect cleanup **and** immediately when the user taps “Cancel”.
-   */
-  const stopEverything = useCallback(() => {
-    console.log("🧹 stopEverything called");
-    isLoopActiveRef.current = false;
-    cancelAnimationFrame(rafIdRef.current);
-
+  const stopAll = useCallback(() => {
+    console.log('[stopAll] Stopping camera and animation');
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = 0;
+    }
     const video = videoRef.current;
+    if (video && video.srcObject instanceof MediaStream) {
+      video.srcObject.getTracks().forEach(t => t.stop());
+      video.srcObject = null;
+    }
     if (video) {
-      const stream = video.srcObject as MediaStream | null;
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        video.srcObject = null;
-      }
       video.pause();
-      video.removeAttribute("src");
+      video.removeAttribute('src');
       video.load();
     }
   }, []);
 
   useEffect(() => {
-    let imageLandmarker: FaceLandmarker | null = null;
-    let videoLandmarker: FaceLandmarker | null = null;
+    let isActive = true;
+    let refDescriptor: Float32Array | null = null;
 
-    const setup = async () => {
+    const runVerification = async () => {
       try {
-        setStatus("Loading model...");
-        const vs = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-        );
+        setStatus('Loading models...');
+        const modelUrl = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
+        await faceapi.nets.ssdMobilenetv1.loadFromUri(modelUrl);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(modelUrl);
 
-        imageLandmarker = await FaceLandmarker.createFromOptions(vs, {
-          baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-          },
-          runningMode: "IMAGE",
-          numFaces: 1,
-        });
+        if (!isActive) return;
 
-        videoLandmarker = await FaceLandmarker.createFromOptions(vs, {
-          baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-          },
-          runningMode: "VIDEO",
-          numFaces: 1,
-        });
-
-        setStatus("Fetching reference...");
-        const resp = await fetch(
+        setStatus('Fetching reference image...');
+        const resp = await axios.get<{ secureUrl: string }>(
           `${import.meta.env.VITE_API_BACKEND_URL}/users/${userId}/face-verification`,
-          { credentials: "include" }
+          { withCredentials: true }
         );
-        const { secureUrl } = await resp.json();
-
+        const secureUrl = resp.data.secureUrl;
         if (!secureUrl) {
-          setStatus("No reference image found. Please capture your face.");
+          setStatus('No reference image found. Please capture again.');
           onRequireCapture();
           return;
         }
 
-        const refImg = new Image();
-        refImg.crossOrigin = "anonymous";
-        refImg.src = secureUrl;
-        await new Promise(r => (refImg.onload = r));
-
-        const refResults = imageLandmarker.detect(refImg);
-        if (!refResults.faceLandmarks?.length) {
-          setStatus("No face in reference image");
+        setStatus('Processing reference image...');
+        const img = await faceapi.fetchImage(secureUrl);
+        const refDetection = await faceapi
+          .detectSingleFace(img)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+        if (!refDetection) {
+          setStatus('Unable to detect face in reference image');
           return;
         }
+        refDescriptor = refDetection.descriptor;
 
-        refPointsRef.current = refResults.faceLandmarks[0];
-        setStatus("Starting camera...");
-
+        setStatus('Starting camera...');
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT, facingMode: "user" },
+          video: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT, facingMode: 'user' },
         });
-
+        if (!isActive) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play();
         }
 
-        setStatus("Detecting...");
-        isLoopActiveRef.current = true;
-
-        const loop = (now: number) => {
-          if (!isLoopActiveRef.current) return;
-
+        setStatus('Verifying...');
+        const verifyLoop = async () => {
+          if (!isActive) return;
           const video = videoRef.current;
-          const canvas = canvasRef.current;
-          if (!video || !canvas || video.readyState < 2) {
-            rafIdRef.current = requestAnimationFrame(loop);
-            return;
-          }
+          if (video && video.readyState >= 2) {
+            const liveDetection = await faceapi
+              .detectSingleFace(video)
+              .withFaceLandmarks()
+              .withFaceDescriptor();
 
-          const ctx = canvas.getContext("2d");
-          if (!ctx) {
-            rafIdRef.current = requestAnimationFrame(loop);
-            return;
-          }
-
-          ctx.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-        ctx.save();
-ctx.scale(-1, 1);
-ctx.translate(-VIDEO_WIDTH, 0);
-ctx.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-ctx.restore();
-    
-          ctx.beginPath();
-          ctx.ellipse(
-            VIDEO_WIDTH / 2,
-            VIDEO_HEIGHT / 2,
-            OVAL_WIDTH / 2,
-            OVAL_HEIGHT / 2,
-            0,
-            0,
-            2 * Math.PI
-          );
-          ctx.strokeStyle = "rgba(0,0,0,0.7)";
-          ctx.lineWidth = 3;
-          ctx.stroke();
-
-          const results = videoLandmarker!.detectForVideo(video, now);
-
-          if (results.faceLandmarks?.length && refPointsRef.current) {
-            const livePoints = results.faceLandmarks[0];
-              ctx.fillStyle = "rgba(255, 105, 180, 0.8)"; // pink dots
-  for (const pt of livePoints) {
-    ctx.beginPath();
-    ctx.arc((1-pt.x) * VIDEO_WIDTH, pt.y * VIDEO_HEIGHT, 2, 0, 2 * Math.PI);
-    ctx.fill();
-  }
-            const refPoints = refPointsRef.current;
-            let sumDist = 0;
-            for (let i = 0; i < Math.min(refPoints.length, livePoints.length); i++) {
-              const dx = refPoints[i].x - livePoints[i].x;
-              const dy = refPoints[i].y - livePoints[i].y;
-              const dz = refPoints[i].z - livePoints[i].z;
-              sumDist += Math.sqrt(dx * dx + dy * dy + dz * dz);
-            }
-            const avgDist = sumDist / refPoints.length;
-            setScore(avgDist);
-
-            if (avgDist < 0.02) {
-              setStatus("Match confirmed ✅");
-              isLoopActiveRef.current = false;
-              stopEverything();
-              onVerified();
-              return;
+            if (liveDetection && refDescriptor) {
+              const dist = faceapi.euclideanDistance(
+                refDescriptor,
+                liveDetection.descriptor
+              );
+              setScore(dist);
+              if (dist < threshold) {
+                  setStatus('Match confirmed ✅');
+                stopAll();
+                 setShowSuccess(true);
+             
+                 // after a short delay, notify parent
+          await new Promise(resolve => setTimeout(resolve, 5000));
+              
+        
+                onVerified();
+              
+              // show the success animation
+             
+                return;
+              } else {
+                // setStatus(`Distance: ${dist.toFixed(4)}`);
+              }
+            } else {
+              setStatus('No face detected');
             }
           }
-
-          rafIdRef.current = requestAnimationFrame(loop);
+          rafIdRef.current = requestAnimationFrame(verifyLoop);
         };
 
-        rafIdRef.current = requestAnimationFrame(loop);
+        verifyLoop();
       } catch (err) {
-        console.error("Face verification error:", err);
-        setStatus("Error occurred");
+        console.error('[runVerification] error:', err);
+        if (isActive) setStatus('Error during verification');
       }
     };
 
-    setup();
+    runVerification();
     return () => {
-      imageLandmarker?.close();
-      videoLandmarker?.close();
-      stopEverything();
+      isActive = false;
+      stopAll();
     };
-  }, [userId, onRequireCapture, onVerified, stopEverything]);
+  }, [userId, onVerified, onRequireCapture, stopAll, threshold]);
 
-  /** Cancel button handler that shuts everything down *before* closing modal */
   const handleCancel = () => {
-    stopEverything();
+    stopAll();
     onCancel();
   };
 
@@ -218,6 +164,15 @@ ctx.restore();
         animate={{ scale: 1, opacity: 1 }}
       >
         <h2 className="text-2xl font-bold">Face Verification</h2>
+            {showSuccess ? (
+         // 2s of Lottie, then onVerified() will fire
+         <DotLottieReact
+           src="/assets/gif/facesuccess.json"
+           autoplay={true}
+           loop={false}
+           style={{ width: 200, height: 200 }}
+         />
+       ) : 
         <div className="relative w-full max-w-lg">
           <video
             ref={videoRef}
@@ -227,19 +182,18 @@ ctx.restore();
             autoPlay
             muted
             playsInline
-            style={{ transform: "scaleX(-1)" }}
-          />
-          <canvas
-            ref={canvasRef}
-            className="absolute top-0 left-0 w-full h-full pointer-events-none"
-            width={VIDEO_WIDTH}
-            height={VIDEO_HEIGHT}
+            style={{ transform: 'scaleX(-1)' }}
           />
         </div>
+        }
         <div className="text-gray-600">
-          {status} {score !== null && `(Distance: ${score.toFixed(5)})`}
+          {status}
+
         </div>
-        <button onClick={handleCancel} className="text-sm text-gray-500 hover:underline">
+        <button
+          onClick={handleCancel}
+          className="text-sm text-gray-500 hover:underline"
+        >
           Cancel
         </button>
       </motion.div>

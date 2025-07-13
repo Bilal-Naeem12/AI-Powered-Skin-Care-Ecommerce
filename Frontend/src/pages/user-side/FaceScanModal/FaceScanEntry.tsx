@@ -83,7 +83,8 @@ const handleChoice = (next: () => void) => {
       // e.g. open a new modal or run verification
 
     } else {
-      nextAction();
+     nextAction();        // trigger fileInput.click() while still handling the button click
+  setAskModeOpen(false);
     }
   } else {
     setOnConsentProceed(() => () => {
