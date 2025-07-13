@@ -21,7 +21,7 @@ export default function Home() {
   const [line, setLine]     = useState<LinePoint[]>([]);
   const [leaders, setLeaders]=useState<Leader[]>([]);
   const [todayRevenue, setTodayRevenue] = useState<MetricKPI>();
-  const TARGET = 2500;
+const [TARGET, setTarget] = useState<number>(2500);
 
   const { globalPeriod } = useChartTabStore();
  
@@ -74,6 +74,7 @@ export default function Home() {
           <MonthlyTarget
             progress={progress}
             target={TARGET}
+            onSetTarget={setTarget}
             revenue={kpi!.totalRevenue.value}
             todayRevenue={todayRevenue}
             changePct={kpi!.totalRevenue.changePct}

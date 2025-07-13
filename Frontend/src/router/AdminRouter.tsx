@@ -28,6 +28,8 @@ import { Leaderboard } from "@mui/icons-material";
 import LeaderboardsPage from "@/pages/admin-side/Analytics/Leaderboards";
 import LineChartsPage from "@/pages/admin-side/Analytics/LineChartsPage";
 import KpisOverviewPage from "@/pages/admin-side/Analytics/KpiOverviewPage";
+import NotificationsPage from "@/pages/user-side/NotificationPage";
+import AdminRefundsPage from "@/pages/admin-side/Customer Experience/AdminRefundsPage";
 
 const AdminRouter: React.FC = () => {
 
@@ -54,6 +56,17 @@ const AdminRouter: React.FC = () => {
   path="/analytics/trends"
   element={<LineChartsPage />}
 />
+
+<Route
+  path="/refund-requests"
+  element={<AdminRefundsPage />}
+/>
+
+<Route
+  path="/notifications"
+  element={<NotificationsPage />}
+/>
+
  <Route path="/analytics/product-performance" element={<KpisOverviewPage />} />
 
           <Route path="products" element={<ManageProducts />} />

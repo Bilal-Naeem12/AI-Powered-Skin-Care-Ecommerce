@@ -20,6 +20,7 @@ export default function NotificationDropdown() {
   MANAGEMENT_ORDER_PLACED: "/assets/icons/ORDER_PLACED.png",
   MANAGEMENT_REFUND_REQUEST:"/assets/icons/MANAGEMENT_REFUND_REQUEST.png",
     CONTACT_MESSAGE:"/assets/icons/CONTACT_MESSAGE.png",
+    NEW_USER:"/assets/icons/NEW_USER.png",
 };
   // Fetch only MANAGEMENT_ORDER_PLACED notifications
   const fetchNotifications = async () => {
@@ -28,7 +29,7 @@ export default function NotificationDropdown() {
         `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
         { withCredentials: true }
       );
-       const allowedKinds = ["MANAGEMENT_ORDER_PLACED", "MANAGEMENT_REFUND_REQUEST", "CONTACT_MESSAGE"];
+       const allowedKinds = ["MANAGEMENT_ORDER_PLACED", "MANAGEMENT_REFUND_REQUEST", "CONTACT_MESSAGE","NEW_USER"];
 
 const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
       setNotifications(filtered.slice(0, 30));

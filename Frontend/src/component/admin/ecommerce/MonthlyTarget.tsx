@@ -5,12 +5,14 @@ import { Dropdown } from "@/component/admin/Dropdown";
 import { DropdownItem } from "@/component/admin/DropdownItem";
 import { MoreDotIcon } from "@/icons";
 import { MetricKPI } from "@/types/DashboardResponse";
+import { Input } from "@mui/material";
 interface Props {
   progress?: number;
   revenue?: number;
   target?: number;
   todayRevenue?: MetricKPI;
   changePct?: number;
+   onSetTarget: (newTarget: number) => void;
 }
 
 export const MonthlyTarget: React.FC<Props> = ({
@@ -19,6 +21,7 @@ export const MonthlyTarget: React.FC<Props> = ({
   target = 0,
   todayRevenue = {value:0,changePct:0} ,
   changePct = 0,
+    onSetTarget,
 }) => {
     const series = [parseFloat(progress.toFixed(2))];
   const options: ApexOptions = {
@@ -68,15 +71,26 @@ export const MonthlyTarget: React.FC<Props> = ({
     },
     labels: ["Progress"],
   };
-  const [isOpen, setIsOpen] = useState(false);
+ const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [draftTarget, setDraftTarget] = useState(target);
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
+  const toggleDropdown = () => setDropdownOpen((o) => !o);
+  const closeDropdown = () => setDropdownOpen(false);
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  const openModal = () => {
+    setDraftTarget(target);
+    setModalOpen(true);
+    closeDropdown();
+  };
+  const closeModal = () => setModalOpen(false);
+
+  const handleSave = () => {
+    onSetTarget(draftTarget);
+    closeModal();
+  };
+
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-5 pt-5 bg-white shadow-default rounded-2xl pb-11 dark:bg-gray-900 sm:px-6 sm:pt-6">
@@ -94,21 +108,17 @@ export const MonthlyTarget: React.FC<Props> = ({
               <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
             </button>
             <Dropdown
-              isOpen={isOpen}
+              isOpen={isDropdownOpen}
               onClose={closeDropdown}
               className="w-40 p-2"
             >
               <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                onItemClick={openModal}
+                className="flex w-full font-normal text-left text-gray-500 rounded-lg 
+                           hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 
+                           dark:hover:bg-white/5 dark:hover:text-gray-300"
               >
-                View More
-              </DropdownItem>
-              <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-              >
-                Delete
+                Set Target
               </DropdownItem>
             </Dropdown>
           </div>
@@ -168,6 +178,45 @@ export const MonthlyTarget: React.FC<Props> = ({
           </p>
         </div>
       </div>
+            {/* Set Target Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 bg-opacity-40">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Set Monthly Target
+            </h2>
+            <div className="mt-4">
+              <label className="block text-sm text-gray-700 dark:text-gray-300">
+                Target Amount
+              </label>
+              <Input
+                type="number"
+                
+                value={draftTarget}
+                onChange={(e) => setDraftTarget(+e.target.value)}
+                className="mt-1 w-full rounded-md border-gray-300 shadow-sm 
+                           focus:border-pink-500 focus:ring-pink-500 dark:bg-gray-800 
+                           dark:border-gray-700 dark:text-white"
+              />
+            </div>
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 rounded-md bg-pink-600 text-white hover:bg-pink-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

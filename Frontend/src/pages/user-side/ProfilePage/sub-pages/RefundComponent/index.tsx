@@ -26,7 +26,7 @@ const RefundRequestsPage: React.FC = () => {
 
   return (
     
-      <Container maxWidth="lg" className="min-h-screen p-5 rounded shadow-lg bg-white my-5">
+      <div className="min-h-screen p-5 rounded shadow-lg bg-white my-5">
         {/* Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <IconButton edge="start" onClick={() => navigate(-1)}>
@@ -45,9 +45,9 @@ const RefundRequestsPage: React.FC = () => {
         ) : (
           <Grid container spacing={3}>
             {requests.map((r) => (
-              <Grid item xs={12} md={6} key={r._id}>
-                <Paper elevation={3} sx={{ p: 3, borderLeft: `6px solid ${r.status === 'Pending' ? '#f59e0b' : r.status === 'Approved' ? '#10b981' : '#ef4444'}` }}>
-                  <Box   onClick={() => navigate(`${r._id}`)} display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+              <Grid item xs={12} md={6} key={r._id} >
+                <Paper onClick={() => navigate(`${r._id}`)} className="hover:cursor-pointer" elevation={3} sx={{ p: 3, borderLeft: `6px solid ${r.status === 'Pending' ? '#f59e0b' : r.status === 'Approved' ? '#10b981' : '#ef4444'}` }}>
+                  <Box    display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                     <Typography variant="subtitle1"><strong>Reason:</strong> {r.reason}</Typography>
                     <Chip label={r.status} color={r.status === 'Approved' ? 'success' : r.status === 'Rejected' ? 'error' : 'warning'} />
                   </Box>
@@ -72,7 +72,7 @@ const RefundRequestsPage: React.FC = () => {
             ))}
           </Grid>
         )}
-      </Container>
+      </div>
     
   );
 };

@@ -49,7 +49,7 @@ const handleMarkAllRead = async () => {
   }
 };
   return (
-    <MainLayout>
+
     <Container maxWidth="lg" className="min-h-screen p-5 rounded shadow-lg bg-white my-5"  sx={{ pt: 3, pb: 6 }}>
       {/* --- header bar --- */}
       <Box
@@ -73,7 +73,7 @@ const handleMarkAllRead = async () => {
       </Box>
 
       <NotificationList />
-    </Container></MainLayout>
+    </Container>
   );
 };
 

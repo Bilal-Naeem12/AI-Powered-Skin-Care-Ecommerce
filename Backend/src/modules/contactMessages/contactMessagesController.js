@@ -29,7 +29,6 @@ exports.submitContactMessage = async (req, res) => {
       kind: "CONTACT_MESSAGE",
       title: "New Contact Message Received",
       body: `${name} sent a message.`,
-      image: `${process.env.CLIENT_URL}/logo.png`,
       role: "admin",
       data: { name, email, phone, message },
     });

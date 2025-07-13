@@ -28,6 +28,7 @@ import MobileScan from "@/pages/user-side/FaceScanModal/MobileScan";
 import { setNavigator } from "@/utils/navigation";
 import CategoryPage from "@/pages/user-side/ShopPage/subpage/CategoryPage";
 import NotificationsPage from "@/pages/user-side/NotificationPage";
+import MainLayout from "@/component/Layout/MainLayout";
 
 
 const RedirectIfAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -88,7 +89,7 @@ const AppRouter: React.FC = () => {
         <Route path="/ai-tools-page/skin-analysis" element={<FaceScanResultPage />} />
         <Route path="/ai-tools-page/inpainting" element={<InpaintingPage />} />
     <Route path="/mobile-scan/:sessionId" element={<MobileScan />} />
-<Route path="/notifications" element={<NotificationsPage />} />
+<Route path="/notifications" element={<MainLayout><NotificationsPage /></MainLayout>} />
         <Route path="/contact-us-page" element={<ContactUsPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/shop/category/:id" element={<CategoryPage />} />

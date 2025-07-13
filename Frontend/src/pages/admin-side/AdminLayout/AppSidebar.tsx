@@ -100,7 +100,7 @@ const othersItems: NavItem[] = [
     name: "Customer Experience",
     subItems: [
       { name: "Reviews", path: "/admin/reviews" },
-       { name: "Refund Requests", path: "/admin/customer-support" },
+       { name: "Refund Requests", path: "/admin/refund-requests" },
     ],
   },
   {
