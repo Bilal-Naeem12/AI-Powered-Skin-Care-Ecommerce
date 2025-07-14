@@ -9,7 +9,7 @@ const HeroSection = () => {
   return (
     <section
       className="relative bg-cover bg-center p-5 lg:h-screen text-white"
-      style={{ backgroundImage: `url(${heroImage})` }}
+      style={{ backgroundImage: `url(${heroImage})` ,backgroundPositionX:`0%`}}
     >
       <div className="container text-black mx-auto h-full flex items-center justify-start sm:px-6 md:px-12">
         <div className="max-w-lg">
