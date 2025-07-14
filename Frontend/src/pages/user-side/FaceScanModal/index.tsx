@@ -22,7 +22,7 @@ const FaceScanModal: React.FC = () => {
   /* ------------ refs ------------------------------------------------------- */
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const faceRef = useRef<any>(null); // exposed by <FaceScanner />
-
+  const {isProgressTracking} = useSkinAnalysisStore()
   /* ------------ zustand shortcuts ----------------------------------------- */
   const {
     capturedImage,

@@ -42,6 +42,9 @@ const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
     fetchNotifications();
   }, []);
 
+   useEffect(() => {
+    setNotifying(true)
+  }, [notifications]);
   
   const handleClick = () => {
     setIsOpen(!isOpen);
@@ -71,11 +74,23 @@ const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
     
     setIsOpen(false);
     if (notif.kind === "MANAGEMENT_ORDER_PLACED" && notif.data?.orderId) {
-      navigate(`/admin/orders/${notif.data?.orderId}`);
+      navigate(`/admin/orders`);
     } 
     if (notif.kind === "MANAGEMENT_REFUND_REQUEST" && notif.data?.orderId) {
-      navigate(`/admin/orders/${notif.data?.orderId}`);
-    }}catch (err) {
+      navigate(`/admin/orders`);
+    }
+      if (notif.kind === "CONTACT_MESSAGE" ) {
+      navigate(`/admin/contact-messages`);
+    }
+  if (notif.kind === "NEW_USER" ) {
+      navigate(`/admin/users`);
+    }
+
+
+  
+  
+  
+  }catch (err) {
       console.error("❌ Failed to mark notification as read", err);
     }
     };

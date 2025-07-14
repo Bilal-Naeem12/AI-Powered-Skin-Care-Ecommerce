@@ -30,6 +30,7 @@ import LineChartsPage from "@/pages/admin-side/Analytics/LineChartsPage";
 import KpisOverviewPage from "@/pages/admin-side/Analytics/KpiOverviewPage";
 import NotificationsPage from "@/pages/user-side/NotificationPage";
 import AdminRefundsPage from "@/pages/admin-side/Customer Experience/AdminRefundsPage";
+import AdminContactMessagesPage from "@/pages/admin-side/Engagement/AdminContactMessagesPage";
 
 const AdminRouter: React.FC = () => {
 
@@ -60,6 +61,10 @@ const AdminRouter: React.FC = () => {
 <Route
   path="/refund-requests"
   element={<AdminRefundsPage />}
+/>
+<Route
+  path="/contact-messages"
+  element={<AdminContactMessagesPage />}
 />
 
 <Route

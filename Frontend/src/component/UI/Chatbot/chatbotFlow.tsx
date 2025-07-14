@@ -44,9 +44,9 @@ export const chatbotFlow: Flow = {
       items: [
         "Start AI Skin Scan",
         "Product Inquries",
-        "Personalized Skin Consultation",
+        "Progress Tracking",
         "View My Past Analysis",
-        "Other Help",
+        
       ],
       sendOutput: true,
     },
@@ -56,10 +56,10 @@ export const chatbotFlow: Flow = {
           return "aiSkinScan";
         case "product inquries":
           return "productHelp";
-        case "personalized skin consultation":
-          return "consultationStart";
         case "view my past analysis":
           return "viewAnalysis";
+          case "progress tracking":
+          return "progresstracking";
         case "other help":
           return "moreHelp";
         default:
@@ -88,10 +88,10 @@ export const chatbotFlow: Flow = {
           return "aiSkinScan";
         case "product inquries":
           return "productHelp";
-        case "personalized skin consultation":
-          return "consultationStart";
         case "view my past analysis":
           return "viewAnalysis";
+             case "progress tracking":
+          return "progresstracking";
         case "other help":
           return "moreHelp";
         default:
@@ -224,7 +224,7 @@ if (
     }
     await params.injectMessage(reply);
 
-await delay(10000); // Wait 4 seconds
+await delay(100); // Wait 4 seconds
 
    await params.injectMessage(
     <div className="bg-blue-50 text-sm text-gray-800 rounded-[16px_16px_16px_4px] px-4 py-3 max-w-[260px] my-5 shadow-sm" style={{marginLeft:"45px"}}>
@@ -324,7 +324,25 @@ viewAnalysis: {
   },
   chatDisabled: true,
 },
+   "progresstracking": {
+  component: async (params: Params) => {
+    await params.injectMessage("Redirecting you to your analysis timeline...");
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
+    const { goTo } = await import("@/utils/navigation");
+  
+    if (!isLoggedin()) {
+      await params.injectMessage("Kindly login first");
+    }
+
+    // Navigate regardless
+    goTo("/profile-page/progress-tracking");
+
+    // Immediately continue the chat flow
+    await params.goToPath("moreHelpLoop");
+  },
+  chatDisabled: true,
+},
 
   routineHelp: {
     message:

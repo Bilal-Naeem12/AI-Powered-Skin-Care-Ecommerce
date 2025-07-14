@@ -39,3 +39,42 @@ exports.submitContactMessage = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+
+
+
+
+
+
+// Admin: get all contact messages
+exports.getAllMessages = async (req, res, next) => {
+  try {
+    const msgs = await ContactMessage.find()
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json(msgs);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin: get one message by ID
+exports.getMessageById = async (req, res, next) => {
+  try {
+    const msg = await ContactMessage.findById(req.params.id).lean();
+    if (!msg) return res.status(404).json({ message: "Not found" });
+    res.json(msg);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin: optionally delete a message
+exports.deleteMessage = async (req, res, next) => {
+  try {
+    const msg = await ContactMessage.findByIdAndDelete(req.params.id);
+    if (!msg) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -73,6 +73,7 @@ const kinds = useMemo(() => {
   return ["ALL", ...Array.from(set)] as (NotificationKind | "ALL")[];
 }, [notifications]);
 
+
   // 3) Fetch for user on mount
   useEffect(() => {
     (async () => {
@@ -198,7 +199,6 @@ const kinds = useMemo(() => {
     );
   })}
 </Stack>
-
       {/* list */}
       {combined.length === 0 ? (
         <Typography color="text.secondary">

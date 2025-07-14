@@ -99,8 +99,9 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Customer Experience",
     subItems: [
+           { name: "Refund Requests", path: "/admin/refund-requests" },
       { name: "Reviews", path: "/admin/reviews" },
-       { name: "Refund Requests", path: "/admin/refund-requests" },
+  
     ],
   },
   {
@@ -108,7 +109,7 @@ const othersItems: NavItem[] = [
     name: "Engagement",
     subItems: [
       { name: "Notifications", path: "/admin/notifications" },
-      { name: "Contact Replies", path: "/admin/support-tickets" },
+      { name: "Contact Replies", path: "/admin/contact-messages" },
      
     ],
   },
