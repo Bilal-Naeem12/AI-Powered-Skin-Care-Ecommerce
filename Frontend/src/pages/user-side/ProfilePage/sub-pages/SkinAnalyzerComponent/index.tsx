@@ -38,6 +38,7 @@ const SkinAnalyzerComponent: React.FC = () => {
   }, [setFaceRef]);
 
   const startCountdown = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setViewState("countdown");
     setCountdown(3);
     let count = 3;
@@ -62,7 +63,7 @@ const SkinAnalyzerComponent: React.FC = () => {
   const captureImage = () => {
     setViewState("loading");
 
-    setTimeout(() => {
+    {
       const base64Image = faceRef.current?.captureSnapshot();
       if (base64Image) {
         setCapturedImage(base64Image);
@@ -71,7 +72,7 @@ const SkinAnalyzerComponent: React.FC = () => {
         console.error("❌ faceRef is null or image not captured");
       }
       setViewState("result");
-    }, 500);
+    }
   };
 
   useEffect(() => {
@@ -96,6 +97,7 @@ const SkinAnalyzerComponent: React.FC = () => {
       showLoading();
       clearResult();
       await analyzeSkin(fd,file,userId);
+      if (useSkinAnalysisStore.getState().error || !useSkinAnalysisStore.getState().result) return;
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
       console.error("❌ Error analyzing image:", err);

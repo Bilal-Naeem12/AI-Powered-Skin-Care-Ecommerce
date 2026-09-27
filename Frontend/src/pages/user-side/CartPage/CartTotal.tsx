@@ -3,8 +3,8 @@ import { Box, Typography } from "@mui/material";
 
 
 
-const CartTotal = ({ subtotal }) => {
-    const formattedSubtotal = parseFloat(subtotal).toFixed(2);
+const CartTotal = ({ subtotal }: { subtotal: number }) => {
+    const formattedSubtotal = subtotal.toFixed(2);
 
   return (
     <Box className="bg-white rounded-lg shadow-md p-2 sm:p-6">

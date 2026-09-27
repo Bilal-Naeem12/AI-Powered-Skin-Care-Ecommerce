@@ -71,11 +71,11 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
       eta: ship?.estimatedDeliveryDate
         ? new Date(ship.estimatedDeliveryDate).toISOString().slice(0, 10)
         : "",
-      street: ship?.shippingAddress.street ?? "",
-      city: ship?.shippingAddress.city ?? "",
-      state: ship?.shippingAddress.state ?? "",
-      postalCode: ship?.shippingAddress.postal_code ?? "",
-      country: ship?.shippingAddress.country ?? "",
+      street: ship?.shippingAddress?.street ?? "",
+      city: ship?.shippingAddress?.city ?? "",
+      state: ship?.shippingAddress?.state ?? "",
+      postalCode: ship?.shippingAddress?.postal_code ?? "",
+      country: ship?.shippingAddress?.country ?? "",
     });
   }, [order]);
 
@@ -91,13 +91,13 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
 
   /* close + refresh on success */
   useEffect(() => {
-    if (responseData) {
+    if (responseData && patchData) {
       toast.success("Order updated successfully!");
       setPatchData(null);      // reset so hook won't refire
       onClose();
       onSuccess?.();
     }
-  }, [responseData]);
+  }, [responseData, patchData, onClose, onSuccess]);
 
   /* helper */
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
@@ -225,27 +225,10 @@ const EditOrderModal: React.FC<Props> = ({ open, order, onClose, onSuccess }) =>
  <LocalizationProvider dateAdapter={AdapterDateFns}>
   <DesktopDatePicker
     label="ETA"
-    inputFormat="yyyy-MM-dd"
+    format="yyyy-MM-dd"
     value={form.eta ? new Date(form.eta) : null}
-    onChange={(newValue) => update("eta", newValue ? newValue.toISOString() : "")}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        fullWidth
-        size="small"
-        sx={{
-          '& .MuiInputBase-root': {
-            height: '40px',   // match your normal TextField height
-          },
-          '& .MuiInputBase-input': {
-            padding: '10px 14px', // adjust for clean vertical alignment
-          },
-          '& .MuiInputAdornment-root': {
-            marginRight: '8px', // optional, tweak if the icon shifts
-          },
-        }}
-      />
-    )}
+    onChange={(newValue) => update("eta", newValue && !Number.isNaN(newValue.getTime()) ? newValue.toISOString() : "")}
+    slotProps={{ textField: { fullWidth: true, size: "small" } }}
   />
 </LocalizationProvider>
 

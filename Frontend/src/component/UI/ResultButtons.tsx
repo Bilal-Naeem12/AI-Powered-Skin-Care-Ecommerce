@@ -2,7 +2,7 @@ import React from "react";
 import ReplayIcon from "@mui/icons-material/Replay";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 
-const ResultButtons = ({ resetCapture, analyzeCapture }) => {
+const ResultButtons = ({ resetCapture, analyzeCapture }: { resetCapture: () => void; analyzeCapture: () => void }) => {
   return (
     <div className="flex justify-center gap-4 mt-4">
       <button

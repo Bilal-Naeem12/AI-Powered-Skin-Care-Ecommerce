@@ -56,7 +56,7 @@ export function ClassificationPie({
         <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
       ))}
     </Pie>
-    <Tooltip formatter={(v: number) => `${v}%`} />
+    <Tooltip formatter={(value) => typeof value === "number" ? `${value}%` : "—"} />
   </PieChart>
 
   <Typography variant="body2" className="capitalize" fontWeight="bold">

@@ -29,7 +29,7 @@ const useInpaintingStore = create<InpaintingState>()(
         error: null,
 
         inpaint: async (file: File) => {
-          set({ loading: true, error: null });
+          set({ loading: true, error: null, result: null });
           const formData = new FormData();
           formData.append("file", file);
           formData.append("model_type", "acne"); // fixed

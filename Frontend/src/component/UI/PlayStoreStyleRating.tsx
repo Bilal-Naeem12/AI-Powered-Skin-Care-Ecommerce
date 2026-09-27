@@ -53,7 +53,7 @@ const ProductRatingBreakdown: React.FC<ProductRatingBreakdownProps> = ({
       {/* RIGHT SIDE: Plain HTML */}
 <div style={{ flex: 1 }}>
   {buckets.map((b) => {
-    const percent = maxCount === 0 ? 0 : (b.count / maxCount) * 100;
+    const percent = !maxCount || maxCount < 0 ? 0 : Math.min(100, (b.count / maxCount) * 100);
     return (
       <div
         key={b.star}

@@ -71,10 +71,11 @@ export default function ManageUsers() {
 
   const confirmDelete = async () => {
     if (!selectedUser) return;
-    await onDelete(
+    const deleted = await onDelete(
       `${import.meta.env.VITE_API_BACKEND_URL}/users/admin/soft-delete`,
       selectedUser._id
     );
+    if (!deleted) return;
     setReload(r => !r);
     setDeleteOpen(false);
   };
@@ -139,7 +140,7 @@ export default function ManageUsers() {
               </TableHeader>
        
               <TableBody className="space-y-2">
-                {data?.users.map(u => (
+                {data?.users?.map(u => (
                   <TableRow key={u._id} >
                     <TableCell>
                       <div className="flex items-center gap-3 p-5">
@@ -168,7 +169,7 @@ export default function ManageUsers() {
                       {new Date(u.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Badge color={u.isDeleted ? "danger" : "success"}>
+                      <Badge color={u.isDeleted ? "error" : "success"}>
                         {u.isDeleted ? "Deleted" : "Active"}
                       </Badge>
                     </TableCell>

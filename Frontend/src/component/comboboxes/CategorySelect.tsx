@@ -1,117 +1,136 @@
 /* src/components/form/CategorySelect.tsx
    -------------------------------------------------------------- */
-   import React, { useMemo } from "react";
-   import {
-     Autocomplete,
-     Avatar,
-     Box,
-     CircularProgress,
-     TextField,
-   } from "@mui/material";
-   import { Controller, Control } from "react-hook-form";
-   import useFetchAuthData from "@/hooks/useFetchAuthData";
-   import { Category } from "@/types/Category";
-   
-   const URL = `${import.meta.env.VITE_API_BACKEND_URL}/categories`;
-   
-   /* narrow helper */
-   const isCategory = (v: unknown): v is Category =>
-     !!v && typeof v === "object" && "_id" in (v as any);
-   
-   interface Props {
-     control:   Control<any>;
-     name:      string;
-     label?:    string;
-     disabled?: boolean;
-   }
-   
-   export default function CategorySelect({
-     control,
-     name,
-     label = "Category",
-     disabled = false,
-   }: Props) {
-     /* fetch once */
-     const { data: cats, loading } = useFetchAuthData<Category[]>(URL);
-   
-     /* id → object lookup */
-     const findById = useMemo(() => {
-       if (!cats) return () => null;
-       const map = new Map(cats.map(c => [c._id, c]));
-       return (id?: string | null) => (id ? map.get(id) ?? null : null);
-     }, [cats]);
-   
-     return (
-       <Controller
-         name={name}
-         control={control}
-         /* ► required ◄ */
-         rules={{ required: "Please select a category" }}
-         render={({ field, fieldState }) => {
-           /* normalise value (either id or object) */
-           const selected: Category | null = isCategory(field.value)
-             ? field.value
-             : findById(field.value as string | undefined);
-   
-           /* propagate in the same shape we received */
-           const handleChange = (_: any, option: Category | null) => {
-             if (!option) return field.onChange("");
-             field.onChange(isCategory(field.value) ? option : option._id);
-           };
-   
-           return (
-             <Autocomplete
-               options={cats ?? []}
-               loading={loading}
-               value={selected}
-               onChange={handleChange}
-               getOptionLabel={(o) => o.name}
-               isOptionEqualToValue={(o, v) => o._id === v._id}
-               disabled={disabled}
-               /* keep label out of the way, kill placeholder */
-               renderInput={(params) => (
-                 <TextField
-                   {...params}
-                   label={label}
-                   placeholder=""                         /* ← always blank   */
-                   InputLabelProps={{ shrink: !!selected }} /* float on select */
-                   error={!!fieldState.error}
-                   helperText={fieldState.error?.message}
-                   /* ---- little spinner in the Input end‑adornment ---- */
-                   InputProps={{
-                     ...params.InputProps,
-                     endAdornment: (
-                       <>
-                         {loading && <CircularProgress size={18} sx={{ mr: 1 }} />}
-                         {params.InputProps.endAdornment}
-                       </>
-                     ),
-                   }}
-                   /* hide default placeholder that MUI adds internally */
-                   inputProps={{
-                     ...params.inputProps,
-                     ...(!selected && { style: { opacity: 0 } }), /* hide ghost */
-                   }}
-                 />
-               )}
-               /* option with optional thumbnail  */
-               renderOption={(props, opt) => (
-                 <Box
-                   component="li"
-                   {...props}
-                   key={opt._id}
-                   sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                 >
-                   {opt.imageUrl && (
-                     <Avatar src={opt.imageUrl} sx={{ width: 24, height: 24 }} />
-                   )}
-                   {opt.name}
-                 </Box>
-               )}
-             />
-           );
-         }}
-       />
-     );
-   }
-   
+
+import React, { useMemo } from "react";
+import {
+  Autocomplete,
+  Avatar,
+  Box,
+  TextField,
+} from "@mui/material";
+
+import {
+  Controller,
+  Control,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
+
+import useFetchAuthData from "@/hooks/useFetchAuthData";
+import { Category } from "@/types/Category";
+
+const URL = `${import.meta.env.VITE_API_BACKEND_URL}/categories`;
+
+const isCategory = (value: unknown): value is Category =>
+  !!value &&
+  typeof value === "object" &&
+  "_id" in value;
+
+interface Props<T extends FieldValues> {
+  control: Control<T>;
+  name: FieldPath<T>;
+  label?: string;
+  disabled?: boolean;
+}
+
+export default function CategorySelect<T extends FieldValues>({
+  control,
+  name,
+  label = "Category",
+  disabled = false,
+}: Props<T>) {
+  const { data: response, loading } =
+    useFetchAuthData<Category[] | { categories: Category[] }>(URL);
+
+  const cats = useMemo(
+    () =>
+      Array.isArray(response)
+        ? response
+        : response?.categories ?? [],
+    [response]
+  );
+
+  const findById = useMemo(() => {
+    const map = new Map(cats.map((category) => [category._id, category]));
+
+    return (id?: string | null) =>
+      id ? map.get(id) ?? null : null;
+  }, [cats]);
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={{
+        required: "Please select a category",
+      }}
+      render={({ field, fieldState }) => {
+        const selected: Category | null = isCategory(field.value)
+          ? field.value
+          : findById(field.value as string | undefined);
+
+        const handleChange = (
+          _: React.SyntheticEvent,
+          option: Category | null
+        ) => {
+          if (!option) {
+            field.onChange("");
+            return;
+          }
+
+          field.onChange(
+            isCategory(field.value)
+              ? option
+              : option._id
+          );
+        };
+
+        return (
+          <Autocomplete
+            options={cats}
+            loading={loading}
+            value={selected}
+            onChange={handleChange}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) =>
+              option._id === value._id
+            }
+            disabled={disabled}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
+            renderOption={(props, option) => (
+              <Box
+                component="li"
+                {...props}
+                key={option._id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                {option.imageUrl && (
+                  <Avatar
+                    src={option.imageUrl}
+                    sx={{
+                      width: 24,
+                      height: 24,
+                    }}
+                  />
+                )}
+
+                {option.name}
+              </Box>
+            )}
+          />
+        );
+      }}
+    />
+  );
+}

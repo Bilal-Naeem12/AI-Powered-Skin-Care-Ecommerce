@@ -1,4 +1,4 @@
-import Product from "@/types/Product"; // Import the Product interface
+import { Product } from "@/types/Product"; // Import the Product interface
 
 const products: Product[] = [
   {

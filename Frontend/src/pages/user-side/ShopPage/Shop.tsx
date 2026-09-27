@@ -15,7 +15,7 @@ const Shop: React.FC = () => {
   // Filters
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]); // ✅ multi-select
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [selectedSkinTypes, setSelectedSkinTypes] = useState<string[]>([]);
   const [availability, setAvailability] = useState<"in" | "out" | undefined>(
     undefined
@@ -25,12 +25,12 @@ const Shop: React.FC = () => {
   const url = useMemo(() => {
     let u = `${import.meta.env.VITE_API_BACKEND_URL}/products?page=${page}&limit=12`;
     if (sortOption) u += `&sort=${sortOption}`;
-    if (selectedCategory) u += `&category=${selectedCategory}`;
-    if (selectedBrands.length > 0) u += `&brand=${selectedBrands.join(",")}`;
+    if (selectedCategory) u += `&category=${encodeURIComponent(selectedCategory)}`;
+    if (selectedBrands.length > 0) u += `&brand=${encodeURIComponent(selectedBrands.join(","))}`;
     if (priceRange[0] > 0) u += `&minPrice=${priceRange[0]}`;
-    if (priceRange[1] < 100) u += `&maxPrice=${priceRange[1]}`;
+    if (priceRange[1] > 0) u += `&maxPrice=${priceRange[1]}`;
     if (selectedSkinTypes.length > 0)
-      u += `&skinType=${selectedSkinTypes.join(",")}`;
+      u += `&skinType=${encodeURIComponent(selectedSkinTypes.join(","))}`;
     if (availability) u += `&availability=${availability}`;
     return u;
   }, [
@@ -129,7 +129,7 @@ const Shop: React.FC = () => {
               <div className="flex justify-center mt-8">
                 <Pagination
                   count={Math.ceil(
-                    (data?.totalCount ?? 0) / (data?.limit ?? 8)
+                    (data?.totalCount ?? 0) / Math.max(1, data?.limit ?? 12)
                   )}
                   page={page}
                   onChange={handlePageChange}

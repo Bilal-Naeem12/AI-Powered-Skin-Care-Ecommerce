@@ -69,7 +69,7 @@ export default function DeletedUsers() {
               </TableHeader>
 
               <TableBody className="space-y-2">
-                {data?.users.map(u => (
+                {data?.users?.map(u => (
                   <TableRow key={u._id} className="bg-white shadow-sm rounded-lg ">
                     <TableCell className="p-2">
                       <div className="flex items-center gap-3">

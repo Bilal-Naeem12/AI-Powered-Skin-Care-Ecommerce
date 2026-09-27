@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaceScannerHandle } from "./FaceScanner";
-import FaceScanner from "./FaceScanner";
 import useUserStore from "@/store/UserStore";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -43,12 +41,14 @@ export  async function handleUploadFaceVerification(
   }
 }
 export default function OnboardingModal() {
-  const { user, isFirstLogin, setUser } = useUserStore();
+  const { user, setUser } = useUserStore();
   const [step, setStep] = useState(0);
   const [faceImage, setFaceImage] = useState<string | null>(null);
-  const scannerRef = useRef<FaceScannerHandle>(null);
+  const [uploadingProfile, setUploadingProfile] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 const [profilePic, setProfilePic] = useState<string>(user?.profileImage??"");  
-const [usedUploader, setUsedUploader] = useState(false);
+
 const [allergens, setAllergens] = useState<string[]>(user?.allergenPreferences ?? []);
 const allergenForm = useForm<{ allergens: string[] }>({
   defaultValues: { allergens: allergens },
@@ -56,16 +56,18 @@ const allergenForm = useForm<{ allergens: string[] }>({
 
 
   useEffect(() => {
+    if (!user || user.walkThroughCompleted) return;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") e.preventDefault();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const stored = localStorage.getItem("walkThroughInProgress");
@@ -80,18 +82,20 @@ const allergenForm = useForm<{ allergens: string[] }>({
   };
 
   const skipStep = () => {
+    setFaceImage(null);
     nextStep();
   };
- if (user?.walkThroughCompleted) return null;
+ if (!user || user.walkThroughCompleted) return null;
 const handleFinishOnboarding = async () => {
+  if (savingRef.current || uploadingProfile || !user?._id) return;
+  savingRef.current = true;
+  setSaving(true);
   try {
 
-    if (!faceImage || !faceImage.startsWith("data:image/")) {
-  console.error("⚠️ Invalid or empty base64 image");
-  return;
-}
-
-await handleUploadFaceVerification(faceImage);
+    if (faceImage) {
+      if (!faceImage.startsWith("data:image/")) throw new Error("Invalid face image. Please capture it again.");
+      await handleUploadFaceVerification(faceImage);
+    }
    const response = await axios.patch<{user:User}>(
   `${import.meta.env.VITE_API_BACKEND_URL}/users/${user?._id}/walkthrough`,
   {
@@ -104,6 +108,7 @@ await handleUploadFaceVerification(faceImage);
 
 // ✅ Grab the updated user from response.data.user
 const updatedUser = response.data.user;
+if (!updatedUser?._id || !updatedUser.walkThroughCompleted) throw new Error("The server did not confirm completion. Please try again.");
 
 // ✅ Now update your local user state properly
 setUser(updatedUser);
@@ -111,18 +116,13 @@ setUser(updatedUser);
     toast.success("Onboarding complete!");
   } catch (err) {
     console.error("Failed to complete walkthrough:", err);
+    toast.error("Could not finish onboarding. Please try again.");
+  } finally {
+    savingRef.current = false;
+    setSaving(false);
   }
 };
 
-  const handleCaptureFace = () => {
-    const captured = scannerRef.current?.captureSnapshot();
-    if (captured) {
-      setFaceImage(captured);
-      nextStep();
-    } else {
-      toast.error("Please align your face properly before capturing.");
-    }
-  };
 
 
   return createPortal(
@@ -139,6 +139,7 @@ setUser(updatedUser);
           {/* ──────────────────────────────
               1️⃣ WELCOME SCREEN
           ────────────────────────────── */}
+          {step > 0 && <button disabled={saving || uploadingProfile} onClick={() => setStep(value => Math.max(0, value - 1))} className="mb-4 underline">Back</button>}
           {step === 0 && (
             <div className="flex flex-col gap-6 text-center">
               <img
@@ -166,7 +167,7 @@ setUser(updatedUser);
   <div className="flex flex-col gap-4">
     <UniversalCapture
       title="Capture Your Face"
-      description="Align your face properly to scan, or upload a clear photo instead."
+      description="Align your face to capture a photo, or skip this optional step."
       onCapture={(dataUrl) => {
         setFaceImage(dataUrl);
      
@@ -229,9 +230,9 @@ setUser(updatedUser);
     {/* Profile Picture Preview & Uploader */}
     <ProfilePicUploader
       profilePic={profilePic}
+      onUploadingChange={setUploadingProfile}
       onChange={(url) => {
         setProfilePic(url);
-        setUsedUploader(true);
       }}
     />
 
@@ -252,7 +253,6 @@ setUser(updatedUser);
         setProfilePic(
           `https://raw.githubusercontent.com/Bilal-Naeem12/Semster-Project/refs/heads/Master/src/main/resources/Images/Profile/${i}.png`
         );
-        setUsedUploader(false);
       }}
     />
   ))}
@@ -261,9 +261,10 @@ setUser(updatedUser);
     {/* ────────────────────────────── */}
     <button
     onClick={handleFinishOnboarding }
+    disabled={saving || uploadingProfile}
       className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold mt-6 hover:opacity-90 transition"
     >
-      Finish
+      {saving ? "Finishing..." : "Finish"}
     </button>
   </div>
 )}

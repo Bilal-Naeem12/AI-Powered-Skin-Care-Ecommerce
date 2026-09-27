@@ -1,3 +1,4 @@
+import useObjectUrl from "@/hooks/useObjectUrl";
 import React, { useState, useRef, useEffect } from "react";
 import Breadcrumb from "@/component/UI/Breadcrumb";
 import MainLayout from "@/component/Layout/MainLayout";
@@ -64,9 +65,9 @@ useEffect(() => {
     clear();
     inpaint(originalImage);
   }
-}, [triggerInpaintId]);
+}, [triggerInpaintId, originalImage, clear, inpaint]);
 
-  const scanned_image_before = file ? URL.createObjectURL(file) : null;
+  const scanned_image_before = useObjectUrl(file);
   const scanned_image_after = result?.inpainted_image
     ? `data:image/jpeg;base64,${result.inpainted_image}`
     : null;

@@ -12,20 +12,24 @@ const useFetchAuthData = <T,>(url: string, reloadTrigger?: boolean) => {
   const { logout } = useUserStore(); // Access logout function from UserStore
   const navigate =  useNavigate()
   useEffect(() => {
+    const controller = new AbortController();
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      setData(null);
 
       const tryRequest = () => {
         return axios.get<T>(url, {
+          signal: controller.signal,
           withCredentials: true, // Send cookies including HTTP-only tokens
         });
       };
 
       try {
         const response = await tryRequest();
-        setData(response.data);
+        if (!controller.signal.aborted) setData(response.data);
       } catch (err: any) {
+        if (controller.signal.aborted) return;
         if (err.response?.status === 403) {
           try {
             // Attempt to refresh access token using the refresh token (HTTP-only cookie)
@@ -37,8 +41,9 @@ const useFetchAuthData = <T,>(url: string, reloadTrigger?: boolean) => {
 
             // Retry original request after refreshing
             const retryResponse = await tryRequest();
-            setData(retryResponse.data);
+            if (!controller.signal.aborted) setData(retryResponse.data);
           } catch (refreshError) {
+            if (controller.signal.aborted) return;
             
             console.error("Refresh token failed:", refreshError);
             // setError("Session expired. Please log in again.");
@@ -52,12 +57,13 @@ const useFetchAuthData = <T,>(url: string, reloadTrigger?: boolean) => {
           setError("Failed to fetch data.");
         }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchData();
-  }, [url, reloadTrigger, logout]); // Adding logout to the dependency array
+    return () => controller.abort();
+  }, [url, reloadTrigger, logout, navigate]); // Adding logout to the dependency array
 
   return { data, loading, error };
 };

@@ -23,7 +23,7 @@ const CameraView: React.FC<Props> = ({
 }) => {
   /* constraint flags from Zustand */
   const { faceInsideOval, facingCamera, lightingOk } =
-    useFaceScanStore.getState();
+    useFaceScanStore();
 
   const constraintsMet = faceInsideOval && facingCamera && lightingOk;
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "@/component/common/ComponentCard";
 import Checkbox from "../input/Checkbox";
 
 export default function CheckboxComponents() {

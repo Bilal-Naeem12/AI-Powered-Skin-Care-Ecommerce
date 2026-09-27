@@ -57,40 +57,25 @@ export default function ManageCategories() {
   const { onDelete } = useDeleteAuthData();
   const confirmDelete = async () => {
     if (!selected) return;
-    await onDelete(
+    const deleted = await onDelete(
       `${import.meta.env.VITE_API_BACKEND_URL}/categories`,
       selected._id
     );
+    if (!deleted) return;
     setReload((r) => !r);
     setModalOpen(false);
   };
 
   /* save (add or update) ---------------------------------------- */
-  const handleSave = async (payload: Partial<Category>) => {
-    try {
-      if (editCat) {
-        // update
-        await axios.put(
-          `${import.meta.env.VITE_API_BACKEND_URL}/categories/${editCat._id}`,
-          payload,
-          { withCredentials: true }
-        );
-        toast.success("Category updated");
-      } else {
-        // create
-        await axios.post(
-          `${import.meta.env.VITE_API_BACKEND_URL}/categories`,
-          payload,
-          { withCredentials: true }
-        );
-        toast.success("Category created");
-      }
-      setReload((r) => !r);
-      setEditOpen(false);
-    } catch (e) {
-      toast.error("Save failed");
-      console.error(e);
-    }
+  const handleSave = async (payload: Partial<Category>): Promise<Category> => {
+    const url = `${import.meta.env.VITE_API_BACKEND_URL}/categories`;
+    const response = editCat
+      ? await axios.put<Category | { category: Category }>(`${url}/${editCat._id}`, payload, { withCredentials: true })
+      : await axios.post<Category | { category: Category }>(url, payload, { withCredentials: true });
+    const saved = "category" in response.data ? response.data.category : response.data;
+    if (!saved?._id) throw new Error("The server did not return the saved category.");
+    setReload(r => !r);
+    return saved;
   };
 
   /* pagination helper ------------------------------------------- */
@@ -119,7 +104,7 @@ export default function ManageCategories() {
             }}
             className="rounded bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
           >
-            + Add
+            + Add
           </button>
         </div>
       </header>
@@ -159,7 +144,7 @@ export default function ManageCategories() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge color={c.isDeleted ? "danger" : "success"}>
+                      <Badge color={c.isDeleted ? "error" : "success"}>
                         {c.isDeleted ? "Deleted" : "Active"}
                       </Badge>
                     </TableCell>

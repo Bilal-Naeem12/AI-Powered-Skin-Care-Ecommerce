@@ -1,104 +1,61 @@
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import { Product } from "@/types/Product";
-import { CartItem } from "@/types/CartItem";
-import { toast } from 'react-toastify';
+import { persist } from "zustand/middleware";
+import type { Product } from "@/types/Product";
+import type { ShoppingCartItem } from "@/types/CartItem";
+import { cartQuantity, productPrice, productStock } from "@/utils/product";
+import { toast } from "react-toastify";
 
 interface CartStore {
-  cart: CartItem[];
-  addProductToCart: (product: Product, quantity?: number) => void;
-  removeProductFromCart: (productId: string) => void;
-  updateProductQuantity: (productId: string, quantity: number) => void;
+  cart: ShoppingCartItem[];
+  addProductToCart: (product: Product, quantity?: number, selectedVariant?: string) => void;
+  removeProductFromCart: (productId: string, selectedVariant?: string) => void;
+  updateProductQuantity: (productId: string, quantity: number, selectedVariant?: string) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
   isCartEmpty: () => boolean;
   isProductInCart: (productId: string) => boolean;
 }
+const matches = (item: ShoppingCartItem, id: string, variant?: string) =>
+  item.product._id === id && item.selectedVariant === variant;
 
-const useCartStore = create<CartStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        cart: [],
-
-        addProductToCart: (product, quantity = 1) => {
-          set((state: any) => {
-            const existingProduct = state.cart.find(
-              (item: any) => item.product._id === product._id
-            );
-
-            toast.success(
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '5px' }}
-                />
-                <span><strong>{product.name}</strong><br /> added to cart!</span>
-              </div>,
-            );
-
-            if (existingProduct) {
-              return {
-                cart: state.cart.map((item: any) =>
-                  item.product._id === product._id
-                    ? { ...item, quantity: item.quantity + quantity }
-                    : item
-                ),
-              };
-            }
-
-            return {
-              cart: [...state.cart, { product, quantity }],
-            };
-          });
-        },
-
-        removeProductFromCart: (productId) => {
-          set((state) => ({
-            cart: state.cart.filter((item: any) => item.product._id !== productId),
-          }));
-        },
-
-        updateProductQuantity: (productId, quantity) => {
-          set((state) => ({
-            cart: state.cart.map((item: any) =>
-              item.product._id === productId
-                ? { ...item, quantity: Math.max(1, quantity) }
-                : item
-            ),
-          }));
-        },
-
-        clearCart: () => set({ cart: [] }),
-
-        getTotalItems: () => {
-          const cart = get().cart;
-          return cart.reduce((total, item) => total + item.quantity, 0);
-        },
-
-        getTotalPrice: () => {
-          const cart = get().cart;
-          return cart.reduce(
-            (total, item: any) => total + item.product.price * item.quantity,
-            0
-          );
-        },
-
-        isCartEmpty: () => {
-          return get().cart.length === 0;
-        },
-
-        isProductInCart: (productId) => {
-          return get().cart.some((item: any) => item.product._id === productId);
-        },
-      }),
-      {
-        name: "cart-store", // 👈 localStorage key
-      }
-    )
-  )
-);
-
+const useCartStore = create<CartStore>()(persist((set, get) => ({
+  cart: [],
+  addProductToCart: (product, quantity = 1, selectedVariant) => {
+    selectedVariant ??= product.variants?.[0]?.size;
+    const stock = productStock(product, selectedVariant);
+    if (!Number.isFinite(product.price) || !cartQuantity(quantity, stock)) {
+      toast.error("This product is unavailable."); return;
+    }
+    set(state => {
+      const existing = state.cart.find(item => matches(item, product._id, selectedVariant));
+      return { cart: existing ? state.cart.map(item => matches(item, product._id, selectedVariant)
+        ? { product, selectedVariant, quantity: cartQuantity(item.quantity + quantity, stock) } : item)
+        : [...state.cart, { product, selectedVariant, quantity: cartQuantity(quantity, stock) }] };
+    });
+    toast.success("Added to cart");
+  },
+  removeProductFromCart: (id, variant) => set(state => ({ cart: state.cart.filter(item => !matches(item, id, variant)) })),
+  updateProductQuantity: (id, quantity, variant) => set(state => ({
+    cart: state.cart.map(item => matches(item, id, variant)
+      ? { ...item, quantity: cartQuantity(quantity, productStock(item.product, variant)) } : item)
+      .filter(item => item.quantity > 0),
+  })),
+  clearCart: () => set({ cart: [] }),
+  getTotalItems: () => get().cart.reduce((sum, item) => sum + item.quantity, 0),
+  getTotalPrice: () => get().cart.reduce((sum, item) => sum + productPrice(item.product, item.selectedVariant) * item.quantity, 0),
+  isCartEmpty: () => get().cart.length === 0,
+  isProductInCart: id => get().cart.some(item => item.product._id === id),
+}), {
+  name: "cart-store",
+  merge: (persisted, current) => {
+    const saved = persisted as { cart?: ShoppingCartItem[] } | null;
+    const cart = Array.isArray(saved?.cart) ? saved.cart.filter(item =>
+      item?.product && typeof item.product._id === "string" && Number.isFinite(item.product.price)
+      && Number.isFinite(item.quantity) && item.quantity > 0
+    ).map(item => ({ ...item, quantity: cartQuantity(item.quantity, productStock(item.product, item.selectedVariant)) }))
+      .filter(item => item.quantity > 0) : [];
+    return { ...current, cart };
+  },
+}));
 export default useCartStore;

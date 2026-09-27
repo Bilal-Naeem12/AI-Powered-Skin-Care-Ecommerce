@@ -100,7 +100,7 @@ const SkinAnalysisTestPage: React.FC = () => {
             {Object.entries(clsData.all_scores).map(
               ([lbl, sc]) => (            // ← destructure both here
                 <li key={lbl}>
-                  {lbl}: {sc as String}
+                  {lbl}: {sc as string}
                 </li>
               )
             )}

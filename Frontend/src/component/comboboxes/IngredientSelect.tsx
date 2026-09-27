@@ -1,47 +1,59 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Autocomplete,
   Box,
   Chip,
-  CircularProgress,
   TextField,
 } from "@mui/material";
-import { Controller, Control } from "react-hook-form";
+import {
+  Controller,
+  Control,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
 import useFetchAuthData from "@/hooks/useFetchAuthData";
 
 /* ------------------------------------------------------- */
 
 const URL = `${import.meta.env.VITE_API_BACKEND_URL}/products/ingredients/all-unique`;
 
-interface Props {
-  control: Control<any>;
-  name: string;
+interface Props<T extends FieldValues> {
+  control: Control<T>;
+  name: FieldPath<T>;
   label?: string;
   disabled?: boolean;
-  multiple?: boolean; // allow selecting multiple ingredients
+  multiple?: boolean;
 }
 
-export default function IngredientSelect({
+export default function IngredientSelect<T extends FieldValues>({
   control,
   name,
   label = "Ingredients",
   disabled = false,
-  multiple = true, // most cases: multiple ingredients
-}: Props) {
-  const { data: ingredients, loading } = useFetchAuthData<string[]>(URL);
-const safeIngredients = Array.isArray(ingredients) ? ingredients : [];
+  multiple = true,
+}: Props<T>) {
+  const { data: ingredients, loading } =
+    useFetchAuthData<string[] | { data: string[] }>(URL);
+
+  const safeIngredients = Array.isArray(ingredients)
+    ? ingredients
+    : Array.isArray(ingredients?.data)
+      ? ingredients.data
+      : [];
 
   return (
     <Controller
       name={name}
       control={control}
-      rules={{ required: "Please select at least one ingredient" }}
+      rules={{
+        required: "Please select at least one ingredient",
+      }}
       render={({ field, fieldState }) => (
         <Autocomplete
           multiple={multiple}
-         options={ingredients?.data ?? []}
+          options={safeIngredients}
           loading={loading}
-          value={field.value || []}
+          value={field.value ?? (multiple ? [] : null)}
           onChange={(_, value) => field.onChange(value)}
           isOptionEqualToValue={(option, value) => option === value}
           disabled={disabled}
@@ -49,25 +61,12 @@ const safeIngredients = Array.isArray(ingredients) ? ingredients : [];
             <TextField
               {...params}
               label={label}
-              placeholder=""
-              InputLabelProps={{ shrink: true }}
               error={!!fieldState.error}
               helperText={fieldState.error?.message}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <>
-                    {loading && (
-                      <CircularProgress size={18} sx={{ mr: 1 }} />
-                    )}
-                    {params.InputProps.endAdornment}
-                  </>
-                ),
-              }}
             />
           )}
           renderTags={(value: readonly string[], getTagProps) =>
-            value.map((option: string, index: number) => (
+            value.map((option, index) => (
               <Chip
                 variant="outlined"
                 label={option}

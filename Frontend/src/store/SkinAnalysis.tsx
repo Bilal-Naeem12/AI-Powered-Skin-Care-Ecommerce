@@ -107,7 +107,7 @@ const useSkinAnalysisStore = create<SkinAnalysisState>()(
         triggerInpaint: () => set({ triggerInpaintId: `${Date.now()}` }),
         setProgressTracking: (value) => set({ isProgressTracking: value }),
         analyzeSkin: async (formData: FormData, originalImage: File|string, userId: string|undefined) => {
-  set({ loading: true, error: null });
+  set({ loading: true, error: null, result: null });
 
  try {
     // ✅ 1️⃣ Verify & crop on FastAPI
@@ -181,8 +181,8 @@ const afterUrl = await uploadImage(afterFile);
     const minimized = {
       classifications: result.classifications,
       detections: {
-        acne: result.detections.acne.objects?.[0],
-        puffy_eyes: result.detections.puffy_eyes.objects?.[0],
+        acne: result.detections?.acne?.objects?.[0],
+        puffy_eyes: result.detections?.puffy_eyes?.objects?.[0],
       },
     };
 
@@ -194,9 +194,9 @@ const afterUrl = await uploadImage(afterFile);
 if (recResp?.data?.success) {
   storeRecommendationData(recResp.data); // ✅ store it right after fetching
 }
-   const recProductsWithSteps = Object.entries(recResp.data.routine)
+   const recProductsWithSteps = Object.entries(recResp.data.routine ?? {})
   .flatMap(([stepKey, step]) =>
-    step?.products.map((p) => ({
+    step?.products?.map((p) => ({
       productId: p._id,
       step: {
         stepKey,
@@ -208,7 +208,7 @@ if (recResp?.data?.success) {
   const { isProgressTracking } = get();
 
     // 5. Save full history
-    await saveSkinHistory(userId ?? "", beforeUrl, afterUrl, result, recProductsWithSteps,isProgressTracking);
+    if (userId) await saveSkinHistory(userId, beforeUrl, afterUrl, result, recProductsWithSteps,isProgressTracking);
 
     toast.success("Skin history saved ✅");
   } catch (e: any) {
@@ -220,7 +220,7 @@ if (recResp?.data?.success) {
   }
 },
 
-        clearResult: () => set({ result: null, error: null }),
+        clearResult: () => set({ result: null, error: null, originalImage: null, triggerInpaintId: null, isProgressTracking: false }),
 
         maxSpots: 50,
         weights: { severity: 0.4, count: 0.3, type: 0.2, puffy: 0.1 },

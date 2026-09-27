@@ -20,7 +20,9 @@ const useSocketStore = create<SocketState>((set, get) => ({
       current.disconnect();
     }
 
-    const s = io(import.meta.env.VITE_API_BACKEND_URL!.replace("/api", ""), {
+    const apiUrl = import.meta.env.VITE_API_BACKEND_URL;
+    if (!apiUrl) return;
+    const s = io(apiUrl.replace(/\/api\/?$/, ""), {
       withCredentials: true,
     });
 

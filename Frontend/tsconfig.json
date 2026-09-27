@@ -1,29 +1,35 @@
 {
   "compilerOptions": {
-
-    /* Language and Environment */
-    "target": "es2020",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "lib": ["es6", "dom"],                                      /* Specify a set of bundled library declaration files that describe the target runtime environment. */
-
-    /* Modules */
-    "module": "es2020",                             /* Specify what module code is generated. */
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+    "target": "ES2020",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    /* Type Checking */
-    "moduleResolution": "node",
-    "strict": true,                                      /* Enable all strict type-checking options. */
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowJs": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src", // This makes 'src' the root directory
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]  // This allows you to use '@' to refer to the 'src' folder
-    }
+      "@/*": [
+        "*"
+      ]
+    },
+    "types": [
+      "vite/client",
+      "node",
+      "react",
+      "react-dom"
+    ]
   },
   "include": [
-    "src/**/*"
+    "src"
   ]
 }

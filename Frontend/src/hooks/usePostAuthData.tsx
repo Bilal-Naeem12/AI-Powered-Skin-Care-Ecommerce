@@ -22,7 +22,8 @@ const usePostAuthData = <T, R>() => {
     try {
       const response = await tryRequest();
       setData(response.data);
-         toast.success(successMessage);
+         if (successMessage) toast.success(successMessage);
+      return { ok: true as const, data: response.data };
     } catch (err: any) {
       if (err.response?.status === 403) {
         try {
@@ -33,6 +34,8 @@ const usePostAuthData = <T, R>() => {
           );
           const retryResponse = await tryRequest();
           setData(retryResponse.data);
+          if (successMessage) toast.success(successMessage);
+          return { ok: true as const, data: retryResponse.data };
         } catch (refreshErr) {
           console.error("🔒 Token refresh failed:", refreshErr);
           toast.error("Session expired. Please log in again.");
@@ -50,6 +53,7 @@ const usePostAuthData = <T, R>() => {
     } finally {
       setLoading(false);
     }
+    return { ok: false as const };
   };
 
   return { data, loading, error, postData };

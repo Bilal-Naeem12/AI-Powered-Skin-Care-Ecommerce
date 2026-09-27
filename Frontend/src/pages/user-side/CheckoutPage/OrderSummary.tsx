@@ -1,3 +1,4 @@
+import { productPrice } from "@/utils/product";
 import React, { useState } from "react";
 import {
   Box,
@@ -11,7 +12,7 @@ import {
 } from "@mui/material";
 import useCartStore from "../../../store/CartStore";
 import useOrderStore from "../../../store/OrderStore";
-import { CartItem } from "@/types/CartItem";
+import { ShoppingCartItem as CartItem } from "@/types/CartItem";
 import { PaymentGateway } from "@/types/Payment";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import usePostAuthData from "@/hooks/usePostAuthData";
@@ -38,7 +39,7 @@ const navigate = useNavigate();
         Order Summary
       </h5>
 <div className=" overflow-y-auto max-h-[365px] my-10 px-5">
-      {cart.map((item: CartItem) => (<>
+      {cart.map((item: CartItem) => (<React.Fragment key={`${item.product._id}-${item.selectedVariant ?? ""}`}>
         <Box
           key={typeof item.product === "string" ? item.product : item.product._id}
           className="flex justify-between items-center my-2"
@@ -48,7 +49,7 @@ const navigate = useNavigate();
             {typeof item.product !== "string" && (
               <>
                 <img
-                  src={item.product.images[0]}
+                  src={item.product.images?.[0] ?? "/assets/product_images/other.webp"}
                   alt={item.product.name}
                   className="w-16 h-16 rounded-lg object-cover"
                 />
@@ -57,12 +58,12 @@ const navigate = useNavigate();
             )}
           </Box>
           <p className=" text-center">
-            {import.meta.env.VITE_API_CURRENCY_Symbol}  {typeof item.product === "string" ? 0 : item.product.price * item.quantity}/-
+            {import.meta.env.VITE_API_CURRENCY_Symbol}  {typeof item.product === "string" ? 0 : productPrice(item.product, item.selectedVariant) * item.quantity}/-
           </p>
           
         </Box>
         <Divider/>
-        </>
+        </React.Fragment>
       ))}
 </div>
       <Box className="flex justify-between items-center py-3 ">

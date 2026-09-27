@@ -54,19 +54,19 @@ export default function LeaveReviewModal({ open, onClose, cartItems }: Props) {
               <div
                 key={idx}
                 className="flex items-center justify-between py-3 px-4 cursor-pointer hover:bg-gray-50"
-                onClick={() => !item.alreadyReviewed && setActive(item)}
+                onClick={() => item.productId?._id && !item.alreadyReviewed && setActive(item)}
               >
                 <div className="flex gap-3 items-center">
                   <img
-                    src={item.productId.images?.[0]}
+                    src={item.productId?.images?.[0]}
                     className="w-12 h-12 object-cover rounded border"
                   />
                   <div className="text-sm">
                     <p className="font-medium line-clamp-1">
-                      {item.productId.name}
+                      {item.productId?.name}
                     </p>
                     <p className="text-gray-500">
-                      {item.selectedVariant || item.productId.brand}
+                      {item.selectedVariant || item.productId?.brand}
                     </p>
                   </div>
                 </div>
@@ -82,7 +82,7 @@ export default function LeaveReviewModal({ open, onClose, cartItems }: Props) {
         </div>
 
         {/* ---------- PANEL 2 : write review ---------- */}
-        {active && (
+        {active?.productId && (
           <div className={reviewCls}>
             {/* back button */}
             <button

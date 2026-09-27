@@ -13,9 +13,11 @@ const usePutAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let active = true;
     const updateData = async () => {
       setLoading(true);
       setError(null);
+      setResponseData(null);
 
       const tryRequest = () => {
         return axios.put<any>(url, data, {
@@ -25,8 +27,9 @@ const usePutAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
 
       try {
         const response = await tryRequest();
-        setResponseData(response.data);
+        if (active) setResponseData(response.data);
       } catch (err: any) {
+        if (!active) return;
         if (err.response?.status === 403) {
           try {
             // Attempt to refresh access token using the refresh token (HTTP-only cookie)
@@ -38,8 +41,9 @@ const usePutAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
 
             // Retry original request after refreshing
             const retryResponse = await tryRequest();
-            setResponseData(retryResponse.data);
+            if (active) setResponseData(retryResponse.data);
           } catch (refreshError) {
+            if (!active) return;
             console.error("Refresh token failed:", refreshError);
             setError("Session expired. Please log in again.");
             // Logout the user by updating the UserStore and removing from localStorage
@@ -52,13 +56,14 @@ const usePutAuthData = <T,>(url: string, data: T, reloadTrigger?: boolean) => {
           setError("Failed to update data.");
         }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
-    if (data) {
+    if (data && url) {
       updateData();
     }
+    return () => { active = false; };
   }, [url, data, reloadTrigger, logout, navigate]); // Adding logout to the dependency array
 
   return { responseData, loading, error };

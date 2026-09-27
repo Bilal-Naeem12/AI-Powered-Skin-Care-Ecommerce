@@ -2,6 +2,7 @@
 import React, {
   useEffect,
   useRef,
+  useState,
   forwardRef,
   useImperativeHandle,
 } from "react";
@@ -99,33 +100,33 @@ overlayRef.current?.getContext("2d")?.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT)
     return sum / (data.length/4);
   };
 
+  const [cameraError, setCameraError] = useState<string | null>(null);
   useEffect(() => {
+    let cancelled = false;
     let faceLandmarker: FaceLandmarker | null = null;
     let rafId: number = 0;
 
     const setupCamera = async () => {
-      try {
-        mediaStreamRef.current =
-          await navigator.mediaDevices.getUserMedia({
+        const stream = await navigator.mediaDevices.getUserMedia({
             video: {
               width: VIDEO_WIDTH,
               height: VIDEO_HEIGHT,
               facingMode: "user",
             },
           });
+        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+        mediaStreamRef.current = stream;
         if (videoRef.current && mediaStreamRef.current) {
           videoRef.current.srcObject = mediaStreamRef.current;
           await videoRef.current.play();
         }
-      } catch (e) {
-        console.error("Camera error:", e);
-      }
     };
 
     const setupModel = async () => {
       const visionFileset = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm"
       );
+      if (cancelled) return;
       faceLandmarker = await FaceLandmarker.createFromOptions(
         visionFileset,
         {
@@ -140,6 +141,7 @@ overlayRef.current?.getContext("2d")?.clearRect(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT)
           outputFacialTransformationMatrixes: false,
         }
       );
+      if (cancelled) { faceLandmarker.close(); return; }
       faceLandmarkerRef.current = faceLandmarker;
     };
 
@@ -227,13 +229,19 @@ ovCtx.restore();
 
     const init = async () => {
       await setupCamera();
+      if (cancelled) return;
       await setupModel();
+      if (cancelled) return;
       rafId = requestAnimationFrame(processFrame);
       rafIdRef.current = rafId;
     };
-    init();
+    init().catch(() => {
+      mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+      if (!cancelled) setCameraError("Camera unavailable. Check permissions and try again.");
+    });
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafIdRef.current);
       mediaStreamRef.current?.getTracks().forEach(t => t.stop());
       faceLandmarkerRef.current?.close();
@@ -243,7 +251,8 @@ ovCtx.restore();
   // The outer card can be any size, but make sure the video/canvas/overlay
   // container is always at the true width/height!
   return (
-<div className="flex items-center justify-center bg-white rounded-2xl shadow-lg w-full">
+<div className="flex flex-col items-center justify-center bg-white rounded-2xl shadow-lg w-full">
+  {cameraError && <p role="alert">{cameraError}</p>}
   <div
     className="relative rounded-xl overflow-hidden border border-gray-200 w-full"
     style={{

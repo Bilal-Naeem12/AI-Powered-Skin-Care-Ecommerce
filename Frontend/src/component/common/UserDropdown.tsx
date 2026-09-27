@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DropdownItem } from "@/component/admin/DropdownItem";
 import { Dropdown } from "@/component/admin/Dropdown";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import useUserStore from "@/store/UserStore";
 import userImg from "@/assets/avatar-default.png"
 export default function UserDropdown() {

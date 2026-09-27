@@ -1,3 +1,4 @@
+import { productPrice, productStock } from "@/utils/product";
 import React from "react";
 import { MdFavoriteBorder } from "react-icons/md"; // Importing icons
 import { Link } from "react-router-dom";
@@ -25,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <Link to={`/product/${product._id}`}> {/* Product Image */}
       {product.images && (
   <img
-    src={Array.isArray(product.images) ? product.images[0] : product.images}
+    src={Array.isArray(product.images) ? product.images?.[0] : product.images}
     alt={product.name}
     className="w-full h-40 object-contain rounded-t-md"
   />
@@ -35,15 +36,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="p-4">
           <h3 className="text-md font-bold">{product.name}</h3>
           <p className="text-gray-600 text-sm">
-  {product.description
+  {(product.description ?? "")
     .split(" ")
     .slice(0, 10)
     .join(" ")}
-  {product.description.split(" ").length > 10 && "..."}
+  {(product.description ?? "").split(" ").length > 10 && "..."}
 </p>
 
           {/* <p className="text-gray-500 text-sm mt-2">{product.variants}</p> Assuming the first variant is being used */}
-          <p className="text-gray-900 text-sm font-outfit mt-2">{import.meta.env.VITE_API_CURRENCY_Symbol} {product.price} /-</p>
+          <p className="text-gray-900 text-sm font-outfit mt-2">{import.meta.env.VITE_API_CURRENCY_Symbol} {productPrice(product, product.variants?.[0]?.size)} /-</p>
         </div>
       </Link>
 
@@ -52,10 +53,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Button
           variant="black"
           className="px-4 py-2 text-sm"
-           disabled={product.stock === 1}
+           disabled={productStock(product, product.variants?.[0]?.size) === 0}
           onClick={handleAddToCart} // Trigger the add to cart action
         >
-         {product.stock === 1 ? "Out of Stock" : "Add to your cart"} {/* Label change */}
+         {productStock(product, product.variants?.[0]?.size) === 0 ? "Out of Stock" : "Add to your cart"} {/* Label change */}
         </Button>
 
         {/* Favorite Icon */}

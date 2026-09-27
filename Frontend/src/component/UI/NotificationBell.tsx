@@ -49,21 +49,23 @@ const NotificationBell: React.FC = () => {
   const handleClose = () => setAnchorEl(null);
 
   const handleClickNotification = async (notif: NotificationItem) => {
+    if (!user) return;
     try {
       const isRead = notif.readBy?.some((r) => r.userId === user?._id);
       if (!isRead) {
-        await fetch(
+        const response = await fetch(
           `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
           {
             method: "PATCH",
             credentials: "include",
           }
         );
+        if (!response.ok) throw new Error("Could not mark notification as read");
         // update locally:
         setNotifications(
           notifications.map((n) =>
             n._id === notif._id
-              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id, readAt: new Date().toISOString() }] }
               : n
           )
         );
@@ -72,7 +74,7 @@ const NotificationBell: React.FC = () => {
       if (notif.kind === "ANALYSIS_RESULT" && notif.data?.skinHistoryId) {
         navigate(`/profile-page/analysis-timeline/${notif.data?.skinHistoryId}`);
         handleClose();
-      }    if ((notif.kind === "ORDER_PLACED" ||    "ORDER_STATUS" ) && notif.data?.orderId) {
+      }    if ((notif.kind === "ORDER_PLACED" || notif.kind === "ORDER_STATUS" ) && notif.data?.orderId) {
         navigate(`/profile-page/orders/${notif.data?.orderId}`);
         handleClose();
       }

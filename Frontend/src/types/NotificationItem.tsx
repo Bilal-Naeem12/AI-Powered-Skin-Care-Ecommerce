@@ -28,7 +28,7 @@ export type NotificationKind =
 export interface NotificationItem {
   _id: string;
   kind: NotificationKind;
-  data:{};
+  data: { orderId?: string; skinHistoryId?: string };
   title: string;
   body?: string;
   image?: string;

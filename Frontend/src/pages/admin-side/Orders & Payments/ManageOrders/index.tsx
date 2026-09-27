@@ -139,7 +139,7 @@ const [cancelOrder, setCancelOrder] = useState<Order | null>(null);
             </TableHeader>
 <div className=" p-2"></div>
             <TableBody >
-              {data?.orders.map((order) => (
+              {data?.orders?.map((order) => (
                 <TableRow key={order._id}  >
                   {/* Order # */}
                   <TableCell className="font-medium">{order.orderNumber}</TableCell>
@@ -156,10 +156,10 @@ const [cancelOrder, setCancelOrder] = useState<Order | null>(null);
                       />
                       <div>
                         <p className="font-semibold">
-                          {order.userId.first_name} {order.userId.last_name}
+                          {order.userId?.first_name} {order.userId?.last_name}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {order.userId.email}
+                          {order.userId?.email}
                         </p>
                       </div>
                     </div>

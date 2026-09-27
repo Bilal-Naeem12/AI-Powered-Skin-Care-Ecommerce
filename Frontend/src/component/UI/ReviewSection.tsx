@@ -1,6 +1,7 @@
 /* ------------------------------------------------------------------
    src/components/Product/SimpleReviewSection.tsx
 -------------------------------------------------------------------*/
+import { toast } from "react-toastify";
 import React, { useState } from "react";
 import {
   Paper,
@@ -40,11 +41,12 @@ interface Props {
 const SimpleReviewSection: React.FC<Props> = ({ product }) => {
   const { user } = useUserStore();
 
+  const [reload, setReload] = useState(false);
   /* fetch existing reviews */
   const { data: reviews, loading, error } = useFetchData<
     ProductReview[]
   >(
-    `${import.meta.env.VITE_API_BACKEND_URL}/products/${product?._id}/reviews`
+    `${import.meta.env.VITE_API_BACKEND_URL}/products/${product?._id}/reviews`, reload
   );
   const [openImage, setOpenImage] = useState<string | null>(null);
   /* form setup */
@@ -63,6 +65,7 @@ const SimpleReviewSection: React.FC<Props> = ({ product }) => {
 
   /* send review */
   const onSubmit = async (data: FormValues) => {
+    try {
     await axios.post(
       `${import.meta.env.VITE_API_BACKEND_URL}/products/${product?._id}/reviews`,
       {
@@ -73,6 +76,8 @@ const SimpleReviewSection: React.FC<Props> = ({ product }) => {
       { withCredentials: true }
     );
     reset();
+    setReload(value => !value);
+    } catch { toast.error("Could not submit review. Please try again."); }
   };
 
   /* ui states */

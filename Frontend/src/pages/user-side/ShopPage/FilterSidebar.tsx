@@ -45,10 +45,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   setAvailability,
   resetPage,
 }) => {
-  const { data: categories, loading, error } = useFetchData<Category[]>(
+  const { data: response, loading, error } = useFetchData<Category[] | { categories: Category[] }>(
     `${import.meta.env.VITE_API_BACKEND_URL}/categories/`
   );
 
+  const categories = Array.isArray(response) ? response : response?.categories ?? [];
   const [expanded, setExpanded] = useState<string | false>(false);
 
   const handleAccordionChange =
@@ -87,24 +88,18 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           <Typography>Price Range</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Slider
-            value={priceRange}
-            onChange={(_, newValue) => {
-              setPriceRange(newValue as [number, number]);
-              resetPage();
-            }}
-            valueLabelDisplay="auto"
-            min={0}
-            max={100}
-            step={1} // ✅ FIXED: smooth slider, steps of 1
-          />
-          <div className="flex justify-between text-xs mt-2 text-gray-600">
-            <span>
-              {import.meta.env.VITE_API_CURRENCY_Symbol} {priceRange[0]}
-            </span>
-            <span>
-              {import.meta.env.VITE_API_CURRENCY_Symbol} {priceRange[1]}
-            </span>
+          <div className="flex flex-col gap-3">
+            <label>Minimum price
+              <input aria-label="Minimum price" type="number" min={0} value={priceRange[0] || ""}
+                onChange={e => { const value = Math.max(0, Number(e.target.value)); if (Number.isFinite(value)) setPriceRange([value, priceRange[1] && priceRange[1] < value ? value : priceRange[1]]); }}
+                className="w-full border rounded p-2" />
+            </label>
+            <label>Maximum price
+              <input aria-label="Maximum price" type="number" min={priceRange[0]} placeholder="No limit" value={priceRange[1] || ""}
+                onChange={e => { const value = Math.max(0, Number(e.target.value)); if (Number.isFinite(value)) setPriceRange([priceRange[0], value]); }}
+                onBlur={() => { if (priceRange[1] > 0 && priceRange[1] < priceRange[0]) setPriceRange([priceRange[0], priceRange[0]]); }}
+                className="w-full border rounded p-2" />
+            </label>
           </div>
         </AccordionDetails>
       </Accordion>

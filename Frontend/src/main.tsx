@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App'; // Import the App component (which should now be in App.tsx)
+import ErrorBoundary from './component/common/ErrorBoundary';
 import './index.css';
 import { ChatBotProvider } from 'react-chatbotify';
 import NotificationProvider from './component/UI/NotificationProvider';
@@ -10,6 +11,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 // React 18+ entry point
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
+    <ErrorBoundary>
       <NotificationProvider />
        <LocalizationProvider dateAdapter={AdapterDateFns}>
        <ChatBotProvider>
@@ -17,5 +19,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     
     </ChatBotProvider>
     </LocalizationProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );

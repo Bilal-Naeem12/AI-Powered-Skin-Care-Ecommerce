@@ -33,7 +33,7 @@ interface ApiResponse {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 1 · Zod schema ("" allowed for selects)                                     */
+/* 1 · Zod schema ("" allowed for selects)                                     */
 /* -------------------------------------------------------------------------- */
 const AccountSchema = z.object({
   first_name: z.string().min(1),
@@ -83,7 +83,7 @@ export type AccountFormValues = z.infer<typeof AccountSchema>;
 type AddressKeys = keyof AccountFormValues["address"];
 
 /* -------------------------------------------------------------------------- */
-/* 2 · Utility data / default values                                           */
+/* 2 · Utility data / default values                                           */
 /* -------------------------------------------------------------------------- */
 const EMPTY_FORM: AccountFormValues = {
   first_name: "",
@@ -138,7 +138,7 @@ const mapUserToForm = (u: User): AccountFormValues => ({
 });
 
 /* -------------------------------------------------------------------------- */
-/* 3 · Component                                                               */
+/* 3 · Component                                                               */
 /* -------------------------------------------------------------------------- */
 const PROFILE_URL = `${import.meta.env.VITE_API_BACKEND_URL}/users/profile`;
 
@@ -185,7 +185,7 @@ const AccountSettingsComponent: React.FC = () => {
     if (!value.trim()) return;
     const current = getValues(field) ?? [];
     setValue(field, [...current, value.trim()]);
-    field === "skin_concerns" ? setSkinInput("") : setAllergenInput("");
+    if (field === "skin_concerns") setSkinInput(""); else setAllergenInput("");
   };
 
   const handleDeleteChip = (
@@ -209,7 +209,7 @@ const allergenPrefs     = watch("allergenPreferences");
       toast.success(res.data.message);
     } catch (err) {
      
-      toast.error(err as String);
+      toast.error(err as string);
     }
   };
 
@@ -285,31 +285,12 @@ const allergenPrefs     = watch("allergenPreferences");
   <LocalizationProvider dateAdapter={AdapterDateFns}>
     <DesktopDatePicker
       label="Date of birth"
-      inputFormat="yyyy-MM-dd"
-      value={watch("date_of_birth") ? new Date(watch("date_of_birth")) : null}
+      format="yyyy-MM-dd"
+      value={watch("date_of_birth") ? new Date(watch("date_of_birth") || "") : null}
       onChange={(newValue) =>
-        setValue("date_of_birth", newValue ? newValue.toISOString().slice(0, 10) : "")
+        setValue("date_of_birth", newValue && !Number.isNaN(newValue.getTime()) ? newValue.toISOString().slice(0, 10) : "")
       }
-      renderInput={(params:any) => (
-        <TextField
-          {...params}
-          fullWidth
-          size="small"
-          error={!!errors.date_of_birth}
-          helperText={errors.date_of_birth?.message}
-          sx={{
-            "& .MuiInputBase-root": {
-              height: "40px",
-            },
-            "& .MuiInputBase-input": {
-              padding: "10px 14px",
-            },
-            "& .MuiInputAdornment-root": {
-              marginRight: "8px",
-            },
-          }}
-        />
-      )}
+      slotProps={{ textField: { fullWidth: true, size: "small" } }}
     />
   </LocalizationProvider>
 </Grid>

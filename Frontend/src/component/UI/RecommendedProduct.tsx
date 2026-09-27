@@ -1,3 +1,4 @@
+import { categoryName } from "@/utils/product";
 import React from "react";
 import Button from "./Button";
 import useCartStore from "@/store/CartStore";
@@ -39,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdded, onAdd }) =>
       )}
 
       <img
-        src={product.images[0]}
+        src={product.images?.[0]}
         alt={product.name}
         className="w-28 h-28 object-cover rounded-lg"
       />
@@ -49,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdded, onAdd }) =>
         <div className="mt-2 text-sm font-medium text-black">
           {import.meta.env.VITE_API_CURRENCY_Symbol} {product.price.toFixed(2)}
         </div>
-        <p className="text-xs text-primary uppercase mt-1">{product.category.name}</p>
+        <p className="text-xs text-primary uppercase mt-1">{categoryName(product.category)}</p>
         <Button
           variant="black"
           className="mt-3 px-3 py-1 text-sm"

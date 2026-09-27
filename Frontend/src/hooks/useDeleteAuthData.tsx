@@ -27,6 +27,7 @@ export function useDeleteAuthData() {
       try {
         await sendDelete(fullUrl);
         toast.success("Delete successful!");
+        return true;
       } catch (err: any) {
         /* ---------- expired access token? try refresh ---------- */
         if (err.response?.status === 403) {
@@ -39,6 +40,7 @@ export function useDeleteAuthData() {
             /* retry once after refresh */
             await sendDelete(fullUrl);
             toast.success("Delete successful!");
+        return true;
           } catch (refreshErr) {
             console.error("Refresh token failed:", refreshErr);
             toast.error("Session expired. Please log in again.");
@@ -59,6 +61,7 @@ export function useDeleteAuthData() {
       } finally {
         setLoading(false);
       }
+      return false;
     },
     [logout, navigate]
   );

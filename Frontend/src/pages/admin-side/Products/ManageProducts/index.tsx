@@ -1,3 +1,4 @@
+import { categoryName } from "@/utils/product";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -10,7 +11,7 @@ import {
 import Badge from "@/component/admin/ui/badge/Badge";
 import { Product } from "@/types/Product";
 import useFetchData from "@/hooks/useFetchData";
-import { useDeleteData } from "@/hooks/useDeleteData";
+import { useDeleteAuthData } from "@/hooks/useDeleteAuthData";
 import DeleteProductModal from "./Modals/DeleteProductModal";
 import EditProductModal from "./Modals/EditProductModal";
 import { toast } from "react-toastify";
@@ -24,11 +25,11 @@ export default function ManageProducts() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [reload, setReload] = useState(false);
-  const { onDelete } = useDeleteData();
+  const { onDelete } = useDeleteAuthData();
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [addProduct, setAddProduct] = useState<Product | null>(null);
-  const [addOpen, setAddOpen] = useState(true);
+  const [addOpen, setAddOpen] = useState(false);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -55,10 +56,11 @@ export default function ManageProducts() {
 
   const handleDelete = async () => {
     if (!selectedProduct) return;
-    await onDelete(
+    const deleted = await onDelete(
       `${import.meta.env.VITE_API_BACKEND_URL}/products`,
       selectedProduct._id
     );
+    if (!deleted) return;
     setReload(r => !r);
     setModalOpen(false);
   };
@@ -148,15 +150,15 @@ export default function ManageProducts() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.products.map(prod => (
+                {data?.products?.map(prod => (
                   <TableRow key={prod._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <img src={prod.images[0]} alt={prod.name} className="w-12 h-12 object-cover rounded"/>
+                        <img src={prod.images?.[0]} alt={prod.name} className="w-12 h-12 object-cover rounded"/>
                         <span>{prod.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{prod.category.name}</TableCell>
+                    <TableCell>{categoryName(prod.category)}</TableCell>
                     <TableCell>{prod.brand}</TableCell>
                     <TableCell>${prod.discount?.discountedPrice ?? prod.price.toFixed(2)}</TableCell>
                     <TableCell>

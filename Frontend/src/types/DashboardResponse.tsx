@@ -20,6 +20,7 @@ export interface DashboardKPI {
    3.  Line-chart point
    ------------------------------------------------------------------ */
 export interface LinePoint {
+  startDate?: string;
   date:  string;   // ISO date string
   value: number;
 }

@@ -57,6 +57,12 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, loading } = useUserStore();
+  if (loading) return <p>Checking login status...</p>;
+  return user?.role === "admin" ? <>{children}</> : <Navigate to="/" replace />;
+};
+
 const NavigationSetup = () => {
   const navigate = useNavigate();
   const checkLogin = useUserStore((state) => state.checkLogin);
@@ -64,7 +70,7 @@ const NavigationSetup = () => {
   useEffect(() => {
     checkLogin(); // ✅ this is REQUIRED
     setNavigator(navigate);
-  }, [navigate]);
+  }, [navigate, checkLogin]);
 
   return null;
 };
@@ -78,13 +84,13 @@ const AppRouter: React.FC = () => {
         <NavigationSetup />
         <RedirectIfAdmin>
       <Routes>
-        <Route path="/admin/*" element={<ProtectedRoute><AdminRouter /></ProtectedRoute>} />
+        <Route path="/admin/*" element={<ProtectedRoute><AdminRoute><AdminRouter /></AdminRoute></ProtectedRoute>} />
 
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/cart-page" element={<CartPage />} />
-        <Route path="/checkout-page" element={<CheckoutPage />} />
+        <Route path="/checkout-page" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         <Route path="/ai-tools-page" element={<AnalyzePage />} />
         <Route path="/ai-tools-page/skin-analysis" element={<FaceScanResultPage />} />
         <Route path="/ai-tools-page/inpainting" element={<InpaintingPage />} />
@@ -98,11 +104,13 @@ const AppRouter: React.FC = () => {
         <Route path="/profile-page/*" element={ <ProtectedRoute>
       <ProfilePage />
     </ProtectedRoute>} />
+        {import.meta.env.DEV && <>
         <Route path="/test" element={<TestPage />} />
         <Route path="/testIn" element={<InpaitingTestPage />} />
         <Route path="/test-acne-severity" element={< AcneSeverityTestPage/>} />
         <Route path="/test-skin-type" element={< SkinTypeTestPage/>} />
         <Route path="/test-skin-analysis" element={< SkinAnalysisTestPage/>} />
+        </>}
 
         <Route path="/forget-password" element={<ForgotPasswordFormPage />} />
         <Route
@@ -111,7 +119,7 @@ const AppRouter: React.FC = () => {
         />
             <Route
           path="/product/upload-images" // Token is passed as a URL parameter
-          element={<ProductImageUploader />} // Render the ResetPasswordPage
+          element={<ProtectedRoute><AdminRoute><ProductImageUploader /></AdminRoute></ProtectedRoute>} // Render the ResetPasswordPage
         />
 
         {/* Catch-all route for 404 Not Found */}

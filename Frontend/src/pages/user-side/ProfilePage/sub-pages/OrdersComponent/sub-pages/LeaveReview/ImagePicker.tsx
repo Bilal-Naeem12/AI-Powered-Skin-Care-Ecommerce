@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import useObjectUrl from "@/hooks/useObjectUrl";
+import React, { useState, ChangeEvent, useEffect, useId } from "react";
 import { X, Upload } from "lucide-react";
 import axios from "axios";
 import usePostAuthData from "@/hooks/usePostAuthData";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props) {
+  const inputId = useId();
   const [files, setFiles] = useState<File[]>([]);
   const { data: resp, loading, postData } =
     usePostAuthData<{ images: string[] }, FormData>();
@@ -40,23 +42,18 @@ export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props)
     const form = new FormData();
     files.forEach((f) => form.append("images", f));
 
-    setJustUploaded(true);
+
 
     // ✅ fallback to default if no custom `uploadUrl` given
     const targetUrl =uploadUrl?
       `${import.meta.env.VITE_API_BACKEND_URL}${uploadUrl}` :
       `${import.meta.env.VITE_API_BACKEND_URL}/products/${productId}/review/images`;
 
-    await postData(targetUrl, form, "Images uploaded successfully!");
+    const result = await postData(targetUrl, form, "Images uploaded successfully!");
+    if (result.ok && Array.isArray(result.data.images)) { onUploaded(result.data.images); setFiles([]); }
   };
 
-  useEffect(() => {
-    if (justUploaded && resp?.images?.length) {
-      onUploaded(resp.images);
-      setFiles([]);
-      setJustUploaded(false);
-    }
-  }, [resp, justUploaded]);
+
 
   return (
     <div className="space-y-3">
@@ -65,13 +62,13 @@ export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props)
         className="border-2 border-dashed border-gray-300 rounded p-4 text-center cursor-pointer"
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
-        onClick={() => document.getElementById("fileInput")?.click()}
+        onClick={() => document.getElementById(inputId)?.click()}
       >
         <p className="text-sm text-gray-600">
           Drag & drop images here, or click to select&nbsp;(max&nbsp;6)
         </p>
         <input
-          id="fileInput"
+          id={inputId}
           type="file"
           accept="image/*"
           multiple
@@ -87,10 +84,7 @@ export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props)
         <div className="flex flex-wrap gap-2">
           {files.map((f, idx) => (
             <div key={idx} className="relative w-20 h-20">
-              <img
-                src={URL.createObjectURL(f)}
-                className="w-full h-full object-cover rounded border"
-              />
+              <FilePreview file={f} />
               <button
                 type="button"
                 onClick={() => remove(idx)}
@@ -115,4 +109,9 @@ export default function ImagePicker({ productId, onUploaded, uploadUrl }: Props)
       </button>
     </div>
   );
+}
+
+function FilePreview({ file }: { file: File }) {
+  const url = useObjectUrl(file);
+  return <img src={url ?? undefined} alt="Review attachment" className="w-full h-full object-cover rounded border" />;
 }

@@ -38,8 +38,8 @@ const RecommendationsPage: React.FC = () => {
 
   if (!storedData || !storedData.routine) return;
 
-  const allProducts = Object.values(storedData.routine)
-    .flatMap((step) => step.products);
+  const allProducts = Object.values(storedData.routine ?? {})
+    .flatMap((step) => step?.products ?? []);
 
   const addedIds = new Set();
 
@@ -51,8 +51,7 @@ const RecommendationsPage: React.FC = () => {
     }
   });
 
-  if (addedIds.size > 0) {
-  } else {
+  if (addedIds.size === 0) {
     toast.info("All recommended products are already in your cart.", {
       position: "bottom-center",
     });

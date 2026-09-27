@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { useForm } from 'react-hook-form';
 
-import { useLocation } from 'react-router-dom';
+import { useFormUpdateAuth } from '@/hooks/useFormUpdateAuth';
 
 const ProfileHeaderAndInfo = ({ givenUser }) => {
   const [isEditable, setIsEditable] = useState(false);
@@ -36,10 +36,7 @@ const ProfileHeaderAndInfo = ({ givenUser }) => {
   const firstname = watch("first_name");
   const lastname = watch("last_name");
 
-  const onSubmit = (data) => {
-    dispatch(updateUser({ ...data,_id: givenUser?._id }));
-    setIsEditable(false);
-  };
+  const onSubmit = useFormUpdateAuth(`${import.meta.env.VITE_API_BACKEND_URL}/users/profile`, () => setIsEditable(false));
 
 
   

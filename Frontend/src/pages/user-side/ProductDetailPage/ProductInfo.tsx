@@ -1,7 +1,8 @@
+import { productPrice, productStock, categoryName } from "@/utils/product";
 // ----------------------------------------------
 // pages/ProductDetailPage.tsx
 // ----------------------------------------------
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Button,
@@ -38,25 +39,35 @@ const ProductDetailPage: React.FC = () => {
   );
   const [tab, setTab] = useState<0 | 1>(0); // 0 -> Details, 1 -> Reviews
 
+  useEffect(() => {
+    setVariant(product?.variants?.[0]);
+    setMainIdx(0);
+    setQuantity(1);
+  }, [product]);
+
+  const images = Array.isArray(product?.images) ? product.images : [];
   /* ----- derived ----- */
-  const cartItem = cart.find((c) => c.product?._id === id);
+  const cartItem = cart.find((c) => c.product?._id === id && c.selectedVariant === variant?.size);
   const [mainIdx, setMainIdx] = useState(0);          // <— NEW
   /* ----- handlers ----- */
   const changeQty = (dir: "inc" | "dec") =>
-    setQuantity((q) => Math.max(1, dir === "inc" ? q + 1 : q - 1));
+    setQuantity((q) => Math.min(product ? Math.max(1, productStock(product, variant?.size)) : 1, Math.max(1, dir === "inc" ? q + 1 : q - 1)));
 
   const addToCart = () => {
     if (!product) return;
     if (cartItem) {
-      updateProductQuantity(product?._id, quantity);
+      updateProductQuantity(product._id, quantity, variant?.size);
     } else {
-      addProductToCart(product, quantity);
+      addProductToCart(product, quantity, variant?.size);
     }
   };
 
   /* ----- loading / error UI ----- */
  
   
+  if (loading) return <div role="status" className="p-8 text-center">Loading product...</div>;
+  if (error || !product) return <p role="alert" className="p-8 text-center">{error || "Product not found."}</p>;
+
   /* ----- main render ----- */
   return (
 <>
@@ -71,12 +82,12 @@ const ProductDetailPage: React.FC = () => {
         {/* images */}
         <div className="space-y-3 self-start ">
           <img
-          src={product?.images[mainIdx]}
+          src={images[mainIdx] ?? "/assets/product_images/other.webp"}
             alt={product?.name}
             className="rounded-lg w-full sm:h-[480px] object-contain shadow-sm bg-white"
           />
           <div className="flex gap-2 overflow-x-auto">
-            {product?.images.map((src) => (
+            {images.map((src) => (
               <img
                 key={src}
                 src={src || ""
@@ -85,7 +96,7 @@ const ProductDetailPage: React.FC = () => {
                 className="w-20 h-20 object-contain rounded-sm border cursor-pointer hover:opacity-80"
                 onClick={() => {
                   
-                  const imgs = [...product?.images];
+                  const imgs = images;
                   const idx = imgs.indexOf(src);
                   setMainIdx(idx);
               
@@ -112,13 +123,13 @@ const ProductDetailPage: React.FC = () => {
 
           {/* price block */}
           <div className="space-y-1">
-            {product?.discount?.percentage ? (
+            {!variant && product?.discount?.percentage ? (
               <>
                 <span className="text-2xl font-bold text-red-600">
                 {import.meta.env.VITE_API_CURRENCY_Symbol} {product?.discount.discountedPrice?.toFixed(0)}
                 </span>
                 <span className="line-through text-gray-500 ml-2">
-                {import.meta.env.VITE_API_CURRENCY_Symbol}  {product?.price.toFixed(0)}
+                {import.meta.env.VITE_API_CURRENCY_Symbol}  {product.price?.toFixed(0)}
                 </span>
                 <span className="ml-2 text-green-600">
                   -{product?.discount.percentage}%
@@ -126,7 +137,7 @@ const ProductDetailPage: React.FC = () => {
               </>
             ) : (
               <span className="text-2xl font-bold">
-                {import.meta.env.VITE_API_CURRENCY_Symbol}  {product?.price.toFixed(0)}
+                {import.meta.env.VITE_API_CURRENCY_Symbol}  {productPrice(product, variant?.size).toFixed(0)}
               </span>
             )}
             <p className="text-sm text-gray-600">
@@ -135,7 +146,7 @@ const ProductDetailPage: React.FC = () => {
           </div>
 
           {/* variants */}
-          {product?.variants && product?.variants.length > 1 && (
+          {Array.isArray(product?.variants) && product.variants.length > 1 && (
             <div>
               <p className="font-medium mb-1">Size / Variant</p>
               <div className="flex flex-wrap gap-2">
@@ -168,7 +179,7 @@ const ProductDetailPage: React.FC = () => {
             <IconButton onClick={() => changeQty("inc")} size="small">
               <AddIcon />
             </IconButton>
-            {product?.isAvailable ? (
+            {productStock(product, variant?.size) > 0 ? (
               <span className="text-sm text-green-700 flex items-center">
                 <CheckCircleIcon fontSize="small" className="mr-1" /> In Stock
               </span>
@@ -184,7 +195,7 @@ const ProductDetailPage: React.FC = () => {
             size="large"
             className="w-max bg-black! hover:bg-gray-800!"
             onClick={addToCart}
-            disabled={!product?.isAvailable}
+            disabled={productStock(product, variant?.size) === 0}
           >
             {cartItem ? "Update Cart" : "Add to Cart"}
           </Button>
@@ -196,13 +207,13 @@ const ProductDetailPage: React.FC = () => {
 
           {/* ingredients & suitability */}
           <div className="text-sm leading-6">
-            {product?.ingredients && (
+            {Array.isArray(product?.ingredients) && (
               <p>
                 <span className="font-medium">Key ingredients:</span>{" "}
                 {product?.ingredients.join(", ")}
               </p>
             )}
-            {product?.aiSkinSuitability && (
+            {Array.isArray(product?.aiSkinSuitability) && (
               <p>
                 <span className="font-medium">Suitable for:</span>{" "}
                 {product?.aiSkinSuitability.join(", ")}
@@ -230,9 +241,9 @@ const ProductDetailPage: React.FC = () => {
             <h2 className="text-xl font-semibold mb-2">Product details</h2>
             <ul className="list-disc pl-6 space-y-1 text-gray-700">
               <li>Brand: {product?.brand}</li>
-              <li>Category: {product?.category.name}</li>
+              <li>Category: {categoryName(product?.category ?? null)}</li>
               <li>Sold: {product?.soldCount ?? 0} pcs.</li>
-              <li>Created: {new Date(product?.createdAt!).toLocaleDateString()}</li>
+              <li>Created: {product.createdAt && !Number.isNaN(Date.parse(product.createdAt)) ? new Date(product.createdAt).toLocaleDateString() : "Not available"}</li>
             </ul>
           </div>
         ) : (

@@ -47,7 +47,7 @@ const ContactDetails = () => {
           <h3 className="font-bold mb-2">{detail.title}</h3>
           {detail.items.map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-sm text-gray-700 mb-1">
-              {item.icon && <span className="text-black">{item.icon}</span>}
+              {("icon" in item ? item.icon : null) && <span className="text-black">{("icon" in item ? item.icon : null)}</span>}
               <span>{item.text}</span>
             </div>
           ))}

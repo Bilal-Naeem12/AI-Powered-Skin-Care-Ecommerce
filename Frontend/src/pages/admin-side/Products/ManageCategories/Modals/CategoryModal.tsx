@@ -1,4 +1,5 @@
 // src/components/CategoryModal.tsx
+import { toast } from "react-toastify";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
@@ -71,6 +72,9 @@ export default function CategoryModal({
   const thumbInputRef  = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => () => { if (thumbPreview.startsWith("blob:")) URL.revokeObjectURL(thumbPreview); }, [thumbPreview]);
+  useEffect(() => () => { if (bannerPreview.startsWith("blob:")) URL.revokeObjectURL(bannerPreview); }, [bannerPreview]);
+
   /* ── generic upload helper (Cloudinary) ───────────────────── */
   const { postData } = usePostAuthData<
     { image?: string; bannerUrl?: string },
@@ -89,10 +93,11 @@ export default function CategoryModal({
         ? `/categories/${id}/image`
         : `/categories/${id}/banner`;
 
-    await postData(
+    const result = await postData(
       `${import.meta.env.VITE_API_BACKEND_URL}${endpoint}`,
       fd
     );
+    if (!result.ok) throw new Error("Image upload failed");
   };
 
   /* ── init / reset when dialog opens ------------------------ */
@@ -126,7 +131,7 @@ export default function CategoryModal({
         if (initialData) {
           // editing -- upload immediately
           setUploadingThumb(true);
-          uploadFile(file, initialData._id, "image").finally(() =>
+          uploadFile(file, initialData._id, "image").catch(() => toast.error("Image upload failed")).finally(() =>
             setUploadingThumb(false)
           );
         } else {
@@ -137,7 +142,7 @@ export default function CategoryModal({
         setBannerPreview(preview);
         if (initialData) {
           setUploadingBanner(true);
-          uploadFile(file, initialData._id, "banner").finally(() =>
+          uploadFile(file, initialData._id, "banner").catch(() => toast.error("Banner upload failed")).finally(() =>
             setUploadingBanner(false)
           );
         } else {
@@ -148,6 +153,7 @@ export default function CategoryModal({
 
   /* ── submit handler ---------------------------------------- */
   const onSubmit = async (payload: CategoryPayload) => {
+    try {
     const savedCat = await onSave(payload); // parent will POST/PUT and return cat
 
     // If we were "add" and files were queued → upload now
@@ -167,6 +173,7 @@ export default function CategoryModal({
     }
 
     onClose();
+    } catch { toast.error("Could not save category or images. Please try again."); }
   };
 
   /* ── UI ----------------------------------------------------- */

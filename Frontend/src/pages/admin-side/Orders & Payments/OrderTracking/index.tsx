@@ -7,7 +7,7 @@ import {
   Button,
   Paper,
   List,
-  ListItem,
+  ListItemButton,
   ListItemAvatar,
   Avatar,
   ListItemText,
@@ -78,9 +78,8 @@ export default function OrderTrackingPage() {
         >
           <List>
             {orders.map((order: any) => (
-              <ListItem
+              <ListItemButton
                 key={order._id}
-                button
                 selected={selectedOrder?._id === order._id}
                 onClick={() => setSelectedOrder(order)}
                 sx={{
@@ -103,7 +102,7 @@ export default function OrderTrackingPage() {
                   primary={`Order #${order.orderNumber}`}
                   secondary={`${order.userId?.first_name} ${order.userId?.last_name} | ${order.userId?.email}`}
                 />
-              </ListItem>
+              </ListItemButton>
             ))}
           </List>
         </Paper>
@@ -126,7 +125,7 @@ export default function OrderTrackingPage() {
             {selectedOrder.statusHistory.map(
               (status: any, index: number) => {
                 let icon;
-                let color = "primary";
+                let color: "primary" | "error" = "primary";
                 switch (status.what) {
                   case "Created":
                     icon = <LocalMallIcon fontSize="small" />;

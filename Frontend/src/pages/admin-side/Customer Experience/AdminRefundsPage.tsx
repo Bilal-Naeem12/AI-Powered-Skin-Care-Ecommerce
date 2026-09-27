@@ -124,9 +124,9 @@ export default function AdminRefundsPage() {
             <TableRow key={r._id} hover>
               <TableCell>{r.orderId.orderNumber}</TableCell>
               <TableCell>
-                {r.images[0] ? (
+                {r.images?.[0] ? (
                   <img
-                    src={r.images[0]}
+                    src={r.images?.[0]}
                     alt="Proof thumbnail"
                     className="w-12 h-12 object-cover rounded"
                   />
@@ -135,7 +135,7 @@ export default function AdminRefundsPage() {
                 )}
               </TableCell>
               <TableCell>
-                {r.userId.first_name} {r.userId.last_name}
+                {r.userId?.first_name} {r.userId?.last_name}
               </TableCell>
               <TableCell>${r.orderId.totalAmount.toFixed(2)}</TableCell>
               <TableCell>{r.reason}</TableCell>
@@ -174,8 +174,8 @@ export default function AdminRefundsPage() {
           {selected && (
             <Box className="space-y-4">
               <Typography>
-                <strong>User:</strong> {selected.userId.first_name}{" "}
-                {selected.userId.last_name} ({selected.userId.email})
+                <strong>User:</strong> {selected.userId?.first_name}{" "}
+                {selected.userId?.last_name} ({selected.userId?.email})
               </Typography>
               <Typography>
                 <strong>Order:</strong> {selected.orderId.orderNumber} — $

@@ -1,3 +1,8 @@
+import useSkinAnalysisStore from './SkinAnalysis';
+import useInpaintingStore from './InpaintingStore';
+import useRecommendationStore from './RecommendationStore';
+import useSocketStore from './SocketStore';
+import useFaceScanStore from './FaceScanStore';
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { User } from "@/types/User";
@@ -21,26 +26,42 @@ const useUserStore = create<UserStore>()(
     user: null,
     isLoggedIn: false,
     isAdmin: false,
+    isFirstLogin: false,
     loading: true, // ✅ start with true
 
   setUser: (user: User, isFirstLogin = false) => {
       const isAdmin = user.role === "admin";
-      set({ user, isLoggedIn: true, isAdmin, isFirstLogin });
+      set({ user, isLoggedIn: true, isAdmin, isFirstLogin, loading: false });
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("isFirstLogin", JSON.stringify(isFirstLogin));
     },
 
     logout: (showtoast = true) => {
-     showtoast&& toast.success("Logout");
-      set({ user: null, isLoggedIn: false, isAdmin: false });
+     if (showtoast) toast.success("Logout");
+      set({ user: null, isLoggedIn: false, isAdmin: false, isFirstLogin: false, loading: false });
+      localStorage.removeItem("isFirstLogin");
+      localStorage.removeItem("walkThroughInProgress");
       localStorage.removeItem("user"); 
         useNotificationStore.getState().clearNotifications();
+        useSkinAnalysisStore.getState().clearResult();
+        useInpaintingStore.getState().clear();
+        useRecommendationStore.getState().clearData();
+        useSocketStore.getState().disconnectSocket();
+        useFaceScanStore.getState().closeModal();
+        useFaceScanStore.getState().resetCapturedImage();
     },
 
   checkLogin: () => {
       const userString = localStorage.getItem("user");
       if (userString) {
-        const user = JSON.parse(userString) as User;
+        let user: User;
+        try {
+          user = JSON.parse(userString) as User;
+          if (!user || typeof user._id !== "string") throw new Error("Invalid cached user");
+        } catch {
+          get().logout(false);
+          return;
+        }
         const isAdmin = user.role === "admin";
         set({ user, isLoggedIn: true, isAdmin, loading: false });
       } else {

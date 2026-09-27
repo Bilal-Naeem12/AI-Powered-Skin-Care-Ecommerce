@@ -36,11 +36,11 @@ export default function UserAddressCard() {
   } = useForm<AddressPayload>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
-      country     : user?.address.country     ?? "",
-      state       : user?.address.state       ?? "",
-      city        : user?.address.city        ?? "",
-      street      : user?.address.street      ?? "",
-      postal_code : user?.address.postal_code ?? "",
+      country     : user?.address?.country     ?? "",
+      state       : user?.address?.state       ?? "",
+      city        : user?.address?.city        ?? "",
+      street      : user?.address?.street      ?? "",
+      postal_code : user?.address?.postal_code ?? "",
       tax_id      : "",   // optional UI field
     },
   });
@@ -49,11 +49,11 @@ export default function UserAddressCard() {
   useEffect(() => {
     if (!isOpen || !user) return;
     reset({
-      country     : user.address.country     ?? "",
-      state       : user.address.state       ?? "",
-      city        : user.address.city        ?? "",
-      street      : user.address.street      ?? "",
-      postal_code : user.address.postal_code ?? "",
+      country     : user.address?.country     ?? "",
+      state       : user.address?.state       ?? "",
+      city        : user.address?.city        ?? "",
+      street      : user.address?.street      ?? "",
+      postal_code : user.address?.postal_code ?? "",
       tax_id      : "",
     });
   }, [isOpen, user, reset]);
@@ -82,9 +82,9 @@ export default function UserAddressCard() {
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               {[
-                ["Country", user?.address.country],
-                ["City / State", `${user?.address.city}, ${user?.address.state}`],
-                ["Postal Code", user?.address.postal_code],
+                ["Country", user?.address?.country],
+                ["City / State", `${user?.address?.city}, ${user?.address?.state}`],
+                ["Postal Code", user?.address?.postal_code],
               ].map(([label, value]) => (
                 <div key={label}>
                   <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
@@ -144,7 +144,7 @@ export default function UserAddressCard() {
             </div>
 
             {/* <div className="col-span-2">
-              <Label>TAX ID (optional)</Label>
+              <Label>TAX ID (optional)</Label>
               <Input {...register("tax_id")} />
             </div> */}
           </div>

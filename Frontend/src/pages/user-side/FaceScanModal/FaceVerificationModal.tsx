@@ -53,7 +53,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
     const runVerification = async () => {
       try {
         setStatus('Loading models...');
-        const modelUrl = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
+        const modelUrl = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model';
         await faceapi.nets.ssdMobilenetv1.loadFromUri(modelUrl);
         await faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl);
         await faceapi.nets.faceRecognitionNet.loadFromUri(modelUrl);
@@ -67,6 +67,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
           `${import.meta.env.VITE_API_BACKEND_URL}/users/${userId}/face-verification`,
           { withCredentials: true }
         );
+        if (!isActive) return;
         const secureUrl = resp.data.secureUrl;
         if (!secureUrl) {
           setStatus('No reference image found. Please capture again.');
@@ -84,6 +85,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
 
 
 
+        if (!isActive) return;
         if (!refDetection) {
           setStatus('Unable to detect face in reference image');
           return;
@@ -103,6 +105,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
           await videoRef.current.play();
         }
 
+        if (!isActive) return;
         setStatus('Verifying...');
         const verifyLoop = async () => {
           if (!isActive) return;
@@ -113,6 +116,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
               .withFaceLandmarks()
               .withFaceDescriptor();
 
+            if (!isActive) return;
             if (liveDetection && refDescriptor) {
               const dist = faceapi.euclideanDistance(
                 refDescriptor,
@@ -128,7 +132,7 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
           await new Promise(resolve => setTimeout(resolve, 5000));
               
         
-                onVerified();
+                if (isActive) onVerified();
               
               // show the success animation
              
@@ -140,11 +144,13 @@ const FaceVerificationModal: React.FC<FaceVerificationModalProps> = ({
               setStatus('No Matched');
             }
           }
-          rafIdRef.current = requestAnimationFrame(verifyLoop);
+          rafIdRef.current = requestAnimationFrame(() => { void verifyLoop().catch(() => { if (isActive) { setStatus("Verification failed. Please try again."); stopAll(); } }); });
         };
 
-        verifyLoop();
+        void verifyLoop().catch(() => { if (isActive) { setStatus("Verification failed. Please try again."); stopAll(); } });
       } catch (err: any) {
+  if (!isActive) return;
+  stopAll();
   const statusCode = err?.response?.status;
   const errorMessage =
     err?.response?.data?.message || "Failed to fetch reference image.";

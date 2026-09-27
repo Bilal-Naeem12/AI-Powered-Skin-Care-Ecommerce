@@ -103,9 +103,8 @@ const SidebarComponent: React.FC<SidebarProps> = ({ sidebarOptions }) => {
                       }`}
                       onClick={() =>{
                       
-                        item.subOptions
-                          ? toggleSection(item.name)
-                          : navigate(item.path); // Navigate directly if no sub-options
+                        if (item.subOptions) toggleSection(item.name);
+                        else navigate(item.path); // Navigate directly if no sub-options
                         
                         
                         }                      }

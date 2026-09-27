@@ -17,16 +17,21 @@ const MobileScan = () => {
   useEffect(() => {
     if (step !== "capture") return;
 
+    let cancelled = false;
+    let activeStream: MediaStream | undefined;
     const startCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user" },
           audio: false,
         });
+        if (cancelled) { stream.getTracks().forEach(track => track.stop()); return; }
+        activeStream = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
+        if (cancelled) return;
         setError("Camera access denied or unavailable.");
         alert("Camera access denied. Please allow camera access and refresh.");
       }
@@ -35,11 +40,8 @@ const MobileScan = () => {
     startCamera();
 
     return () => {
-      if (videoRef.current?.srcObject) {
-        (videoRef.current.srcObject as MediaStream)
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
+      cancelled = true;
+      activeStream?.getTracks().forEach(track => track.stop());
     };
   }, [step]);
 

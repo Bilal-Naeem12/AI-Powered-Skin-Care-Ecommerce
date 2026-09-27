@@ -29,7 +29,7 @@ export default function DeleteCategoryModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button color="danger" onClick={onConfirm}>
+          <Button className="bg-red-600 hover:bg-red-700" onClick={onConfirm}>
             Delete
           </Button>
         </div>

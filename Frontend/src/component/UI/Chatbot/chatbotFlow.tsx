@@ -6,7 +6,7 @@ import useUserStore from "@/store/UserStore";
 import ProductCarousel from "../ProductCarousel";
 
 
-let counter = false
+const counter = false
 const triggerFaceScan = () => {
   const { setEntryModal } = useFaceScanStore.getState();
   setEntryModal(true);

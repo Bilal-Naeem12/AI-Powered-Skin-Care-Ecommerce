@@ -10,9 +10,11 @@ const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOU
 export default function ProfilePicUploader({
   profilePic,
   onChange,
+  onUploadingChange,
 }: {
   profilePic: string;
   onChange: (photo: string) => void;
+  onUploadingChange?: (uploading: boolean) => void;
 }) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -42,7 +44,9 @@ export default function ProfilePicUploader({
   };
 
   const handleImageUpload = async (e: any) => {
+    if (isUploading) return;
     setIsUploading(true);
+    onUploadingChange?.(true);
     try {
       const file = e.target.files[0];
 
@@ -68,6 +72,7 @@ export default function ProfilePicUploader({
       toast.error("Error uploading profile picture");
     } finally {
       setIsUploading(false);
+      onUploadingChange?.(false);
     }
   };
 

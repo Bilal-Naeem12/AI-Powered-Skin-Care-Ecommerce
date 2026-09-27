@@ -30,20 +30,10 @@ export function CalendarFilter({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DesktopDatePicker
         label="Filter by date"
-        inputFormat="dd/MM/yyyy"
+        format="dd/MM/yyyy"
         value={selectedDate}
         onChange={onChange}
-        renderInput={(props) => (
-          <Button 
-            {...props} 
-            startIcon={<CalendarTodayIcon />} 
-            variant="outlined" 
-          >
-            {selectedDate
-              ? props.inputProps?.value
-              : "All Dates"}
-          </Button>
-        )}
+        slotProps={{ textField: { fullWidth: true, size: "small" } }}
       />
     </LocalizationProvider>
   );

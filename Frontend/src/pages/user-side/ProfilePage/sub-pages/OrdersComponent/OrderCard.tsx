@@ -54,8 +54,8 @@ export default function OrderCard({ order }: Props) {
   {/* TRACK */}
   <button
     className="btn-primary border rounded-full bg-orange-400 px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
-    onClick={() => navigate(`/track/${order._id}`)}
-    disabled={!["Paid"].includes(latestStatus?.what)}
+    onClick={() => navigate(`/profile-page/orders/${order._id}`)}
+    disabled={!["Paid"].includes(latestStatus?.what ?? "")}
   >
     Track
   </button>
@@ -72,7 +72,7 @@ export default function OrderCard({ order }: Props) {
   <button
     className="btn-secondary border rounded-full border-black px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
     onClick={() => setShowModal(true)}
-    disabled={!["Paid", "Refunded"].includes(latestStatus?.what)}
+    disabled={!["Paid", "Refunded"].includes(latestStatus?.what ?? "")}
   >
     Leave a Review
   </button>
@@ -81,7 +81,7 @@ export default function OrderCard({ order }: Props) {
   <button
     className="btn-secondary border rounded-full border-black px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
     onClick={() => setShowRefundModal(true)}
-    disabled={!["Paid"].includes(latestStatus?.what)}
+    disabled={!["Paid"].includes(latestStatus?.what ?? "")}
   >
     Return/Refund
   </button>

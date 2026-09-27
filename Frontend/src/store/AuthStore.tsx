@@ -29,9 +29,11 @@ export const checkRefreshToken = async () => {
     if (res.data.valid) {
       setRefreshTokenValid(true);
     } else {
+      setRefreshTokenValid(false);
       logout(false);
     }
   } catch (e) {
-    logout(false);
+    setRefreshTokenValid(false);
+      logout(false);
   }
 };

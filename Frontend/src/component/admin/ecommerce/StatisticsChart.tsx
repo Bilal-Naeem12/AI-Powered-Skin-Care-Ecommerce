@@ -7,16 +7,12 @@ interface Props { points: LinePoint[] }
 export default function StatisticsChart({ points }: Props) {
   const periodKey = useChartTabStore((s) => s.statisticsPeriod);
   const backendPeriod = PERIOD_MAP[periodKey];
-   const sorted = [...points].sort((a, b) => +new Date(a.date) - +new Date(b.date));
+   const sorted = [...points].sort((a, b) => +new Date(a.date || a.startDate || 0) - +new Date(b.date || b.startDate || 0));
 
 const categories = sorted.map((p) => {
-  if (!p.date && p.startDate) {
-    p.date = p.startDate; // fallback: use startDate
-  }
-
-  if (!p.date) return "N/A";
-
-  const d = new Date(p.date);
+  const date = p.date || p.startDate;
+  if (!date) return "N/A";
+  const d = new Date(date);
   if (isNaN(d.getTime())) return "N/A";
 
   if (backendPeriod === "Month") {

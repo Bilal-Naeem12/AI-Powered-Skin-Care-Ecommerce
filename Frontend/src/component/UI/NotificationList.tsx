@@ -82,7 +82,7 @@ const kinds = useMemo(() => {
           `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
           { withCredentials: true }
         );
-        let all = res.data;
+        const all = res.data;
 
         // sort: unread first, then newest first
         all.sort((a, b) => {

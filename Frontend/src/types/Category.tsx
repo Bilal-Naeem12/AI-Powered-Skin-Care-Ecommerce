@@ -5,10 +5,10 @@ export interface Category {
     /** MongoDB ObjectId as string */
     _id: string;
   
-    /** Display name – max 40 chars, unique */
+    /** Display name – max 40 chars, unique */
     name: string;
   
-    /** Short description – max 200 chars (optional) */
+    /** Short description – max 200 chars (optional) */
     description?: string;
   
     /** Full https://… URL (or relative path) of hero/thumbnail image */

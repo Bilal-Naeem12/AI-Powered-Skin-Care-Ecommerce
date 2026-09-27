@@ -67,10 +67,10 @@ export interface Product {
 
   /**
    * Category reference
-   * – If not populated: ObjectId as string
-   * – If populated   : Category object
+   * – If not populated: ObjectId as string
+   * – If populated   : Category object
    */
-  category: Category;
+  category: Category | string | null;
 
   brand: string;
 
@@ -86,6 +86,7 @@ export interface Product {
 
   /* ingredients & AI tags */
   ingredients?: string[];
+  allergens?: string[];
   aiSkinSuitability?: string[];
 
   /* AI‑detected skin problems (array after rename) */

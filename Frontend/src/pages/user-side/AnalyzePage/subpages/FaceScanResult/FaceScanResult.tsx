@@ -95,7 +95,7 @@ const navigate = useNavigate()
         <h3 className="text-xl font-semibold text-gray-800">Classifications</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(
-            Object.entries(classifications) as [keyof Classifications, Classifications][]
+            Object.entries(classifications) as [keyof Classifications, Classifications[keyof Classifications]][]
           ).map(([name, cls ]) => (
             <div
               key={name}

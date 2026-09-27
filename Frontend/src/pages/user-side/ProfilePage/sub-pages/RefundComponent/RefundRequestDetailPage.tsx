@@ -130,16 +130,16 @@ const RefundRequestDetailPage: React.FC = () => {
               sx={{ my: 1, p: 1, border: "1px solid #eee", borderRadius: 2 }}
             >
               <img
-                src={item.productId.images[0]}
-                alt={item.productId.name}
+                src={item.productId?.images?.[0]}
+                alt={item.productId?.name}
                 style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }}
               />
               <Box>
                 <Typography variant="body1">
-                  {item.productId.name} (x{item.quantity})
+                  {item.productId?.name} (x{item.quantity})
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Price: ${item.productId.price.toFixed(2)}
+                  Price: ${item.productId?.price?.toFixed(2)}
                 </Typography>
               </Box>
             </Box>

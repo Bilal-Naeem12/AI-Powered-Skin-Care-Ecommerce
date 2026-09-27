@@ -7,3 +7,8 @@ export interface CartItem {
   selectedVariant?: string;
   priceAtTimeOfOrder:number;
   }
+export interface ShoppingCartItem {
+  product: Product;
+  quantity: number;
+  selectedVariant?: string;
+}

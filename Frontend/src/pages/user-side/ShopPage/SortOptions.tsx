@@ -14,6 +14,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({ sortOption, setSortOption }) 
       </label>
       <select
         id="sort"
+        value={sortOption === "asc" ? "low-to-high" : sortOption === "desc" ? "high-to-low" : sortOption || "relevance"}
      
         onChange={(e) => setSortOption(e.target.value)}
         className="border px-3 py-1.5 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"

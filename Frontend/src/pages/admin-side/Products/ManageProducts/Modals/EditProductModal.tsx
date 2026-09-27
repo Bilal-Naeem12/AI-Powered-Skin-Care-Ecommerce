@@ -33,7 +33,7 @@ const normalise = (data: Props["initialData"]): Partial<FormData> | {} => {
   if (!data) return {};
   return {
     ...data,
-    category: typeof data.category === "object" ? data.category._id : data.category ?? "",
+    category: data.category && typeof data.category === "object" ? data.category._id : data.category ?? "",
   };
 };
 export type ProductFormValues = z.infer<typeof schema>;

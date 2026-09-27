@@ -47,7 +47,7 @@ export default function ProductReviewPage({ product, onSuccess }: Props) {
  
 const submit = async () => {
 console.log(images)
-  await postData(
+  const result = await postData(
     `${import.meta.env.VITE_API_BACKEND_URL}/products/${product.id}/reviews`,                 // same endpoint
     {
       rating,
@@ -57,7 +57,7 @@ console.log(images)
     },
     "Review submitted successfully!"                   // toast text
   );
-  if(!error){
+  if(result.ok){
   onSuccess();      
   }
                                    // keep your callback

@@ -10,6 +10,7 @@ import { Product } from "@/types/Product";
 // Define the type for cart items
 interface CartItemType {
   product: Product;  // The product type is from the Product interface
+  selectedVariant?: string;
   quantity: number;  // Quantity of the product in the cart
 }
 
@@ -41,7 +42,7 @@ const CartPage: React.FC = () => {
           ) : (
             cart.map((item: CartItemType) => (
               <CartItem
-                key={item.product._id}
+                key={`${item.product._id}-${item.selectedVariant ?? ""}`}
                 item={item}
               />
             ))

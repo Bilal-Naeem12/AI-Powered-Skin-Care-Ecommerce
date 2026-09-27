@@ -2,9 +2,10 @@
 import { create } from "zustand";
 import type { Order } from "@/types/Order";
 
+type OrderDraft = Omit<Order, "userId"> & { userId: string | Order["userId"] };
 type OrderStore = {
-  order: Order;
-  setOrder: (update: Partial<Order>) => void;
+  order: OrderDraft;
+  setOrder: (update: Partial<OrderDraft>) => void;
   resetOrder: () => void;
 };
 

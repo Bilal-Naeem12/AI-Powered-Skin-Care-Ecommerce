@@ -51,6 +51,7 @@ const FaceScanModal: React.FC = () => {
 
   /* ------------ countdown logic ------------------------------------------- */
   const startCountdown = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setViewState("countdown");
     setCountdown(3);
     let count = 3;
@@ -77,7 +78,7 @@ const FaceScanModal: React.FC = () => {
   const captureImage = () => {
     setViewState("loading");
 
-    setTimeout(() => {
+    {
       const base64Image = faceRef.current?.captureSnapshot();
       if (base64Image) {
         setCapturedImage(base64Image);
@@ -86,7 +87,7 @@ const FaceScanModal: React.FC = () => {
         console.error("❌ faceRef is null or image not captured");
       }
       setViewState("result");
-    }, 500);
+    }
   };
 
   /* clear interval on unmount */
@@ -115,7 +116,8 @@ const FaceScanModal: React.FC = () => {
    
       showLoading();
       clearResult();               // reset any prior result
-      await analyzeSkin(fd,file,userId); 
+      await analyzeSkin(fd,file,userId);
+      if (useSkinAnalysisStore.getState().error || !useSkinAnalysisStore.getState().result) return; 
   
       closeModal()
       navigate("/ai-tools-page/skin-analysis");

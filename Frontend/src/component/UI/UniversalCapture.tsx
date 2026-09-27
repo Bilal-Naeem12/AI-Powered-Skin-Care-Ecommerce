@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   FilesetResolver,
   FaceLandmarker,
@@ -36,6 +36,7 @@ const UniversalCapture: React.FC<Props> = ({
   const [lightingOk, setLightingOk] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [captured, setCaptured] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   const constraintsMet = faceInsideOval && facingCamera && lightingOk;
 
@@ -66,7 +67,7 @@ const UniversalCapture: React.FC<Props> = ({
   };
 
   // main loop: draw video, detect, draw overlay, update flags, loop
-  const processFrame = (now: number) => {
+  const processFrame = useCallback((now: number) => {
     const video = videoRef.current!;
     const canvas = canvasRef.current!;
     const overlay = overlayRef.current!;
@@ -143,19 +144,23 @@ if (res?.faceLandmarks?.length) {
 
     // loop
     rafIdRef.current = requestAnimationFrame(processFrame);
-  };
+  }, []);
 
   // init camera & Mediapipe
   useEffect(() => {
+    let cancelled = false;
     (async () => {
+      try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
       });
+      if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
       mediaStreamRef.current = stream;
 
       const video = videoRef.current!;
       video.srcObject = stream;
       await video.play();
+      if (cancelled) return;
 
       // now that videoWidth/videoHeight are known, sync canvas sizing
       const vw = video.videoWidth;
@@ -169,9 +174,10 @@ if (res?.faceLandmarks?.length) {
 
       // load Mediapipe
       const visionFileset = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm"
       );
-      faceLandmarkerRef.current = await FaceLandmarker.createFromOptions(
+      if (cancelled) return;
+      const landmarker = await FaceLandmarker.createFromOptions(
         visionFileset,
         {
           baseOptions: {
@@ -182,17 +188,25 @@ if (res?.faceLandmarks?.length) {
           numFaces: 1,
         }
       );
+      if (cancelled) { landmarker.close(); return; }
+      faceLandmarkerRef.current = landmarker;
 
       // start loop
       rafIdRef.current = requestAnimationFrame(processFrame);
+      } catch {
+        mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+        if (!cancelled) setCameraError("Camera unavailable. Check camera permissions, or skip this step.");
+      }
     })();
 
     return () => {
+      cancelled = true;
+      if (timerRef.current) clearTimeout(timerRef.current);
       cancelAnimationFrame(rafIdRef.current);
       mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
       faceLandmarkerRef.current?.close();
     };
-  }, []);
+  }, [processFrame]);
 
   // countdown start/cancel
   useEffect(() => {
@@ -203,7 +217,7 @@ if (res?.faceLandmarks?.length) {
       clearTimeout(timerRef.current!);
       setCountdown(null);
     }
-  }, [constraintsMet, captured]);
+  }, [constraintsMet, captured, countdown]);
 
   // countdown tick or capture
   useEffect(() => {
@@ -234,6 +248,7 @@ if (res?.faceLandmarks?.length) {
       <p className="text-gray-600 text-center max-w-md mx-auto mb-4">
         {description}
       </p>
+      {cameraError && <p role="alert" className="text-red-600 text-center">{cameraError}</p>}
 
       {/* responsive container — caps at 500px wide */}
       <div

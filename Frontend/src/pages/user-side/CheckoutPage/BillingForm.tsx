@@ -1,3 +1,4 @@
+import { productPrice } from "@/utils/product";
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -17,7 +18,7 @@ import useCartStore from "@/store/CartStore";
 import { useNavigate } from "react-router-dom";
 import usePostAuthData from "@/hooks/usePostAuthData";
 import { PaymentGateway } from "@/types/Payment";
-import { CartItem } from "@/types/CartItem";
+import { ShoppingCartItem as CartItem } from "@/types/CartItem";
 import PageOverlay from "@/component/UI/PageOverlay";
 
 interface BillingFormData {
@@ -75,17 +76,12 @@ const BillingForm = () => {
         phone: user.phone || "",
       });
 
-      setOrder({
-        ...order,
-        shipping: {
-          ...order.shipping,
-          shippingAddress: user.address,
-        },
-      });
+
     }
   }, [user, reset, setOrder]);
 
   const handlePlaceOrder = async (data: BillingFormData) => {
+    if (showOverlay || !user?._id || cart.length === 0) return;
     const shippingAddress = {
       street: data.street,
       city: data.city,
@@ -95,7 +91,7 @@ const BillingForm = () => {
     };
 
     const payload = {
-      userId: (order.userId as any)?._id || order.userId,
+      userId: user._id,
       cartItems: cart.map((item: CartItem) => ({
         productId:
           typeof item.product === "string"
@@ -104,7 +100,7 @@ const BillingForm = () => {
         quantity: item.quantity,
         selectedVariant: item.selectedVariant,
         priceAtTimeOfOrder:
-          typeof item.product === "string" ? 0 : item.product.price,
+          productPrice(item.product, item.selectedVariant),
       })),
       paymentMethod: selectedGateway,
       payment: {
@@ -115,11 +111,12 @@ const BillingForm = () => {
 
     setShowOverlay(true);
 
-    await postData(
+    const result = await postData(
       `${import.meta.env.VITE_API_BACKEND_URL}/orders`,
       payload,
       "🎉 Order placed successfully!"
     );
+if (!result.ok) { setShowOverlay(false); return; }
 if (data.saveInfo) {
   await fetch(`${import.meta.env.VITE_API_BACKEND_URL}/users/profile`, {
     method: "PUT",
@@ -141,7 +138,7 @@ if (data.saveInfo) {
       },
     }),
   })
-    .then((res) => res.json())
+    .then((res) => { if (!res.ok) throw new Error("Profile update failed"); return res.json(); })
     .then((res) => {
       console.log("📝 Profile updated:", res.message);
       setUser(res.user)
@@ -150,10 +147,9 @@ if (data.saveInfo) {
       console.error("❌ Failed to update profile:", err);
     });
 }
-    setTimeout(() => {
-      clearCart();
-      navigate("/");
-    }, 2000);
+    clearCart();
+    setShowOverlay(false);
+    navigate("/");
   };
 
   return (
@@ -360,7 +356,7 @@ if (data.saveInfo) {
         variant="contained"
         fullWidth
         type="submit"
-        disabled={loading}
+        disabled={loading || showOverlay || cart.length === 0}
         style={{
           backgroundColor: "black",
           color: "white",

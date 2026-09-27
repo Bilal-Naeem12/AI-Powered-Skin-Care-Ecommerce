@@ -1,3 +1,4 @@
+import { productPrice } from "@/utils/product";
 import React from "react";
 import { Box, Typography, TextField, MenuItem, IconButton, ButtonGroup } from "@mui/material";
 import { MdDelete } from "react-icons/md"; // Import delete icon
@@ -11,6 +12,7 @@ interface CartItemProps {
   item: {
     product: Product; // The product is typed as the Product interface
     quantity: number;
+    selectedVariant?: string;
   };
 }
 
@@ -18,11 +20,11 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { updateProductQuantity, removeProductFromCart } = useCartStore(); // Access the actions from the Zustand store
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
-    updateProductQuantity(productId, newQuantity); // Update the quantity in the cart when changed
+    updateProductQuantity(productId, newQuantity, item.selectedVariant); // Update the quantity in the cart when changed
   };
 
   const handleDelete = (productId: string) => {
-    removeProductFromCart(productId); // Remove the product from the cart when delete button is clicked
+    removeProductFromCart(productId, item.selectedVariant); // Remove the product from the cart when delete button is clicked
   };
 
   return (
@@ -30,12 +32,12 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
       {/* Product Info */}
       <Box className="w-[30%] flex flex-col sm:flex-row  justify-center sm:justify-start  items-center gap-4">
         <img
-          src={item.product.images[0]} // Assuming the first image is used as the main image
+          src={item.product.images?.[0] ?? "/assets/product_images/other.webp"} // Assuming the first image is used as the main image
           alt={item.product.name}
           className="w-16 h-16 rounded-lg object-cover"
         />
         <p className="text-xs sm:text-sm">
-          {item.product.name}
+          {item.product.name} {item.selectedVariant && `(${item.selectedVariant})`}
        </p>
       </Box>
 
@@ -44,7 +46,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center text-sm"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {productPrice(item.product, item.selectedVariant)}/-
       </p>
 
       {/* Quantity Dropdown */}
@@ -108,7 +110,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
         className="w-[20%] text-center  text-sm"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        {import.meta.env.VITE_API_CURRENCY_Symbol}  {item.product.price * item.quantity}/-
+        {import.meta.env.VITE_API_CURRENCY_Symbol}  {productPrice(item.product, item.selectedVariant) * item.quantity}/-
       </p>
 
       {/* Delete Button */}

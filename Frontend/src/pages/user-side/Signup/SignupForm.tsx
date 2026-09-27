@@ -60,7 +60,7 @@ const SignupForm: React.FC = () => {
       // Check if the error response status is 400 (Bad Request)
       if (error.response?.status === 400) {
         // Show the error message from the server (from error.response.data.message)
-        toast.error(error.response?.data.message || "Signup failed. Please try again.");
+        toast.error(error.response?.data?.message || "Signup failed. Please try again.");
       } else {
         // Handle other types of errors (e.g., network errors)
         toast.error("An error occurred. Please try again.");

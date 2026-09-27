@@ -5,14 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "pnpm typecheck && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@hookform/resolvers": "^5.0.1",
@@ -21,7 +24,7 @@
     "@mediapipe/face_mesh": "^0.4.1633559619",
     "@mediapipe/tasks-vision": "^0.10.22-rc.20250304",
     "@mui/icons-material": "^6.1.8",
-    "@mui/lab": "^7.0.0-beta.14",
+    "@mui/lab": "6.0.0-beta.32",
     "@mui/material": "^6.1.8",
     "@mui/x-data-grid": "^8.2.0",
     "@mui/x-date-pickers": "^8.5.1",
@@ -34,6 +37,7 @@
     "@react-jvectormap/world": "^1.1.2",
     "@tensorflow-models/face-landmarks-detection": "^1.0.6",
     "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-webgl": "4.22.0",
     "@vladmandic/face-api": "^1.7.15",
     "apexcharts": "^4.7.0",
     "axios": "^1.8.4",
@@ -51,6 +55,7 @@
     "react-chatbotify": "^2.1.0",
     "react-compare-slider": "^3.1.0",
     "react-dom": "^18.3.1",
+    "react-dropzone": "^14.3.8",
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.56.1",
     "react-icons": "^5.3.0",
@@ -60,7 +65,7 @@
     "react-vertical-timeline-component": "^3.5.3",
     "recharts": "^3.0.0",
     "socket.io-client": "^4.8.1",
-    "swiper": "^11.2.6",
+    "swiper": "^14.2.0",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",
     "vite-plugin-svgr": "^4.3.0",
@@ -71,12 +76,13 @@
     "@eslint/js": "^9.13.0",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.4",
-    "@types/axios": "^0.9.36",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/jquery": "^3.5.32",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.14.1",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
-    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.13.0",
@@ -84,9 +90,25 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
-    "vite": "^5.4.18"
+    "typescript-eslint": "^8.56.0",
+    "vite": "^6.4.3",
+    "vitest": "^4.1.11"
+  },
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "core-js",
+      "react-vertical-timeline-component"
+    ]
   }
 }

@@ -42,12 +42,12 @@ const OrderDetailPage: React.FC<Props> = ({ order }) => {
                 <TableRow key={idx}>
                   <TableCell>
                     <img
-                      src={item.productId.images?.[0]}
-                      alt={item.productId.name}
+                      src={item.productId?.images?.[0]}
+                      alt={item.productId?.name}
                       className="w-10 h-10 object-cover rounded"
                     />
                   </TableCell>
-                  <TableCell>{item.productId.name}</TableCell>
+                  <TableCell>{item.productId?.name}</TableCell>
                   <TableCell>{item.selectedVariant || "-"}</TableCell>
                   <TableCell>${item.priceAtTimeOfOrder.toFixed(2)}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
@@ -65,11 +65,11 @@ const OrderDetailPage: React.FC<Props> = ({ order }) => {
       <section className="card bg-white shadow p-4">
         <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
         <div className="space-y-1 text-sm">
-          <p><strong>Address:</strong> {order?.shippingId?.shippingAddress.street}</p>
-          <p><strong>City:</strong> {order?.shippingId?.shippingAddress.city}</p>
-          <p><strong>Postal Code:</strong> {order?.shippingId?.shippingAddress.postal_code}</p>
-          <p><strong>Country:</strong> {order?.shippingId?.shippingAddress.country}</p>
-          {/* <p><strong>Contact:</strong> {order?.shippingId?.shippingAddress.}</p> */}
+          <p><strong>Address:</strong> {order?.shippingId?.shippingAddress?.street}</p>
+          <p><strong>City:</strong> {order?.shippingId?.shippingAddress?.city}</p>
+          <p><strong>Postal Code:</strong> {order?.shippingId?.shippingAddress?.postal_code}</p>
+          <p><strong>Country:</strong> {order?.shippingId?.shippingAddress?.country}</p>
+          {/* <p><strong>Contact:</strong> {order?.shippingId?.shippingAddress?.}</p> */}
         </div>
       </section>
 

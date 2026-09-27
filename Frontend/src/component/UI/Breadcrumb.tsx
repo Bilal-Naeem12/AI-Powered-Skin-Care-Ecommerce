@@ -1,6 +1,6 @@
 import React from "react";
 
-const Breadcrumb = ({ paths }) => {
+const Breadcrumb = ({ paths }: { paths: { name: string; link: string }[] }) => {
   return (
     <nav className="text-lg text-gray-600">
       {paths.map((path, index) => (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "@/component/common/ComponentCard";
 import Input from "../input/InputField";
 import Label from "../Label";
 export default function InputStates() {

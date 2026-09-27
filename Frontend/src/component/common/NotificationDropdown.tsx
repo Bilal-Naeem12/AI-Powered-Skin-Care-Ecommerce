@@ -22,26 +22,6 @@ export default function NotificationDropdown() {
     CONTACT_MESSAGE:"/assets/icons/CONTACT_MESSAGE.png",
     NEW_USER:"/assets/icons/NEW_USER.png",
 };
-  // Fetch only MANAGEMENT_ORDER_PLACED notifications
-  const fetchNotifications = async () => {
-    try {
-      const res = await axios.get<NotificationItem[]>(
-        `${import.meta.env.VITE_API_BACKEND_URL}/notifications`,
-        { withCredentials: true }
-      );
-       const allowedKinds = ["MANAGEMENT_ORDER_PLACED", "MANAGEMENT_REFUND_REQUEST", "CONTACT_MESSAGE","NEW_USER"];
-
-const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
-      setNotifications(filtered.slice(0, 30));
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
    useEffect(() => {
     setNotifying(true)
   }, [notifications]);
@@ -52,21 +32,23 @@ const filtered = res.data.filter(n => allowedKinds.includes(n.kind));
   };
 
   const handleItemClick =async (notif: NotificationItem) => {
+    if (!user) return;
      try {
       const isRead = notif.readBy?.some((r) => r.userId === user?._id);
       if (!isRead) {
-        await fetch(
+        const response = await fetch(
           `${import.meta.env.VITE_API_BACKEND_URL}/notifications/${notif._id}/read`,
           {
             method: "PATCH",
             credentials: "include",
           }
         );
+        if (!response.ok) throw new Error("Could not mark notification as read");
         // update locally:
         setNotifications(
           notifications.map((n) =>
             n._id === notif._id
-              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id }] }
+              ? { ...n, readBy: [...(n.readBy || []), { userId: user._id, readAt: new Date().toISOString() }] }
               : n
           )
         );

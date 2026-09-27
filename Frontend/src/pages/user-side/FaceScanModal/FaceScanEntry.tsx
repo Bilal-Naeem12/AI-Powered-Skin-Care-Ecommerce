@@ -116,7 +116,9 @@ const triggerFilePicker = () => {
     try {
       clearResult();
       await analyzeSkin(fd, file, userId);
-      setDetectedImage(`data:image/jpeg;base64,${result?.scanned_image}`);
+      const analysis = useSkinAnalysisStore.getState();
+      if (analysis.error || !analysis.result) { setStep("preview"); return; }
+      setDetectedImage(`data:image/jpeg;base64,${analysis.result.scanned_image}`);
       closeAll();
       navigate("/ai-tools-page/skin-analysis");
     } catch (err) {
@@ -125,6 +127,8 @@ const triggerFilePicker = () => {
       hideLoading();
     }
   };
+
+  useEffect(() => () => { if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
 
   const resetSelection = () => {
     setFile(null);
@@ -148,26 +152,32 @@ const triggerFilePicker = () => {
   };
 
   useEffect(() => {
+    let cancelled = false;
+    let polling = false;
     let poller: NodeJS.Timeout;
     if (step === "qr" && sessionId) {
       poller = setInterval(async () => {
+        if (polling || cancelled) return;
+        polling = true;
         try {
           const statusResp = await axios.get(
             `${import.meta.env.VITE_API_BACKEND_URL}/scan-session/${sessionId}/status`
           );
+          if (cancelled) return;
           const data = statusResp.data as { status: string; imageUrl?: string };
           if (data.status === "uploaded" && data.imageUrl) {
             clearInterval(poller);
             const imgResp = await axios.get(data.imageUrl, { responseType: "blob" });
+            if (cancelled) return;
             const blob = imgResp.data as Blob;
             const fakeFile = new File([blob], "mobile-upload.jpg", { type: blob.type });
             setFile(fakeFile);
             setPreviewUrl(URL.createObjectURL(blob));
             setStep("preview");
           }
-        } catch {}
+        } catch { /* Retry on the next poll. */ } finally { polling = false; }
       }, 10000);
-      return () => clearInterval(poller);
+      return () => { cancelled = true; clearInterval(poller); };
     }
   }, [step, sessionId]);
 

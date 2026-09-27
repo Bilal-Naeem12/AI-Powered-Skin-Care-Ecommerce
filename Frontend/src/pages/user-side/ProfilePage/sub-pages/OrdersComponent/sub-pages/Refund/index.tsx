@@ -29,12 +29,14 @@ const username = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim();
   if (!open) return null;
 
   const submit = async () => {
-    await postData(
+    if (loading || !reason.trim()) return;
+    const result = await postData(
       `${import.meta.env.VITE_API_BACKEND_URL}/refund-requests/${orderId}`,
       { reason, details, images ,username},
       "Refund request submitted!"
     );
-    if (!error && onSubmitted) {
+    if (!result.ok) return;
+    if (onSubmitted) {
       onSubmitted();
     }
     onClose();

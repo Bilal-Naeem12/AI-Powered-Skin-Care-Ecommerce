@@ -81,7 +81,7 @@ const ProgressTracking: React.FC = () => {
                     </p>
                     <p>
                       <strong>Puffy Eyes:</strong>{' '}
-                      {entry.detections.puffy_eyes?.objects.length ?? 0}
+                      {entry.detections.puffy_eyes?.objects?.length ?? 0}
                     </p>
                   </div>
                   <AccurateSkinHealthGauge   detections={entry.detections}

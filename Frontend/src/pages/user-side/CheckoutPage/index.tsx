@@ -19,7 +19,7 @@ const CheckoutPage: React.FC = () => {
       console.log("hello")
       navigate("/login");
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
 
   return (
     <MainLayout>
