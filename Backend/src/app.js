@@ -15,6 +15,7 @@ const { init } = require("./socket");   // NEW
 const mainRouter = require('./routes/mainRouter');
 
 const app = express();
+require("./config/proxy").configureProxy(app);
 
 const httpServer = init(app);           // wrap express
 

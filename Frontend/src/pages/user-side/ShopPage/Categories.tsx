@@ -2,6 +2,7 @@ import React from "react";
 import useFetchData from "@/hooks/useFetchData"; // Update this path if your hook is in a different folder
 import { Category } from "@/types/Category";
 import { useNavigate } from "react-router-dom";
+import CategoryImage from "@/component/UI/CategoryImage";
 
 
 
@@ -23,9 +24,9 @@ const Categories: React.FC = () => {
            onClick={() => navigate(`category/${category._id}`)}
         >
           <div className="w-20 h-20 rounded-full overflow-hidden shadow-md">
-            <img
+            <CategoryImage
               src={category.imageUrl}
-              alt={category.name}
+              name={category.name}
               className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110"
             />
           </div>

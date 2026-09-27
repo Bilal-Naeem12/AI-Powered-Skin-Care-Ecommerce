@@ -29,6 +29,11 @@ test("port 465 uses implicit TLS", () => {
   service.getTransporter();
   expect(require("nodemailer").createTransport).toHaveBeenCalledWith(expect.objectContaining({ secure: true, port: 465 }));
 });
+test("port 2525 uses required STARTTLS", () => {
+  process.env.SMTP_PORT = "2525";
+  service.getTransporter();
+  expect(require("nodemailer").createTransport).toHaveBeenCalledWith(expect.objectContaining({ secure: false, requireTLS: true, port: 2525 }));
+});
 test("missing credentials fail without attempting delivery", async () => {
   delete process.env.SMTP_PASS;
   await expect(service.sendEmail("recipient@example.com", "Subject", "Body")).rejects.toMatchObject({ status: 503 });

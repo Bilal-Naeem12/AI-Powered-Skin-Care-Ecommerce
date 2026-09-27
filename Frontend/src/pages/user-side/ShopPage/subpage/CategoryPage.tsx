@@ -7,6 +7,7 @@ import { Product } from "@/types/Product";
 import ProductGrid from "../ProductGrid";
 import { CircularProgress, Breadcrumbs, Typography, Avatar } from "@mui/material";
 import MainLayout from "@/component/Layout/MainLayout";
+import CategoryImage from "@/component/UI/CategoryImage";
 
 export default function CategoryPage() {
   const { id = "" } = useParams<{ id: string }>();
@@ -47,13 +48,11 @@ export default function CategoryPage() {
         <Typography>{category.name}</Typography>
       </Breadcrumbs>
       <div className="flex flex-col lg:flex-row">
-         {category.imageUrl&& (
-        <img
+        <CategoryImage
           src={category.imageUrl}
-          alt={`${category.name} banner`}
+          name={category.name}
           className="lg:w-fit sm:max-h-[300px] object-contain  rounded-lg mb-6"
         />
-      )}
       {category.bannerUrl && (
         <img
           src={category.bannerUrl}
