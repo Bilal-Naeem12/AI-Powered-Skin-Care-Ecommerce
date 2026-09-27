@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const { addItemToCart, removeItemFromCart, getCart, checkoutCart } = require('./cartService');
 
 // **Add item to the cart**
@@ -7,7 +8,7 @@ exports.addItem = async (req, res) => {
         const cart = await addItemToCart(userId, productId, quantity, selectedVariant);
         res.status(200).json({ message: "Item added to cart", cart });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        sendError(res, error);
     }
 };
 
@@ -18,7 +19,7 @@ exports.removeItem = async (req, res) => {
         const cart = await removeItemFromCart(userId, productId);
         res.status(200).json({ message: "Item removed from cart", cart });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        sendError(res, error);
     }
 };
 
@@ -29,7 +30,7 @@ exports.getCart = async (req, res) => {
         const cart = await getCart(userId);
         res.status(200).json({ cart });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        sendError(res, error);
     }
 };
 
@@ -40,6 +41,6 @@ exports.checkout = async (req, res) => {
         const cart = await checkoutCart(userId);
         res.status(200).json({ message: "Cart checked out successfully", cart });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        sendError(res, error);
     }
 };

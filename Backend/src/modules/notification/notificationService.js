@@ -22,6 +22,7 @@ exports.notify = async ({
   userId = null,
   role = null,
 }) => {
+  try {
   let target;
 
   if (userId) {
@@ -66,4 +67,8 @@ exports.notify = async ({
   }
 
   return notif;
+  } catch (error) {
+    console.error("Notification delivery failed", { name: error.name, code: error.code });
+    return null;
+  }
 };

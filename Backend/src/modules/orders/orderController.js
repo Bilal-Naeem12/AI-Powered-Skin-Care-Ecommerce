@@ -67,6 +67,7 @@ exports.cancelOrder = async (req, res, next) => {
     const order = await orderService.cancelOrder({
       orderId: req.params.id,
       reason: req.body.reason,
+      isAdmin: req.user.role === "admin",
       updatedBy: req.user._id,
     });
     await notify({
@@ -91,26 +92,14 @@ exports.cancelOrder = async (req, res, next) => {
 
     // fallback error
     console.error("Unexpected error:", err);
-    return res.status(500).json({ status: "error", message: "Something went wrong. Try again later." });
+    return sendError(res, err);
   
   
   }
 };
 
-exports.processRefund = async (req, res, next) => {
-  try {
-    const order = await orderService.processRefund({ orderId: req.params.id });
-    await notify({
-  kind: "ORDER_STATUS",
-  title: `Refund processed for Order #${order.orderNumber}`,
-  body: "Your refund has been processed successfully.",
-  userId: order.userId,
-  data: { orderId: order._id }
-});
-    res.json(order);
-  } catch (err) {
-    next(err);
-  }
+exports.processRefund = async (req, res) => {
+  return res.status(501).json({ message: "Gateway refunds are not configured. Process the refund through the payment provider." });
 };
 
 exports.getOrderById = async (req, res, next) => {
@@ -122,6 +111,7 @@ exports.getOrderById = async (req, res, next) => {
     const order = await orderService.getOrderById(req.params.id);
     
     if (!order) return res.status(404).json({ message: "Order not found" });
+    if (req.user.role !== "admin" && String(order.userId?._id || order.userId) !== String(req.user._id)) return res.status(403).json({ message: "Access denied." });
     res.json(order);
   } catch (err) {
     next(err);
@@ -133,7 +123,7 @@ exports.getOrderTrackingStatus = async (req, res, next) => {
   try {
     const { id: orderId } = req.params;
 
-    const shipping = await Shipping.findOne({ orderId });
+    const shipping = await Shipping.findOne({ orderId, ...(req.user.role === "admin" ? {} : { userId: req.user._id }) });
 
     if (!shipping) {
       return res.status(404).json({ message: "No shipping record found for this order." });
@@ -158,13 +148,13 @@ exports.getCustomerOrder = async (req, res) => {
   try {
     const userId = req.user._id; // populated by authMiddleware
     const orders = await Order.find({ userId })
-      .populate("payment shipping invoice")
+      .populate("paymentId shippingId invoiceId")
       .sort({ placedAt: -1 });
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user." });
     }
-    console.log(orders)
+
     res.status(200).json(orders);
   } catch (err) {
     console.error("Failed to fetch user orders:", err);

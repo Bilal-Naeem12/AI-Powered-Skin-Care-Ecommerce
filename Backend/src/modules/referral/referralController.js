@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const ReferralService = require("./referralService");
 
 // **🔹 Create a New Referral Code**
@@ -20,7 +21,7 @@ exports.getReferral = async (req, res) => {
 
         res.status(200).json(referral);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

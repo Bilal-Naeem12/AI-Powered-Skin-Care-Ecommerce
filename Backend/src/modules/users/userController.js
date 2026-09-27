@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const User = require('./userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -16,7 +17,7 @@ const commonOptions = {
 const buildUserQuery = ({ name, deleted }) => {
   const q = { isDeleted: deleted === "true" };     // ⭐ NEW
   if (name) {
-    const regex = new RegExp(name.trim(), "i");
+    const regex = new RegExp(String(name).trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     q.$or = [{ first_name: regex }, { last_name: regex }, { email: regex }];
   }
   return q;
@@ -38,20 +39,22 @@ exports.registerUser = async (req, res) => {
   role: "admin"
 });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    sendError(res, error);
   }
 };
 // **🔹 Verify Email**
 exports.verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
-    const user = await User.findOne({ verificationToken: token });
+    if (typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token)) return res.status(400).json({ message: "Invalid verification token." });
+    const user = await User.findOne({ verificationToken: token, isDeleted: false });
     if (!user) return res.status(400).send("Invalid or expired token");
 if (user.verificationTokenExpires && user.verificationTokenExpires < new Date()) {
     return res.status(400).json({ message: "Verification link has expired." });
   }
     user.isVerified = true;
     user.verificationToken = null;
+    user.verificationTokenExpires = null;
     await user.save();
 
     // Render view with user's name and login URL
@@ -72,7 +75,7 @@ exports.loginUser = async (req, res) => {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
        
-        if (!user || !(await user.comparePassword(password))) {
+        if (!user || user.isDeleted || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
@@ -95,7 +98,7 @@ exports.loginUser = async (req, res) => {
         // Set access token cookie with a short expiration time (e.g., 15 mins)
   res.cookie('accessToken', accessToken, {
     ...commonOptions,
-    maxAge: 100*60*1000, // 15 minutes
+    maxAge: 60*60*1000, // 15 minutes
   });
 
   // Set refresh token cookie with a longer expiration time (e.g., 7 days)
@@ -108,6 +111,8 @@ exports.loginUser = async (req, res) => {
   const safeUser = user.toObject();
   delete safeUser.password;
   delete safeUser.refreshToken;
+  delete safeUser.verificationToken;
+  delete safeUser.resetPasswordToken;
  res.status(200).json({
       user: safeUser,
       isFirstLogin, // ✅ NEW FIELD
@@ -115,7 +120,7 @@ exports.loginUser = async (req, res) => {
       accessToken,
     });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -128,22 +133,14 @@ exports.checkRefreshTokenStatus = async (req, res) => {
       return res.status(200).json({ valid: false, reason: "No token" });
     }
 
-    // Decode token without throwing
-    jwt.verify(token, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
-      if (err) {
-        return res.status(200).json({ valid: false, reason: "Expired or Invalid" });
-      }
-
-      const user = await User.findOne({ _id: decoded.userId, refreshToken: token });
-      if (!user) {
-        return res.status(200).json({ valid: false, reason: "Token doesn't match user" });
-      }
-
-      return res.status(200).json({ valid: true });
-    });
+    let decoded;
+    try { decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET); }
+    catch { return res.status(200).json({ valid: false, reason: "Expired or Invalid" }); }
+    const user = await User.findOne({ _id: decoded.userId, refreshToken: token, isDeleted: false, isVerified: true });
+    return res.status(200).json({ valid: Boolean(user) });
 
   } catch (err) {
-    return res.status(500).json({ valid: false, reason: "Server error", error: err.message });
+    return sendError(res, err);
   }
 };
 
@@ -156,7 +153,8 @@ exports.refreshToken = async (req, res) => {
         }
        
         // Find user with the matching refresh token
-        const user = await User.findOne({ refreshToken: token });
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+        const user = await User.findOne({ _id: decoded.userId, refreshToken: token, isDeleted: false, isVerified: true });
         if (!user) {
             return res.status(403).json({ message: "Invalid refresh token" });
         }
@@ -167,13 +165,13 @@ exports.refreshToken = async (req, res) => {
         // Set access token cookie (short expiry)
         res.cookie('accessToken', newAccessToken, {
            ...commonOptions,
-            maxAge: 100*60*1000, // 15 minutes
+            maxAge: 60*60*1000, // 15 minutes
         });
 
         res.status(200).json({ message: "Access token refreshed successfully." });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -196,7 +194,7 @@ exports.requestPasswordReset = async (req, res) => {
 
         res.status(200).json({ message: "Password reset email sent." });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -221,7 +219,8 @@ exports.resetPassword = async (req, res) => {
       // Hash and save the new password
       user.password = newPassword;
       user.resetPasswordToken = null; // Clear the reset token
-      user.resetPasswordExpires = null; // Clear expiration time
+      user.resetPasswordExpires = null;
+      user.refreshToken = null; // Clear expiration time
   
       await user.save();
   
@@ -238,7 +237,7 @@ exports.getUserProfile = async (req, res) => {
       
         res.status(200).json(req.user);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -250,7 +249,9 @@ exports.updateUserProfile = async (req, res) => {
         return res.status(401).json({ message: "Unauthorised – no user in request" });
       }
   
-      const updates = req.body;
+      const allowed = ["first_name", "last_name", "phone", "date_of_birth", "gender", "address", "preferred_language", "skin_concerns", "lifestyle_factors", "profileImage", "allergenPreferences"];
+      const updates = Object.fromEntries(Object.entries(req.body || {}).filter(([key]) => allowed.includes(key)));
+      if (!Object.keys(updates).length) return res.status(400).json({ message: "No editable profile fields supplied." });
       if (updates.email) {
         const email = updates.email.toLowerCase().trim();
   
@@ -284,7 +285,7 @@ exports.updateUserProfile = async (req, res) => {
       });
     } catch (error) {
       console.error("updateUserProfile:", error);
-      res.status(500).json({ error: error.message });
+      sendError(res, error);
     }
   };
   
@@ -292,13 +293,13 @@ exports.updateUserProfile = async (req, res) => {
 // **🔹 Soft Delete Account**
 exports.softDeleteAccount = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId);
+        const user = await User.findById(req.user._id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
         await user.softDelete();
         res.status(200).json({ message: "Account deleted successfully." });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -307,6 +308,7 @@ exports.getAllUsers = async (req, res) => {
   try {
     const { page = 1, limit = 15, name,deleted } = req.query;
 
+    if (!Number.isInteger(Number(page)) || Number(page) < 1 || !Number.isInteger(Number(limit)) || Number(limit) < 1 || Number(limit) > 100) return res.status(400).json({ message: "Invalid pagination." });
     const query = buildUserQuery({ name,deleted });
 
     const totalCount = await User.countDocuments(query);
@@ -319,7 +321,7 @@ exports.getAllUsers = async (req, res) => {
     res.json({ users, page: Number(page), limit: Number(limit), totalCount });
   } catch (err) {
     console.error("getAllUsers:", err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -345,7 +347,7 @@ await notify({
     res.json({ message: "User role updated." });
   } catch (err) {
     console.error("changeUserRole:", err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 exports.adminSoftDeleteUser = async (req, res) => {
@@ -367,7 +369,7 @@ await notify({
     res.json({ message: "User deleted." });
   } catch (err) {
     console.error("adminSoftDeleteUser:", err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -407,6 +409,8 @@ exports.logoutUser = (req, res) => {
 
 
   exports.updateUserConsent = async (req, res) => {
+  const targetId = req.params.id || req.params.userId;
+  if (req.user.role !== "admin" && String(req.user._id) !== targetId) return res.status(403).json({ message: "Access denied." });
   const { userId } = req.params;
 
   try {
@@ -422,7 +426,8 @@ exports.logoutUser = (req, res) => {
       { new: true }
     );
 
-    res.json({ success: true, user: updatedUser });
+    if (!updatedUser) return res.status(404).json({ message: "User not found." });
+    res.json({ success: true });
   } catch (err) {
     console.error("Consent update error:", err);
     res.status(500).json({ error: "Could not update consent" });
@@ -431,6 +436,8 @@ exports.logoutUser = (req, res) => {
 
 
 exports.completeWalkthrough = async (req, res) => {
+  const targetId = req.params.id || req.params.userId;
+  if (req.user.role !== "admin" && String(req.user._id) !== targetId) return res.status(403).json({ message: "Access denied." });
   try {
     const userId = req.params.id; // ✅ use `id` not `_id` in the route param
 
@@ -480,6 +487,8 @@ exports.completeWalkthrough = async (req, res) => {
 
 
 exports.getLatestFaceVerificationImage = async (req, res) => {
+  const targetId = req.params.id || req.params.userId;
+  if (req.user.role !== "admin" && String(req.user._id) !== targetId) return res.status(403).json({ message: "Access denied." });
   try {
     const userId = req.params.id;
 
@@ -508,4 +517,18 @@ exports.getLatestFaceVerificationImage = async (req, res) => {
     console.error("getLatestFaceVerificationImage error:", err);
     res.status(500).json({ message: "Server error." });
   }
+};
+// Recovery path when initial verification delivery fails or the link expires.
+exports.resendVerification = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email.toLowerCase(), isVerified: false, isDeleted: false });
+    if (user) {
+      user.verificationToken = crypto.randomBytes(32).toString("hex");
+      user.verificationTokenExpires = new Date(Date.now() + 10 * 60 * 1000);
+      await user.save();
+      const link = `${process.env.BACKEND_URL}/api/users/verify-email?token=${user.verificationToken}`;
+      await sendEmail(user.email, "Verify Your Email - SkinCare Pro", require("../../templates/verificationEmailTemplate")(user.first_name, link), true);
+    }
+    res.json({ message: "If an unverified account exists, a verification email has been sent." });
+  } catch (error) { sendError(res, error); }
 };

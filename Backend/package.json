@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "start": "nodemon ./src/app.js",
-    "build": "node ./src/app.js"
+    "start": "node ./src/app.js",
+    "build": "node --check ./src/app.js",
+    "test:reliability": "jest --runInBand src/__tests__",
+    "email:verify": "node src/scripts/verifyEmail.js",
+    "start:prod": "node -r dotenv/config ./src/app.js dotenv_config_path=.env.production"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

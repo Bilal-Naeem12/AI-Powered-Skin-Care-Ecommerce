@@ -20,7 +20,6 @@ const router = express.Router();
 router.get("/customer", authMiddleware, getCustomerOrder);
 router.post("/", authMiddleware, createOrder);
 router.get("/:id", authMiddleware, getOrderById);
-router.get("/:id", authMiddleware, getOrderById);
 router.put("/:id/cancel", authMiddleware, cancelOrder);
 router.get("/:id/tracking", authMiddleware, getOrderTrackingStatus);
 

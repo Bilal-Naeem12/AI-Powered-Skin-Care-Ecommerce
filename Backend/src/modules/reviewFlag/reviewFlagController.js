@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const ReviewFlagService = require("./reviewFlagService");
 
 // **🔹 Create a Flag for a Review**
@@ -17,7 +18,7 @@ exports.getFlaggedReviews = async (req, res) => {
         const flaggedReviews = await ReviewFlagService.getFlaggedReviews();
         res.status(200).json(flaggedReviews);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -30,7 +31,7 @@ exports.getFlaggedReviewById = async (req, res) => {
 
         res.status(200).json(flag);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

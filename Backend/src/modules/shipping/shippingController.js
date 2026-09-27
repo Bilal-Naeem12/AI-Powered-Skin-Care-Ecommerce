@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const ShippingService = require("./shippingService");
 
 // **🔹 Create Shipping Record**
@@ -20,7 +21,7 @@ exports.getShippingInfo = async (req, res) => {
 
         res.status(200).json(shippingInfo);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

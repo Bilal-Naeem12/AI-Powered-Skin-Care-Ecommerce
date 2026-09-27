@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const InvoiceService = require("./invoiceService");
 
 // **🔹 Create a New Invoice**
@@ -20,7 +21,7 @@ exports.getInvoiceByOrderId = async (req, res) => {
 
         res.status(200).json(invoice);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,6 +42,6 @@ exports.getAllInvoices = async (req, res) => {
         const invoices = await InvoiceService.getAllInvoices();
         res.status(200).json(invoices);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };

@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const CouponService = require("./couponService");
 
 // **🔹 Create a New Coupon**
@@ -20,7 +21,7 @@ exports.getCoupon = async (req, res) => {
 
         res.status(200).json(coupon);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -30,7 +31,7 @@ exports.getAllActiveCoupons = async (req, res) => {
         const coupons = await CouponService.getActiveCoupons();
         res.status(200).json(coupons);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,7 +42,7 @@ exports.deactivateCoupon = async (req, res) => {
         const updatedCoupon = await CouponService.deactivateCoupon(id);
         res.status(200).json({ message: "Coupon deactivated successfully", coupon: updatedCoupon });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

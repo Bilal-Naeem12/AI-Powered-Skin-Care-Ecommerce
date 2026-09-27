@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const SystemConfigService = require("./systemConfigService");
 
 // **🔹 Get System Configuration**
@@ -6,7 +7,7 @@ exports.getSystemConfig = async (req, res) => {
         const config = await SystemConfigService.getSystemConfig();
         res.status(200).json(config);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

@@ -15,14 +15,14 @@ exports.submitContactMessage = async (req, res) => {
     await contact.save();
 
     // ✅ Send Email to Admin
-    const adminEmail = process.env.EMAIL_USER ;
+    const adminEmail = process.env.CONTACT_EMAIL || process.env.EMAIL_FROM ;
     const html = getContactMessageTemplate(name, email, phone, message);
     await sendEmail(
       adminEmail,
       "📬 New Contact Message – SkinCare Pro",
       html,
       true
-    );
+    ).catch(() => console.error("Contact saved, but admin email delivery failed"));
 
     // ✅ Send Notification to Admin Role
     await notify({

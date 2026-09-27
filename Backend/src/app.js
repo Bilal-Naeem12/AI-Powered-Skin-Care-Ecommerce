@@ -10,8 +10,6 @@ const rateLimit = require('express-rate-limit'); // Prevent brute force attacks
 const compression = require('compression'); // Optimize response size
 const mongoose = require('mongoose');
 const { init } = require("./socket");   // NEW
-const Product  = require("./modules/products/productModel");
-const Review   = require("./modules/review/reviewModel");
 
 // Import Routes for each module
 const mainRouter = require('./routes/mainRouter');
@@ -27,19 +25,18 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:57202",
   "http://localhost:53008",
-  'https://skincare-test.loca.lt', // <-- Your tunnel URL
 ];
 
 
 // **Security Middleware**
 app.use(helmet()); // Adds security headers
-app.use(require("cors")({
+app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g. mobile apps or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('CORS not allowed from this origin: ' + origin));
+    return callback(createError(403, 'Origin is not allowed'));
   },
   credentials: true
 }));app.use(compression()); // Enables gzip compression for performance
@@ -52,20 +49,9 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// **Database Connection**
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then( async() =>{
-    
-    
-    
-    console.log("✅ MongoDB Connected")
-})
-  .catch(err => console.error("❌ MongoDB Connection Error:", err));
-
 // **Express Middleware**
-app.use(logger('dev')); // Request logging
+logger.token('safe-path', req => req.path);
+app.use(logger(':method :safe-path :status :response-time ms')); // Request logging
 app.use(express.json()); // JSON payload support
 app.use(express.urlencoded({ extended: true })); // URL-encoded payload support
 app.use(cookieParser());
@@ -77,7 +63,12 @@ app.set('view engine', 'ejs');
 
 
 // **Module Routes** - Connect each module to its route path
-app.use("/api", mainRouter);
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+app.get("/ready", (req, res) => res.status(mongoose.connection.readyState === 1 ? 200 : 503).json({ ready: mongoose.connection.readyState === 1 }));
+app.use("/api", (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: "Database temporarily unavailable. Please try again later." });
+  next();
+}, mainRouter);
 app.use("/", indexRouter);
 // **404 Error Handling**
 indexRouter.get("/", async (req, res) =>
@@ -85,28 +76,41 @@ indexRouter.get("/", async (req, res) =>
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// At the bottom of all routes
-app.use((err, req, res, next) => {
-  const status = err.status || 500;
-  res.status(status).json({
-    success: false,
-    message: err.message || "Internal Server Error",
+app.use((req, res) => res.status(404).json({ success: false, message: "Route not found." }));
+app.use(require("./middleware/errorHandler").errorHandler);
+
+async function start() {
+  for (const key of ["JWT_SECRET", "JWT_REFRESH_SECRET"]) {
+    if (!process.env[key]) throw new Error(`${key} is required`);
+  }
+  await require("./config/database").connectDb();
+  const port = Number(process.env.PORT || 3000);
+  await new Promise((resolve, reject) => {
+    httpServer.once("error", reject);
+    httpServer.listen(port, "0.0.0.0", () => {
+      httpServer.removeListener("error", reject);
+      resolve();
+    });
   });
-});
-
-// **Global Error Handler**
-app.use((err, req, res, next) => {
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    res.status(err.status || 500);
-    res.render('error');
-});
-
-// **Define & Start the Server**
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, "0.0.0.0", () =>
-  console.log(`🚀  API & WS on port ${PORT}`)
-);
-
+  console.log(`API & WS listening on port ${port}`);
+  return httpServer;
+}
+if (require.main === module) {
+  start().catch(async (error) => {
+    console.error("Server startup failed", { name: error.name, code: error.code });
+    await mongoose.disconnect();
+    process.exitCode = 1;
+  });
+  for (const signal of ["SIGINT", "SIGTERM"]) {
+    process.once(signal, () => {
+      const timeout = setTimeout(() => process.exit(1), 10000);
+      timeout.unref();
+      require("./socket").getIO().close(async () => {
+        await mongoose.disconnect();
+        clearTimeout(timeout);
+      });
+    });
+  }
+}
 module.exports = app;
+module.exports.start = start;

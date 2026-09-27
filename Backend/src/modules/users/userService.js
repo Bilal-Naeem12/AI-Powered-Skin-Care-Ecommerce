@@ -1,3 +1,4 @@
+const createError = require("http-errors");
 const User = require("./userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -8,8 +9,9 @@ const getVerificationEmailTemplate = require("../../templates/verificationEmailT
 // **🔹 Create New User**
 exports.registerUser = async ({ first_name, last_name, email, password }) => {
   // 1. Check for existing user
+  email = email.trim().toLowerCase();
   const existingUser = await User.findOne({ email });
-  if (existingUser) throw new Error("Email is already in use");
+  if (existingUser) throw createError(409, "Email is already in use. If unverified, use resend verification.");
 
 
   // 2. Create user & generate token
@@ -87,7 +89,8 @@ exports.resetPassword = async (token, newPassword) => {
     const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
     if (!user) throw new Error("Invalid or expired reset token.");
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = newPassword;
+    user.refreshToken = null;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
 

@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const GiftCardService = require("./giftCardService");
 
 // **🔹 Create Gift Card**
@@ -31,7 +32,7 @@ exports.getGiftCardByCode = async (req, res) => {
 
         res.status(200).json(giftCard);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,6 +42,6 @@ exports.getAllGiftCards = async (req, res) => {
         const giftCards = await GiftCardService.getAllGiftCards();
         res.status(200).json(giftCards);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };

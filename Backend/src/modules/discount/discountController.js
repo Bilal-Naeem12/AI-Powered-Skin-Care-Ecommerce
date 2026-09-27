@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const DiscountService = require("./discountService");
 
 // **🔹 Create a New Discount**
@@ -20,7 +21,7 @@ exports.getDiscount = async (req, res) => {
 
         res.status(200).json(discount);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -30,7 +31,7 @@ exports.getAllActiveDiscounts = async (req, res) => {
         const discounts = await DiscountService.getActiveDiscounts();
         res.status(200).json(discounts);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,7 +42,7 @@ exports.updateDiscountStatus = async (req, res) => {
         const updatedDiscount = await DiscountService.updateDiscountStatus(discountId, status);
         res.status(200).json({ message: "Discount status updated", discount: updatedDiscount });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

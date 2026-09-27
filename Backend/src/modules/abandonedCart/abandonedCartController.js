@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const AbandonedCartService = require("./abandonedCartService");
 
 // **🔹 Create a New Abandoned Cart**
@@ -20,7 +21,7 @@ exports.getAbandonedCart = async (req, res) => {
 
         res.status(200).json(cart);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -40,6 +41,6 @@ exports.sendRecoveryEmail = async (req, res) => {
             res.status(500).json({ message: "Failed to send recovery email" });
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };

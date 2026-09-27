@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const reviewModel = require("../review/reviewModel");
 const Product = require("./productModel");
 const mongoose = require('mongoose');
@@ -102,7 +103,7 @@ exports.getAllProducts = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error);
   }
 };
 
@@ -126,7 +127,7 @@ exports.getProductById = async (req, res) => {
     res.status(200).json(product);
   } catch (error) {
     console.error("Error in getProductById:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error);
   }
 };
 
@@ -156,7 +157,7 @@ exports.getRelatedProductsById = async (req, res) => {
     res.status(200).json({ relatedProducts });
   } catch (error) {
     console.error("Error fetching related products:", error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error);
   }
 };
 // **🔹 Update a Product**
@@ -235,7 +236,7 @@ exports.updateProduct = async (req, res) => {
     res.json({ message: "Updated", product });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -252,7 +253,7 @@ exports.softDeleteProduct = async (req, res) => {
 
         res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -267,7 +268,7 @@ exports.restoreProduct = async (req, res) => {
 
         res.status(200).json({ message: "Product restored successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -396,7 +397,7 @@ exports.getFeaturedProducts = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message });
+    sendError(res, error);
   }
 };
 

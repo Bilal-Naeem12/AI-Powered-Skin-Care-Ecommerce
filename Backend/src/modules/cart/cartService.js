@@ -1,23 +1,31 @@
+const createError = require("http-errors");
 const Cart = require('./cartModel');
 const Product = require('../products/productModel'); // Assuming you have a Product model
 
 // **Add an item to the cart**
 exports.addItemToCart = async (userId, productId, quantity, selectedVariant) => {
+    if (!Number.isSafeInteger(quantity) || quantity <= 0) throw createError(400, "Quantity must be a positive integer");
     const product = await Product.findById(productId);
-    if (!product) throw new Error("Product not found");
+    if (!product || product.isDeleted) throw createError(404, "Product not found");
 
+    const variant = selectedVariant ? product.variants.find(v => v.size === selectedVariant) : null;
+    if (selectedVariant && !variant) throw createError(400, "Invalid product variant");
+    const price = variant ? variant.price : product.price;
+    const stock = variant ? variant.stock : product.stock;
+    if (quantity > stock) throw createError(400, "Insufficient stock");
     const cart = await Cart.findOne({ userId, isCheckedOut: false });
     if (!cart) {
         const newCart = new Cart({
             userId,
-            items: [{ productId, quantity, selectedVariant, priceAtTimeOfAddition: product.price }],
+            items: [{ productId, quantity, selectedVariant, priceAtTimeOfAddition: price }],
         });
         return await newCart.save();
     } else {
-        const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+        const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId && (item.selectedVariant || null) === (selectedVariant || null));
         if (itemIndex === -1) {
-            cart.items.push({ productId, quantity, selectedVariant, priceAtTimeOfAddition: product.price });
+            cart.items.push({ productId, quantity, selectedVariant, priceAtTimeOfAddition: price });
         } else {
+            if (cart.items[itemIndex].quantity + quantity > stock) throw createError(400, "Insufficient stock");
             cart.items[itemIndex].quantity += quantity; // Increase quantity
         }
 
@@ -29,7 +37,7 @@ exports.addItemToCart = async (userId, productId, quantity, selectedVariant) => 
 // **Remove an item from the cart**
 exports.removeItemFromCart = async (userId, productId) => {
     const cart = await Cart.findOne({ userId, isCheckedOut: false });
-    if (!cart) throw new Error("Cart not found");
+    if (!cart) throw createError(404, "Cart not found");
 
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
     if (itemIndex === -1) throw new Error("Item not found in cart");
@@ -42,14 +50,14 @@ exports.removeItemFromCart = async (userId, productId) => {
 // **Get the cart for a user**
 exports.getCart = async (userId) => {
     const cart = await Cart.findOne({ userId, isCheckedOut: false }).populate('items.productId');
-    if (!cart) throw new Error("Cart not found");
+    if (!cart) throw createError(404, "Cart not found");
     return cart;
 };
 
 // **Checkout the cart**
 exports.checkoutCart = async (userId) => {
     const cart = await Cart.findOne({ userId, isCheckedOut: false });
-    if (!cart) throw new Error("Cart not found");
+    if (!cart) throw createError(404, "Cart not found");
 
     cart.isCheckedOut = true;
     await cart.save();

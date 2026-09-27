@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const ReviewService = require("./reviewService");
 
 // **🔹 Create a New Review**
@@ -30,7 +31,7 @@ exports.getReviewsByProduct = async (req, res) => {
         const reviews = await ReviewService.getReviewsByProduct(productId);
         res.status(200).json(reviews);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,7 +42,7 @@ exports.getReviewsByUser = async (req, res) => {
         const reviews = await ReviewService.getReviewsByUser(userId);
         res.status(200).json(reviews);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -52,7 +53,7 @@ exports.updateReviewStatus = async (req, res) => {
         const updatedReview = await ReviewService.updateReviewStatus(reviewId, status);
         res.status(200).json({ message: "Review status updated", review: updatedReview });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

@@ -15,6 +15,10 @@ exports.placeOrder = async ({
   paymentPayload,   // { gateway, ... }
   shippingAddress   // { street, city, state, country, postalCode }
 }) => {
+  if (!Array.isArray(cartItems) || cartItems.length === 0 || cartItems.some(it => !it || !mongoose.isObjectIdOrHexString(it.productId) || !Number.isSafeInteger(it.quantity) || it.quantity <= 0)) throw createError(400, "Valid cart items and positive integer quantities are required");
+  if (!shippingAddress || ["street", "city", "state", "country", "postal_code"].some(key => typeof shippingAddress[key] !== "string" || !shippingAddress[key].trim())) throw createError(400, "Complete shipping address is required");
+  if (!paymentPayload || typeof paymentPayload.paymentGateway !== "string") throw createError(400, "Payment gateway is required");
+  cartItems = cartItems.map(({ productId, quantity, selectedVariant }) => ({ productId, quantity, selectedVariant }));
   const session = await mongoose.startSession();
   session.startTransaction();
   let committed = false;
@@ -27,7 +31,9 @@ exports.placeOrder = async ({
       if (!prod || prod.isDeleted) throw createError(404, "Product not found");
 
       await prod.adjustStock(it.quantity, it.selectedVariant, session);
-      it.priceAtTimeOfOrder = it.priceAtTimeOfOrder || prod.price;
+      const variant = it.selectedVariant ? prod.variants.find(v => v.size === it.selectedVariant) : null;
+      it.priceAtTimeOfOrder = variant ? variant.price : prod.price;
+      if (!Number.isFinite(it.priceAtTimeOfOrder) || it.priceAtTimeOfOrder < 0) throw createError(409, "Product price is unavailable");
       total += it.priceAtTimeOfOrder * it.quantity;
     }
 
@@ -44,7 +50,8 @@ exports.placeOrder = async ({
 
     /* 1-C  Payment */
     const payment = await new Payment({
-      ...paymentPayload,
+      paymentGateway: paymentPayload.paymentGateway,
+      paymentStatus: "Pending",
       userId,
       orderId: newOrderId,
       amountPaid: total
@@ -109,18 +116,21 @@ await order.save()
 /* ────────────────────────────────────────────────────────────── *
  * 3.  CANCEL ORDER                                              *
  * ────────────────────────────────────────────────────────────── */
-exports.cancelOrder = async ({ orderId, reason, updatedBy }) => {
+exports.cancelOrder = async ({ orderId, reason, updatedBy, isAdmin = false }) => {
   const session = await mongoose.startSession();
   session.startTransaction();
+  let committed = false;
 
   try {
     const order = await Order.findById(orderId).session(session);
     if (!order) throw new Error("Order not found");
+    if (!isAdmin && String(order.userId?._id || order.userId) !== String(updatedBy)) throw createError(403, "Access denied");
     if (order.isCancelled) throw new Error("Order already cancelled");
 
     // restore stock
     for (const it of order.cartItems) {
       const prod = await Product.findById(it.productId).session(session);
+      if (!prod) throw createError(409, "Cannot restore stock for missing product");
       await prod.adjustStock(-it.quantity, it.selectedVariant, session);
     }
 
@@ -134,7 +144,7 @@ exports.cancelOrder = async ({ orderId, reason, updatedBy }) => {
     // refund payment
     const payment = await Payment.findOne({ orderId }).session(session);
     if (payment) {
-      payment.paymentStatus = "Refunded";
+      if (payment.paymentStatus === "Completed") payment.refundStatus = "Requested";
       await payment.save({ session });
     }
 
@@ -149,11 +159,12 @@ exports.cancelOrder = async ({ orderId, reason, updatedBy }) => {
     await order.save({ session });
 
     await session.commitTransaction();
+    committed = true;
     session.endSession();
 
     return await Order.withAll(orderId);   // populated order
   } catch (err) {
-    await session.abortTransaction();
+    if (!committed) await session.abortTransaction();
     session.endSession();
     throw err;
   }

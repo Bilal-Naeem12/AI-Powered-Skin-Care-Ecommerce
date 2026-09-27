@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const BannerService = require("./bannerService");
 
 // **🔹 Create a Banner**
@@ -17,7 +18,7 @@ exports.getActiveBanners = async (req, res) => {
         const activeBanners = await BannerService.getActiveBanners();
         res.status(200).json(activeBanners);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -30,7 +31,7 @@ exports.getBannerById = async (req, res) => {
 
         res.status(200).json(banner);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 

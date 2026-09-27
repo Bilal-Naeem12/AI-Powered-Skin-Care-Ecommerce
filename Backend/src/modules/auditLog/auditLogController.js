@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const AuditLogService = require("./auditLogService");
 
 // **🔹 Create an Audit Log**
@@ -7,7 +8,7 @@ exports.createAuditLog = async (req, res) => {
         const log = await AuditLogService.createAuditLog(adminId, actionType, targetModel, targetId, actionDescription, ipAddress, deviceInfo, role);
         res.status(201).json({ message: "Audit log created successfully", log });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -17,7 +18,7 @@ exports.getAllAuditLogs = async (req, res) => {
         const logs = await AuditLogService.getAllAuditLogs();
         res.status(200).json(logs);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -29,6 +30,6 @@ exports.getAuditLogById = async (req, res) => {
         if (!log) return res.status(404).json({ message: "Audit log not found" });
         res.status(200).json(log);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };

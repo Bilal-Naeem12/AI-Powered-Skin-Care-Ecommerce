@@ -24,14 +24,17 @@ function init(app) {
   });
 
   // ✅ Middleware for JWT auth
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     try {
       const rawCookie = socket.handshake.headers.cookie || "";
       const cookies = cookie.parse(rawCookie);
       const token = cookies["accessToken"]; // Or your cookie name!
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const { userId, role } = decoded;
+      const user = await require("./modules/users/userModel").findById(decoded.userId).select("role isVerified isDeleted");
+      if (!user || user.isDeleted || !user.isVerified) return next(new Error("Unauthorized"));
+      const userId = String(user._id);
+      const role = user.role;
 
       socket.data.userId = userId;
       socket.data.role = role;
@@ -104,7 +107,10 @@ async function notify({
       io.to(`user:${userId}`).emit("notifications:new", notif);
       console.log(`📣 Emitted immediately to user:${userId}`);
     } else {
+      // Notifications also exist in MongoDB; cap this optional in-memory cache.
+      if (!pendingNotifs.has(userId) && pendingNotifs.size >= 1000) pendingNotifs.delete(pendingNotifs.keys().next().value);
       if (!pendingNotifs.has(userId)) pendingNotifs.set(userId, []);
+      if (pendingNotifs.get(userId).length >= 100) pendingNotifs.get(userId).shift();
       pendingNotifs.get(userId).push(notif);
       console.log(`📌 Queued notif for user:${userId}`);
     }

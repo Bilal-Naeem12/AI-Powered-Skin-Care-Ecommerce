@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 // src/modules/analytics/analyticsController.js
 const AnalyticsService = require("./analyticsService");
 const { floorDate, ceilDate,shiftDate } = require("../../utils/dateUtils");
@@ -77,7 +78,7 @@ exports.getAnalyticsByPeriod = async (req, res) => {
 
     res.json({ docs: result });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -87,7 +88,7 @@ exports.calculateAnalyticsTrend = async (req, res) => {
     await AnalyticsService.calculateAnalyticsTrend(metricType, period);
     res.json({ message: "Trend updated" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -124,7 +125,7 @@ exports.lineChart = async (req, res) => {
     res.json(formatted);
   } catch (err) {
     console.error("lineChart error:", err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -270,7 +271,7 @@ exports.dashboardOverview = async (req, res) => {
     });
   } catch (err) {
     console.error("dashboardOverview error:", err);
-    res.status(500).json({ error: err.message });
+    sendError(res, err);
   }
 };
 
@@ -318,7 +319,7 @@ exports.getAllLineCharts = async (req, res) => {
     return res.json(payload);
   } catch (err) {
     console.error("getAllLineCharts error:", err);
-    return res.status(500).json({ error: err.message });
+    return sendError(res, err);
   }
 };
 
@@ -401,6 +402,6 @@ exports.getAllKpis = async (req, res) => {
     return res.json(payload);
   } catch (err) {
     console.error("getAllKpis error:", err);
-    return res.status(500).json({ error: err.message });
+    return sendError(res, err);
   }
 };

@@ -1,3 +1,4 @@
+const { sendError } = require("../../middleware/errorHandler");
 const AdminService = require("./adminService");
 
 // **🔹 Create Admin**
@@ -17,7 +18,7 @@ exports.getAllAdmins = async (req, res) => {
         const admins = await AdminService.getAllAdmins();
         res.status(200).json({ admins });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -29,7 +30,7 @@ exports.getAdminById = async (req, res) => {
         if (!admin) return res.status(404).json({ message: "Admin not found" });
         res.status(200).json(admin);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -41,7 +42,7 @@ exports.updateAdmin = async (req, res) => {
         const updatedAdmin = await AdminService.updateAdmin(adminId, updateData);
         res.status(200).json({ message: "Admin updated successfully", admin: updatedAdmin });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -52,7 +53,7 @@ exports.deleteAdmin = async (req, res) => {
         const deletedAdmin = await AdminService.deleteAdmin(adminId);
         res.status(200).json({ message: "Admin deleted successfully", admin: deletedAdmin });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -63,7 +64,7 @@ exports.manageUsers = async (req, res) => {
         await AdminService.manageUsers(action, userId);
         res.status(200).json({ message: `User ${action}d successfully` });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -74,7 +75,7 @@ exports.manageProducts = async (req, res) => {
         const product = await AdminService.manageProducts(action, productId, productData);
         res.status(200).json({ message: `Product ${action}d successfully`, product });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
 
@@ -85,6 +86,6 @@ exports.manageOrders = async (req, res) => {
         const updatedOrder = await AdminService.manageOrders(action, orderId, orderData);
         res.status(200).json({ message: `Order ${action}d successfully`, order: updatedOrder });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendError(res, error);
     }
 };
